@@ -1,7 +1,7 @@
 +++
 id = "P-008"
 title = "env-agnostic secret writes: cuora put --env all / sync-env"
-status = "open"
+status = "cancelled"
 created = "2026-11-14"
 priority = "low"
 +++
