@@ -61,6 +61,7 @@ provenance:
   - project/proposals/proposal-0005-cuora-serve-ndjson-policy-decision-wire-for-peregrin.md
   - project/proposals/proposal-0006-constant-time-bearer-comparison-in-cf-worker.md
   - project/proposals/proposal-0007-cached-remote-vault-read-through-encrypted-local-cache.md
+  - project/proposals/proposal-0008-env-agnostic-secret-writes-cuora-put-env-all-sync-env.md
   hashes:
   - 9065e6f6e33503b5f7a4a773acd637396048731c
   - 043c72083824501be0dd939539075300db2c03eb
@@ -106,6 +107,7 @@ provenance:
   - 0ec9fb65c273830ae9355b611998bef0161cb019
   - f5ea53eda54409a8922805b45efa218155f2998e
   - 8b93f846e1262c6b19348553a01993d23387dd97
-  commit_sha: 9aa078807f3d952dd07e69bd48851e3ce8243869
-  generated_at: '1794488905'
+  - 2c9ac77a5f9eecca7cf545fc7ff416efcc569603
+  commit_sha: 88d69286b3e21767b54ac46d8d19471885c5f9f1
+  generated_at: '1794759785'
   generator: kuda-template/0.1.4

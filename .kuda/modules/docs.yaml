@@ -14,7 +14,7 @@ verify:
 - docs/explanation/worktree-model.md
 - docs/gen-api-index.py
 - docs/gen-api.py
-- docs/gen-config-docs.py
+- docs/getting-started.md
 provenance:
   files:
   - docs/README.md
@@ -25,8 +25,6 @@ provenance:
   - docs/explanation/worktree-model.md
   - docs/gen-api-index.py
   - docs/gen-api.py
-  - docs/gen-config-docs.py
-  - docs/gen-crate-map.py
   - docs/getting-started.md
   - docs/how-to/add-a-secret.md
   - docs/how-to/cached-vaults.md
@@ -49,17 +47,15 @@ provenance:
   - docs/tutorials/first-secret.md
   hashes:
   - 66fe00b11a1a060dca8f99b2d58f507ba3d6f998
-  - 78ab94d1d3ef2079a695be757ff5b678e91db99d
+  - af827611e923f70e3f6c0299fb8eb1e41011f0b1
   - ea111f15e91e9bb57c2b6a87fbe2bc46b13f3229
   - 25e3590e47b333471fd4c59b4de377f2f865185f
   - 6e16b6ccc7891fd3d731b16ff4365a429ef4d523
   - dc21de1f8acfcb179081ea3c188adf7d0ce0d80d
   - f54808e08ec28d73f117e5763421765d064099db
   - c61b3a9ae5bf6b6027e30e2ff6026044d75f413c
-  - c552f853ea290b3ebd07082a9eb67941cc76fabb
-  - 9adeaa01170703097e99fcb5cf7c64f6970b32a2
-  - f3183ea1c08d65782de1320d20372b413d4f962a
-  - e041a2233afe66d20531af9c4a093d9c6d032bf8
+  - c4ee9cd00f8c906a9af595db03485e717b3ca9d5
+  - d269ad77abc02805150d9a5b86bfe7a008c6ed30
   - 5eb7f27d9f4b6be7b3393863df2e42479c62626a
   - 2e5d178c70b7cebd3a3262263acd076a01243c36
   - a857eb7b23cde7b85b70a41ac9bb7ee5afa77bec
@@ -67,17 +63,17 @@ provenance:
   - e5a9cce080703ddbc30a25c13de47d95a91756de
   - 670cb0090984c21c3431482011958034474e2621
   - 378a3b81a727e8633afc94b495a2cec78754aec6
-  - 0cbb4bcce72b27d45986abfaf063ee26247cd499
+  - cc8a725cce3289ea67bfae955782b39acfd9fe5c
   - 0dd953ee7ef517251f9e046f4d1ecc0fe4bafcb9
-  - 6881805656a7de5071bacbd97d7390d8a5430abb
+  - 7c22124d7e49b533877d4ee48e60afc1a95303eb
   - 175fa4f47aecdc02e902d243a1c29914eb2ee258
   - 2d2c338c5cf64fed52f38b46edae1d7303f53cba
-  - c8af532ab828e58c08ad896c972e1c11dee252c4
-  - a4f2c6c297107b4c19341f55a6cc39ea7f8299e2
-  - c0dc83f68d18ea758c19d1194df8b25abf95fb1e
+  - 590128e311d9344383ed7800a3044247b2e083ef
+  - b9f5de648157bcb5e96f6ee2cd938eb7dbb53e6c
+  - c23b42402b00b79898cd52193a7c59b4194346f7
   - 7732226fa9f5893e4e87f8da152eefc89269cca7
   - c4d9cab3100d66a41396388efec1629e7a12c587
   - e99cb8872128f852e1d35ddd6966fa09d5c82170
-  commit_sha: 7edd027d33c573ea9fd5ad1dbb15d75a768548a7
-  generated_at: '1794601469'
+  commit_sha: 88d69286b3e21767b54ac46d8d19471885c5f9f1
+  generated_at: '1794759785'
   generator: kuda-template/0.1.4
