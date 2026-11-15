@@ -198,11 +198,11 @@ peregrin-version caveats (campaigns need the peregrin v2 engine).
 ## Status
 
 Working v1 — local age vault + remote `cf` vault (self-hosted
-Worker + D1), deploy sinks, the full verb surface, TUI browser,
-audit wire, agent skill, docs site. `cuora serve` — the ndjson IPC
-surface + `[serve.pdp]` policy-decision wire for peregrin — is in
-(ADR-0003); a KMS-backed crypto port is a later ADR per
-`project/plans/` and `project/proposals/`.
+Worker + D1), deploy sinks, the full verb surface, pavo view
+driver, audit wire, agent skill, docs site. `cuora serve` — the
+ndjson IPC surface + `[serve.pdp]` policy-decision wire for
+peregrin — is in (ADR-0003); a KMS-backed crypto port is a later
+ADR per `project/plans/` and `project/proposals/`.
 
 ## Install
 
