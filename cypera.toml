@@ -107,3 +107,6 @@ text = """
 - `cuora schema` emits the JSON Schema for this shape;
   `cuora check` validates a real file end-to-end.
 """
+
+[check]
+profile = "engine"
