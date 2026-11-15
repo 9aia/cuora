@@ -48,7 +48,7 @@ than hand-editing when a verb exists.
 The `docs` branch holds the VitePress + Diátaxis sources;
 generated pages (`reference/cli.md`, `reference/config.md`, the
 crate map in `architecture.md`, `reference/crate-api.md`) are
-rebuilt by `docs/gen-*.py` and `cuora gen-cli-docs` — never
+rebuilt by `cypera gen` — never
 hand-edited. `cargo xtask site` builds the site; pushes deploy to
 GitHub Pages at `9aia.com/cuora` via `scripts/deploy-docs.sh`.
 

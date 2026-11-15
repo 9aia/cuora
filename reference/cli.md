@@ -2,6 +2,8 @@
 
 This document contains the help content for the `cuora` command-line program.
 
+cuora — secrets broker for agents: `cuora://` refs, redaction, env-injection instead of plaintext. Refs name logical secrets (`cuora://billing/stripe`); `--env` picks the resolution context. `[secrets]` in cuora.toml bounds what `run`/`env` may inject. `manifest`/`schema` describe the surface for machines; every verb honors `--json`.
+
 **Command Overview:**
 
 * [`cuora`↴](#cuora)
@@ -22,13 +24,11 @@ This document contains the help content for the `cuora` command-line program.
 
 ## `cuora`
 
-cuora — secrets broker for agents: `cuora://` refs, redaction, env-injection instead of plaintext.
-
-Refs name logical secrets (`cuora://billing/stripe`); `--env` picks the resolution context. `[secrets]` in cuora.toml bounds what `run`/`env` may inject. `manifest`/`schema` describe the surface for machines; every verb honors `--json`.
+cuora — secrets broker for agents: `cuora://` refs, redaction, env-injection instead of plaintext. Refs name logical secrets (`cuora://billing/stripe`); `--env` picks the resolution context. `[secrets]` in cuora.toml bounds what `run`/`env` may inject. `manifest`/`schema` describe the surface for machines; every verb honors `--json`.
 
 **Usage:** `cuora [OPTIONS] <COMMAND>`
 
-###### **Subcommands:**
+###### **Commands:**
 
 * `init` — Bootstrap: store the age identity per `[identity] backend` / `CUORA_IDENTITY_BACKEND` — `keyring` (default) fails closed when no session store is reachable, `auto` falls back to the keyfile with a note, `file` never probes. Imports an existing identity.txt rather than orphaning it. Verifies the vault opens
 * `put` — Store a secret. The value comes from stdin (`printf … | cuora put cuora://ns/name`) or a hidden terminal prompt — never args, which land in shell history and `/proc`
@@ -51,8 +51,8 @@ Refs name logical secrets (`cuora://billing/stripe`); `--env` picks the resoluti
 * `--env <ENV>` — Env context — `dev`/`staging`/`prod`/custom. Overrides `CUORA_ENV`; default `dev`
 * `--config <PATH>` — Config file, overriding the search ($CUORA_CONFIG → ./cuora.toml → ~/.config/cuora/cuora.toml)
 * `--actor <ACTOR>` — Actor attribution for audit events (default $CUORA_ACTOR, else $USER)
-
-
+* `-h, --help` — Print help (see a summary with '-h')
+* `-V, --version` — Print version
 
 ## `cuora init`
 
@@ -62,89 +62,117 @@ Bootstrap: store the age identity per `[identity] backend` / `CUORA_IDENTITY_BAC
 
 ###### **Options:**
 
+* `--json` — Emit JSON — stable machine shapes on every verb; errors are `{"error": "…"}` on stderr with a non-zero exit
 * `--with-file` — Force the identity keyfile even when a keyring is available — the headless/CI mode
-
-
+* `--env <ENV>` — Env context — `dev`/`staging`/`prod`/custom. Overrides `CUORA_ENV`; default `dev`
+* `--config <PATH>` — Config file, overriding the search ($CUORA_CONFIG → ./cuora.toml → ~/.config/cuora/cuora.toml)
+* `--actor <ACTOR>` — Actor attribution for audit events (default $CUORA_ACTOR, else $USER)
+* `-h, --help` — Print help
 
 ## `cuora put`
 
 Store a secret. The value comes from stdin (`printf … | cuora put cuora://ns/name`) or a hidden terminal prompt — never args, which land in shell history and `/proc`
 
-**Usage:** `cuora put <RREF>`
+**Usage:** `cuora put [OPTIONS] <RREF>`
 
 ###### **Arguments:**
 
 * `<RREF>` — `cuora://` ref, e.g. cuora://billing/stripe
 
+###### **Options:**
 
+* `--json` — Emit JSON — stable machine shapes on every verb; errors are `{"error": "…"}` on stderr with a non-zero exit
+* `--env <ENV>` — Env context — `dev`/`staging`/`prod`/custom. Overrides `CUORA_ENV`; default `dev`
+* `--config <PATH>` — Config file, overriding the search ($CUORA_CONFIG → ./cuora.toml → ~/.config/cuora/cuora.toml)
+* `--actor <ACTOR>` — Actor attribution for audit events (default $CUORA_ACTOR, else $USER)
+* `-h, --help` — Print help
 
 ## `cuora get`
 
 Print a secret's value to stdout — the escape hatch. Prefer `cuora run` so values never enter agent context; guardrails can deny this op
 
-**Usage:** `cuora get <RREF>`
+**Usage:** `cuora get [OPTIONS] <RREF>`
 
 ###### **Arguments:**
 
 * `<RREF>` — `cuora://` ref
 
+###### **Options:**
 
+* `--json` — Emit JSON — stable machine shapes on every verb; errors are `{"error": "…"}` on stderr with a non-zero exit
+* `--env <ENV>` — Env context — `dev`/`staging`/`prod`/custom. Overrides `CUORA_ENV`; default `dev`
+* `--config <PATH>` — Config file, overriding the search ($CUORA_CONFIG → ./cuora.toml → ~/.config/cuora/cuora.toml)
+* `--actor <ACTOR>` — Actor attribution for audit events (default $CUORA_ACTOR, else $USER)
+* `-h, --help` — Print help
 
 ## `cuora list`
 
 List the refs stored in the selected env — names only, never values
 
-**Usage:** `cuora list`
+**Usage:** `cuora list [OPTIONS]`
 
+###### **Options:**
 
+* `--json` — Emit JSON — stable machine shapes on every verb; errors are `{"error": "…"}` on stderr with a non-zero exit
+* `--env <ENV>` — Env context — `dev`/`staging`/`prod`/custom. Overrides `CUORA_ENV`; default `dev`
+* `--config <PATH>` — Config file, overriding the search ($CUORA_CONFIG → ./cuora.toml → ~/.config/cuora/cuora.toml)
+* `--actor <ACTOR>` — Actor attribution for audit events (default $CUORA_ACTOR, else $USER)
+* `-h, --help` — Print help
 
 ## `cuora rm`
 
 Remove a secret from the selected env
 
-**Usage:** `cuora rm <RREF>`
+**Usage:** `cuora rm [OPTIONS] <RREF>`
 
 ###### **Arguments:**
 
 * `<RREF>` — `cuora://` ref
 
+###### **Options:**
 
+* `--json` — Emit JSON — stable machine shapes on every verb; errors are `{"error": "…"}` on stderr with a non-zero exit
+* `--env <ENV>` — Env context — `dev`/`staging`/`prod`/custom. Overrides `CUORA_ENV`; default `dev`
+* `--config <PATH>` — Config file, overriding the search ($CUORA_CONFIG → ./cuora.toml → ~/.config/cuora/cuora.toml)
+* `--actor <ACTOR>` — Actor attribution for audit events (default $CUORA_ACTOR, else $USER)
+* `-h, --help` — Print help
 
 ## `cuora rotate`
 
 Rotate a secret to a new value (stdin or hidden prompt, like `put`); bumps version + rotated_at
 
-**Usage:** `cuora rotate <RREF>`
+**Usage:** `cuora rotate [OPTIONS] <RREF>`
 
 ###### **Arguments:**
 
 * `<RREF>` — `cuora://` ref
 
+###### **Options:**
 
+* `--json` — Emit JSON — stable machine shapes on every verb; errors are `{"error": "…"}` on stderr with a non-zero exit
+* `--env <ENV>` — Env context — `dev`/`staging`/`prod`/custom. Overrides `CUORA_ENV`; default `dev`
+* `--config <PATH>` — Config file, overriding the search ($CUORA_CONFIG → ./cuora.toml → ~/.config/cuora/cuora.toml)
+* `--actor <ACTOR>` — Actor attribution for audit events (default $CUORA_ACTOR, else $USER)
+* `-h, --help` — Print help
 
 ## `cuora run`
 
-Run a command with declared secrets injected as env vars.
-
-Injection surface = `[secrets]` in cuora.toml plus `-s VAR=cuora://ref` ad-hoc pairs; nothing else is injectable. Two exec modes after `--`:
-
-`cuora run -- 'pnpm test | tee log'` — one string → `bash -c`
-
-`cuora run -- pnpm test --filter x` — argv → direct exec
-
-argv mode needs no shell quoting — prefer it when the command has arguments. Exit code is the child's.
+Run a command with declared secrets injected as env vars. Injection surface = `[secrets]` in cuora.toml plus `-s VAR=cuora://ref` ad-hoc pairs; nothing else is injectable. Two exec modes after `--`: `cuora run -- 'pnpm test | tee log'` — one string → `bash -c` `cuora run -- pnpm test --filter x` — argv → direct exec argv mode needs no shell quoting — prefer it when the command has arguments. Exit code is the child's.
 
 **Usage:** `cuora run [OPTIONS] -- <CMD>...`
 
 ###### **Arguments:**
 
-* `<CMD>` — Command to run (after `--`). One arg → `bash -c`; several → `argv[0]` exec'd directly with the rest
+* `<CMD>...` — Command to run (after `--`). One arg → `bash -c`; several → `argv[0]` exec'd directly with the rest
 
 ###### **Options:**
 
-* `-s`, `--secret <VAR=CUORA_REF>` — Extra `VAR=cuora://ref` pairs to inject (refused when `[guardrails] deny_adhoc` is set)
-
-
+* `--json` — Emit JSON — stable machine shapes on every verb; errors are `{"error": "…"}` on stderr with a non-zero exit
+* `-s, --secret <VAR=CUORA_REF>` — Extra `VAR=cuora://ref` pairs to inject (refused when `[guardrails] deny_adhoc` is set)
+* `--env <ENV>` — Env context — `dev`/`staging`/`prod`/custom. Overrides `CUORA_ENV`; default `dev`
+* `--config <PATH>` — Config file, overriding the search ($CUORA_CONFIG → ./cuora.toml → ~/.config/cuora/cuora.toml)
+* `--actor <ACTOR>` — Actor attribution for audit events (default $CUORA_ACTOR, else $USER)
+* `-h, --help` — Print help (see a summary with '-h')
 
 ## `cuora env`
 
@@ -154,17 +182,26 @@ Print `export VAR='…'` lines for `eval "$(cuora env)"` — the human path (`ru
 
 ###### **Options:**
 
-* `-s`, `--secret <VAR=CUORA_REF>` — Extra `VAR=cuora://ref` pairs to resolve
-
-
+* `--json` — Emit JSON — stable machine shapes on every verb; errors are `{"error": "…"}` on stderr with a non-zero exit
+* `-s, --secret <VAR=CUORA_REF>` — Extra `VAR=cuora://ref` pairs to resolve
+* `--env <ENV>` — Env context — `dev`/`staging`/`prod`/custom. Overrides `CUORA_ENV`; default `dev`
+* `--config <PATH>` — Config file, overriding the search ($CUORA_CONFIG → ./cuora.toml → ~/.config/cuora/cuora.toml)
+* `--actor <ACTOR>` — Actor attribution for audit events (default $CUORA_ACTOR, else $USER)
+* `-h, --help` — Print help
 
 ## `cuora check`
 
 Validate config + the declared surface: `[envs]` routes point at declared vaults, vaults decrypt, every `[secrets]` ref resolves in its routed env. Exit 1 on findings
 
-**Usage:** `cuora check`
+**Usage:** `cuora check [OPTIONS]`
 
+###### **Options:**
 
+* `--json` — Emit JSON — stable machine shapes on every verb; errors are `{"error": "…"}` on stderr with a non-zero exit
+* `--env <ENV>` — Env context — `dev`/`staging`/`prod`/custom. Overrides `CUORA_ENV`; default `dev`
+* `--config <PATH>` — Config file, overriding the search ($CUORA_CONFIG → ./cuora.toml → ~/.config/cuora/cuora.toml)
+* `--actor <ACTOR>` — Actor attribution for audit events (default $CUORA_ACTOR, else $USER)
+* `-h, --help` — Print help
 
 ## `cuora migrate`
 
@@ -174,9 +211,12 @@ Rewrite stored records for a wire/config upgrade. Currently one transform: `--pr
 
 ###### **Options:**
 
+* `--json` — Emit JSON — stable machine shapes on every verb; errors are `{"error": "…"}` on stderr with a non-zero exit
 * `--private-refs` — Re-key cf-vault rows under HMAC-derived storage keys, attaching the encrypted `name` blob (P-004)
-
-
+* `--env <ENV>` — Env context — `dev`/`staging`/`prod`/custom. Overrides `CUORA_ENV`; default `dev`
+* `--config <PATH>` — Config file, overriding the search ($CUORA_CONFIG → ./cuora.toml → ~/.config/cuora/cuora.toml)
+* `--actor <ACTOR>` — Actor attribution for audit events (default $CUORA_ACTOR, else $USER)
+* `-h, --help` — Print help
 
 ## `cuora deploy`
 
@@ -190,38 +230,51 @@ Push a stored secret to a write-only deploy target (`[deploy.NAME]` in cuora.tom
 
 ###### **Options:**
 
+* `--json` — Emit JSON — stable machine shapes on every verb; errors are `{"error": "…"}` on stderr with a non-zero exit
 * `--target <NAME>` — Deploy target name (`[deploy.NAME]`); required when several are configured
-
-
+* `--env <ENV>` — Env context — `dev`/`staging`/`prod`/custom. Overrides `CUORA_ENV`; default `dev`
+* `--config <PATH>` — Config file, overriding the search ($CUORA_CONFIG → ./cuora.toml → ~/.config/cuora/cuora.toml)
+* `--actor <ACTOR>` — Actor attribution for audit events (default $CUORA_ACTOR, else $USER)
+* `-h, --help` — Print help
 
 ## `cuora serve`
 
 Serve the Vault port over ndjson — one JSON request per stdin line, one response per stdout line, audit events on stderr unchanged. For orchestrators embedding cuora (peregrin); with `[serve.pdp]` configured, a policy decision point is consulted before every vault-touching op. `{"op":"manifest"}` on the wire describes the protocol
 
-**Usage:** `cuora serve`
+**Usage:** `cuora serve [OPTIONS]`
 
+###### **Options:**
 
+* `--json` — Emit JSON — stable machine shapes on every verb; errors are `{"error": "…"}` on stderr with a non-zero exit
+* `--env <ENV>` — Env context — `dev`/`staging`/`prod`/custom. Overrides `CUORA_ENV`; default `dev`
+* `--config <PATH>` — Config file, overriding the search ($CUORA_CONFIG → ./cuora.toml → ~/.config/cuora/cuora.toml)
+* `--actor <ACTOR>` — Actor attribution for audit events (default $CUORA_ACTOR, else $USER)
+* `-h, --help` — Print help
 
 ## `cuora manifest`
 
 Capabilities, JSON shapes, env vars, audit contract — agent self-discovery (always JSON)
 
-**Usage:** `cuora manifest`
+**Usage:** `cuora manifest [OPTIONS]`
 
+###### **Options:**
 
+* `--json` — Emit JSON — stable machine shapes on every verb; errors are `{"error": "…"}` on stderr with a non-zero exit
+* `--env <ENV>` — Env context — `dev`/`staging`/`prod`/custom. Overrides `CUORA_ENV`; default `dev`
+* `--config <PATH>` — Config file, overriding the search ($CUORA_CONFIG → ./cuora.toml → ~/.config/cuora/cuora.toml)
+* `--actor <ACTOR>` — Actor attribution for audit events (default $CUORA_ACTOR, else $USER)
+* `-h, --help` — Print help
 
 ## `cuora schema`
 
 JSON Schema for `cuora.toml`
 
-**Usage:** `cuora schema`
+**Usage:** `cuora schema [OPTIONS]`
 
+###### **Options:**
 
-
-<hr/>
-
-<small><i>
-    This document was generated automatically by
-    <a href="https://crates.io/crates/clap-markdown"><code>clap-markdown</code></a>.
-</i></small>
-
+* `--json` — Emit JSON — stable machine shapes on every verb; errors are `{"error": "…"}` on stderr with a non-zero exit
+* `--env <ENV>` — Env context — `dev`/`staging`/`prod`/custom. Overrides `CUORA_ENV`; default `dev`
+* `--config <PATH>` — Config file, overriding the search ($CUORA_CONFIG → ./cuora.toml → ~/.config/cuora/cuora.toml)
+* `--actor <ACTOR>` — Actor attribution for audit events (default $CUORA_ACTOR, else $USER)
+* `-h, --help` — Print help

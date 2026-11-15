@@ -5,7 +5,9 @@
 # `bash scripts/deploy-docs.sh` in a detached worktree of the pushed
 # docs sha, so cwd is the docs checkout root and
 # `..` is NOT the main repo. Cargo work happens in CUORA_REPO (the real
-# checkout); the gen-*.py scripts honor CUORA_ROOT for the same reason.
+# checkout); the gen-api.py rustdoc pipeline honors CUORA_ROOT for the
+# same reason. cli/config/crate-map pages come from `cypera gen`
+# driven by $REPO/cypera.toml.
 set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
@@ -16,14 +18,11 @@ export CUORA_ROOT="$REPO"
 echo "==> bun install"
 bun install
 
-CUORA_BIN="$(command -v cuora || true)"
-CUORA_BIN="${CUORA_BIN:-$HOME/.cargo/bin/cuora}"
-echo "==> reference/cli.md ($CUORA_BIN gen-cli-docs)"
-"$CUORA_BIN" gen-cli-docs > reference/cli.md
-
-echo "==> gen config + crate map (CUORA_ROOT=$REPO)"
-python3 gen-config-docs.py
-python3 gen-crate-map.py
+CYPERA="cargo run -q --manifest-path $REPO/../cypera/Cargo.toml -p cypera --"
+echo "==> reference pages (cypera gen, repo=$REPO)"
+$CYPERA gen cli --repo "$REPO"
+$CYPERA gen config --repo "$REPO"
+$CYPERA gen crate-map --repo "$REPO"
 
 echo "==> rustdoc → public/api (cargo doc in $REPO)"
 python3 gen-api.py
