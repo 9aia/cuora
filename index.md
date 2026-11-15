@@ -8,7 +8,7 @@ hero:
   actions:
     - theme: brand
       text: Getting Started
-      link: /getting-started
+      link: /tutorials/getting-started
     - theme: alt
       text: Tutorial
       link: /tutorials/first-secret
@@ -35,3 +35,12 @@ features:
     link: /reference/audit-events
     linkText: audit contract
 ---
+
+## Where to go next
+
+| You want to… | Go to |
+| --- | --- |
+| Install cuora and seal your first secret | [Tutorial](/tutorials/getting-started) |
+| Do a task (rotate, route envs, deploy a sink) | [How-to](/how-to/add-a-secret) |
+| Understand the design (threat model, crypto model) | [Explanation](/explanation/threat-model) |
+| Look up a verb, audit event, or env var | [Reference](/reference/cli) |

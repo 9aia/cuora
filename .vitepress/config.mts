@@ -12,7 +12,7 @@ export default defineConfig({
   ignoreDeadLinks: [/\/api\//],
   themeConfig: {
     nav: [
-      { text: "Getting Started", link: "/getting-started" },
+      { text: "Getting Started", link: "/tutorials/getting-started" },
       { text: "Tutorial", link: "/tutorials/first-secret" },
       { text: "How-to", link: "/how-to/add-a-secret" },
       { text: "Explanation", link: "/explanation/architecture" },
@@ -59,6 +59,7 @@ export default defineConfig({
         text: "Explanation",
         items: [
           { text: "Architecture", link: "/explanation/architecture" },
+          { text: "Boundaries", link: "/explanation/boundaries" },
           { text: "Threat model", link: "/explanation/threat-model" },
           { text: "Crypto model", link: "/explanation/crypto-model" },
           { text: "Concepts", link: "/explanation/concepts" },
