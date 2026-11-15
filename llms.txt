@@ -8,7 +8,7 @@ cuora:// references in code, env vars at runtime, an audit trail for every mater
 
 ### Tutorials
 
-- [Your first secret](/cuora/tutorials/first-secret.md)
+- [Getting started](/cuora/tutorials/getting-started.md)
 
 ### How-to
 
@@ -44,5 +44,4 @@ cuora:// references in code, env vars at runtime, an audit trail for every mater
 
 ### Other
 
-- [Getting started](/cuora/tutorials/getting-started.md)
 - [Untitled](/cuora/public/api/static.files/SourceSerif4-LICENSE-a2cfd9d5.md)
