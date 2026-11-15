@@ -60,8 +60,10 @@ export default defineConfig({
         items: [
           { text: "Architecture", link: "/explanation/architecture" },
           { text: "Threat model", link: "/explanation/threat-model" },
-          { text: "Boundaries", link: "/explanation/boundaries" },
           { text: "Crypto model", link: "/explanation/crypto-model" },
+          { text: "Concepts", link: "/explanation/concepts" },
+          { text: "Decisions", link: "/explanation/decisions" },
+          { text: "Flow: a secret's life", link: "/explanation/flow" },
           { text: "The worktree model", link: "/explanation/worktree-model" },
         ],
       },
