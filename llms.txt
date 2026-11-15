@@ -34,6 +34,7 @@ cuora:// references in code, env vars at runtime, an audit trail for every mater
 ### Explanation
 
 - [Architecture](/cuora/explanation/architecture.md)
+- [Boundaries](/cuora/explanation/boundaries.md)
 - [Threat model](/cuora/explanation/threat-model.md)
 - [Crypto model](/cuora/explanation/crypto-model.md)
 - [Concepts](/cuora/explanation/concepts.md)
@@ -43,5 +44,5 @@ cuora:// references in code, env vars at runtime, an audit trail for every mater
 
 ### Other
 
-- [Getting started](/cuora/getting-started.md)
+- [Getting started](/cuora/tutorials/getting-started.md)
 - [Untitled](/cuora/public/api/static.files/SourceSerif4-LICENSE-a2cfd9d5.md)

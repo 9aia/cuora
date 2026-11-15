@@ -1,5 +1,5 @@
 ---
-url: /cuora/getting-started.md
+url: /cuora/tutorials/getting-started.md
 ---
 # Getting started
 
@@ -124,10 +124,10 @@ teaches agents the verbs.
 
 ## Where next
 
-* [Your first secret](tutorials/first-secret.md) — a guided
+* [Your first secret](/tutorials/first-secret.md) — a guided
   end-to-end in a throwaway HOME.
-* [Inject into a process](how-to/inject-into-a-process.md) — run
+* [Inject into a process](/how-to/inject-into-a-process.md) — run
   modes, ad-hoc `-s` pairs, the `eval "$(cuora env)"` human path.
-* [The threat model](explanation/threat-model.md) — what cuora
+* [The threat model](/explanation/threat-model.md) — what cuora
   does and does not protect against.
-* [CLI reference](reference/cli.md) — the full verb surface.
+* [CLI reference](/reference/cli.md) — the full verb surface.
