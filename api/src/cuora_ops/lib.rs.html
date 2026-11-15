@@ -554,7 +554,7 @@
 <a href=#554 id=554 data-nosnippet>554</a>    /// without opening anything. The middle item is `Some` only
 <a href=#555 id=555 data-nosnippet>555</a>    /// when `[vaults.*].identity` pins a file; identity *resolution*
 <a href=#556 id=556 data-nosnippet>556</a>    /// (env → keyring → default file) happens in
-<a href=#557 id=557 data-nosnippet>557</a>    /// [`Self::resolve_identity`].
+<a href=#557 id=557 data-nosnippet>557</a>    /// `Self::resolve_identity`.
 <a href=#558 id=558 data-nosnippet>558</a>    </span><span class="kw">pub fn </span>vault_paths(
 <a href=#559 id=559 data-nosnippet>559</a>        <span class="kw-2">&amp;</span><span class="self">self</span>,
 <a href=#560 id=560 data-nosnippet>560</a>        env: <span class="kw-2">&amp;</span>Env,
@@ -802,7 +802,7 @@
 <a href=#802 id=802 data-nosnippet>802</a>    /// **Sealed-pack fallback:** a vault miss on an unpinned
 <a href=#803 id=803 data-nosnippet>803</a>    /// two-segment ref (`cuora://&lt;pack&gt;/&lt;secret&gt;`) is retried
 <a href=#804 id=804 data-nosnippet>804</a>    /// against installed sealed tamias packs (see
-<a href=#805 id=805 data-nosnippet>805</a>    /// [`Self::get_from_pack`]) — and so is a vault that can't even
+<a href=#805 id=805 data-nosnippet>805</a>    /// `Self::get_from_pack`) — and so is a vault that can't even
 <a href=#806 id=806 data-nosnippet>806</a>    /// *open* (no creds, unreachable), since the ref names a pack
 <a href=#807 id=807 data-nosnippet>807</a>    /// outright (T-053: packs are the vault-less path). Vault hits
 <a href=#808 id=808 data-nosnippet>808</a>    /// always win — packs are the migration target, not an override.

@@ -2,7 +2,7 @@
 engine ops surface.</p>
 <p>Verbs (the tamias driver contract):</p>
 <ul>
-<li><code>manifest</code> — print the [<code>DriverManifest</code>] JSON (discovery
+<li><code>manifest</code> — print the <a href="pavo_protocol::DriverManifest"><code>DriverManifest</code></a> JSON (discovery
 probe; never touches vault state).</li>
 <li><code>capabilities</code> — <code>{"capabilities": ["pavo"], "verbs": […]}</code>.</li>
 <li><code>ops</code> — the engine ops manifest: every bounded <code>cuora</code> CLI
@@ -47,7 +47,7 @@ params mapped to cuora’s globals, so <code>cuora::dispatch</code> writes to
 the child’s captured stdout and never touches the serve loop’s
 ndjson stream — and every mutation keeps the engine’s own
 semantics (config search, audit events, guardrails).</dd><dt><a class="mod" href="sealed/index.html" title="mod tamias_driver_cuora::sealed">sealed</a><span title="Restricted Visibility">&nbsp;🔒</span> </dt><dd>Sealed packs — tamias ADR-0004 / org P-027 / PL-017 task 3.</dd><dt><a class="mod" href="views/index.html" title="mod tamias_driver_cuora::views">views</a><span title="Restricted Visibility">&nbsp;🔒</span> </dt><dd>views — the driver’s manifest: every ViewSpec plus the wiring
-that turns query bindings into [<code>ViewResult</code>] data.</dd></dl><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><dl class="item-table"><dt><a class="fn" href="fn.capabilities_json.html" title="fn tamias_driver_cuora::capabilities_json">capabilities_<wbr>json</a><span title="Restricted Visibility">&nbsp;🔒</span> </dt><dt><a class="fn" href="fn.dispatch.html" title="fn tamias_driver_cuora::dispatch">dispatch</a><span title="Restricted Visibility">&nbsp;🔒</span> </dt><dd>Dispatch one parsed request to its response.</dd><dt><a class="fn" href="fn.engine_argv.html" title="fn tamias_driver_cuora::engine_argv">engine_<wbr>argv</a><span title="Restricted Visibility">&nbsp;🔒</span> </dt><dd><code>cli</code> verb argv (after the <code>cli</code> token) → engine argv (argv[0]
+that turns query bindings into <a href="pavo_protocol::wire::ViewResult"><code>ViewResult</code></a> data.</dd></dl><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><dl class="item-table"><dt><a class="fn" href="fn.capabilities_json.html" title="fn tamias_driver_cuora::capabilities_json">capabilities_<wbr>json</a><span title="Restricted Visibility">&nbsp;🔒</span> </dt><dt><a class="fn" href="fn.dispatch.html" title="fn tamias_driver_cuora::dispatch">dispatch</a><span title="Restricted Visibility">&nbsp;🔒</span> </dt><dd>Dispatch one parsed request to its response.</dd><dt><a class="fn" href="fn.engine_argv.html" title="fn tamias_driver_cuora::engine_argv">engine_<wbr>argv</a><span title="Restricted Visibility">&nbsp;🔒</span> </dt><dd><code>cli</code> verb argv (after the <code>cli</code> token) → engine argv (argv[0]
 included). <code>tamias bin exec</code>/<code>driver exec</code> prepend the standard
 driver flags — <code>--dir &lt;payload&gt;</code> <code>--name &lt;pkg&gt;</code> — which the
 engine doesn’t know; consume the leading run of those two

@@ -35,8 +35,10 @@ cuora:// references in code, env vars at runtime, an audit trail for every mater
 
 - [Architecture](/cuora/explanation/architecture.md)
 - [Threat model](/cuora/explanation/threat-model.md)
-- [Boundaries](/cuora/explanation/boundaries.md)
 - [Crypto model](/cuora/explanation/crypto-model.md)
+- [Concepts](/cuora/explanation/concepts.md)
+- [Decisions](/cuora/explanation/decisions.md)
+- [Flow: a secret's life — seal, declare, inject, audit](/cuora/explanation/flow.md)
 - [The worktree model](/cuora/explanation/worktree-model.md)
 
 ### Other

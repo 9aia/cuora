@@ -51,7 +51,7 @@ hop re-matches the new head against the keys, so a target
 path that itself matches keeps resolving. The matched key’s
 segments are replaced by the target’s; the unmatched tail is
 appended verbatim. Segment-boundary prefix match, longest
-key wins — see <a href="struct.Config.html#method.alias_entry" title="method cuora_core::config::Config::alias_entry"><code>Self::alias_entry</code></a>.</p>
+key wins — see <code>Self::alias_entry</code>.</p>
 <p>The result is a plain path ref: env pins inside an alias
 <em>target</em> are not re-evaluated (the caller already resolved
 the env — <code>cuora-ops</code> strips pins before calling this).</p>

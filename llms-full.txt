@@ -1703,11 +1703,57 @@ Design rules:
   exec-driven `[serve.pdp]` policy-decision hook (ADR-0003);
   peregrin's embedding point.
 
-## Boundary — secret materialization only
+## Where it sits
 
-cuora owns refs, vaults, env injection, redaction, and the audit
-wire. Neighbors own theirs — see
-[boundaries](boundaries.md) for the full map.
+Cuora is an **engine** in the 9aia stack — it owns one domain
+(secret materialization) and is consumed by everything that runs
+code:
+
+```
+tamias (distribution)  →  engines  →  orchestration  →  surfaces
+                          cuora ◄───     peregrin           pavo,
+                          myco,         campaigns,         cuora run,
+                          kuda,          bupha CI          agents
+                          mimus…
+```
+
+Peregrin campaigns consume secrets via `cuora run`; mimus resolves
+through it via its `mimus-cuora` adapter; agents get the shimmed
+`cuora` command via the `libraries/cuora` tamias pack. The
+`cuora serve` ndjson wire is peregrin's embedding point — cuora
+consults, peregrin decides.
+
+## Boundaries — secret materialization only
+
+cuora owns **secret materialization** — refs, vaults, env
+injection, redaction, audit — and nothing else. If a feature needs
+another kind of memory or authority, it belongs to a neighbor:
+
+| neighbor | owns | how it meets cuora |
+| --- | --- | --- |
+| **myco** | work memory — tasks, issues, proposals, plans, ADRs, handoffs | this repo's `project/` ledger is myco's; cuora has no PM surface |
+| **sturn** | ephemeral coordination — live claims/ops/topics | not secrets: sturn state is transient, cuora state is sealed |
+| **kuda** | code memory — symbol/index knowledge | cuora refs name *secrets*, not code entities |
+| **peregrin** | orchestration — campaigns, multi-actor arbitration, policy | campaigns consume secrets via `cuora run`; audit aggregation + real policy are peregrin's (`CUORA_ACTOR` is self-claimed inside cuora); `cuora serve` — the ndjson IPC wire + `[serve.pdp]` exec consult (ADR-0003) — is its embedding point |
+| **bupha** | CI gate | the org gate is the peregrin `ci-gate` campaign, mid-migration back to bupha (`type: bupha` bundles); it asserts no plaintext secrets land in pipelines, `cuora check` in pipeline steps |
+| **mimus** | critic | secrets resolve env → cuora → legacy (keyring, `~/.config/mimus/env`) via `mimus-cuora` shelling `cuora`; vaults are canonical, writes land in them |
+| **sepia** | session lifecycle | session wrappers can capture cuora's stderr audit stream |
+| **tamias** | distribution | sealed packs (`type: secrets`) carry age ciphertext cuora opens consumer-side |
+
+What that means in practice:
+
+* **A hosted vault service is in scope** — `cuora-vault-cf` is a
+  store impl behind the same port, ciphertext-only, self-hosted.
+* **A daemon is out of scope** — persistent coordination,
+  multi-machine views, arbitration between actors → peregrin.
+  cuora stays a sync, embeddable binary: env vars are the
+  interface, no SDK.
+* **Policy is out of scope** — `[guardrails]` are advisory
+  accident prevention. Enforcement, identity, and unforgeable
+  attribution are orchestration concerns.
+* **The audit wire stops at stderr** — emitting ndjson is cuora's;
+  collecting, storing, and alerting on it is peregrin's
+  (ADR-0001 deliberately removed the local `audit.jsonl`).
 
 ---
 
@@ -1791,42 +1837,6 @@ does not.
 cuora makes the *default* posture "values never appear in repos,
 prompts, args, logs, or agent context" — and records every time
 one still crosses.
-
----
-
----
-url: /cuora/explanation/boundaries.md
----
-# Boundaries
-
-cuora is one organism in a stack — it owns **secret
-materialization** and nothing else. If a feature needs another
-kind of memory or authority, it belongs to a neighbor.
-
-| neighbor | owns | how it meets cuora |
-| --- | --- | --- |
-| **myco** | work memory — tasks, issues, proposals, plans, ADRs, handoffs | this repo's `project/` ledger is myco's; cuora has no PM surface |
-| **sturn** | ephemeral coordination — live claims/ops/topics | not secrets: sturn state is transient, cuora state is sealed |
-| **kuda** | code memory — symbol/index knowledge | cuora refs name *secrets*, not code entities |
-| **peregrin** | orchestration — campaigns, multi-actor arbitration, policy | campaigns consume secrets via `cuora run`; audit aggregation + real policy are peregrin's (`CUORA_ACTOR` is self-claimed inside cuora); `cuora serve` — the ndjson IPC wire + `[serve.pdp]` exec consult (ADR-0003) — is its embedding point |
-| **bupha / ci-gate** | CI gate | bupha is the CI repo — the org gate is the peregrin `ci-gate` campaign, mid-migration back to bupha (`type: bupha` bundles); it asserted no plaintext secrets land in pipelines, `cuora check` in pipeline steps |
-| **mimus** | critic | secrets resolve env → cuora → legacy (keyring, `~/.config/mimus/env`) via `mimus-cuora` shelling `cuora`; vaults are canonical, writes land in them |
-| **sepia** | session lifecycle | session wrappers can capture cuora's stderr audit stream |
-
-## What that means in practice
-
-* **A hosted vault service is in scope** — `cuora-vault-cf` is a
-  store impl behind the same port, ciphertext-only, self-hosted.
-* **A daemon is out of scope** — persistent coordination,
-  multi-machine views, arbitration between actors → peregrin.
-  cuora stays a sync, embeddable binary: env vars are the
-  interface, no SDK.
-* **Policy is out of scope** — `[guardrails]` are advisory
-  accident prevention. Enforcement, identity, and unforgeable
-  attribution are orchestration concerns.
-* **The audit wire stops at stderr** — emitting ndjson is cuora's;
-  collecting, storing, and alerting on it is peregrin's
-  (ADR-0001 deliberately removed the local `audit.jsonl`).
 
 ---
 
@@ -1925,6 +1935,255 @@ unlocks the local file vault and the remote `cf` vault alike.
 * **No signing / integrity metadata** beyond what age's AEAD
   gives — tampered ciphertext fails decryption loudly, which is
   the correct failure.
+
+---
+
+---
+url: /cuora/explanation/concepts.md
+---
+# Concepts
+
+The vocabulary of the cuora secrets broker — each term defined once.
+
+## Refs and values
+
+* **`cuora://` ref** — the only way a secret is named in code and
+  config: `cuora://<ns>/<name>`, optionally env-pinned
+  (`cuora://prod/ns/name`). Never a value.
+* **`Secret`** — the redacting newtype every resolved value passes
+  through: no `Display`/`Debug` of plaintext, `.expose()` is the only
+  way out, memory is `Zeroizing`-scrubbed on drop.
+* **Env** — the routing axis (`dev`/`staging`/`prod` + customs). The
+  same ref holds different values per env; `cuora://prod/…` pins one.
+* **Actor** — who performed an op (`CUORA_ACTOR`, `--actor`).
+  Self-claimed attribution, not identity — enforcement is
+  peregrin's.
+
+## Vaults and identity
+
+* **Vault** — a readable secret store behind the `cuora-vault` port:
+  `get`/`put`/`list`/`rotate`/`rm`, per-env variants, ciphertext-only
+  at rest. Impls: `age` (local file), `cf` (self-hosted Worker + D1),
+  `cached` (read-through local mirror).
+* **Identity** — the one X25519 age keypair that unlocks every vault.
+  Held by an `cuora-identity` impl: session keyring (default, fails
+  closed) or `identity.txt` keyfile (headless/CI opt-in).
+* **Recipient** — a public `age1…` key a vault encrypts to;
+  `[vaults.*].recipients` adds team keys without sharing the private
+  one.
+* **`token_env`** — config names the *env var* carrying a credential;
+  the value only ever lives in process env.
+
+## Surfaces and packs
+
+* **`cuora run`** — the agent path: resolves `[secrets]` (+ `-s`
+  pairs), injects values as env vars into the child only, exits with
+  the child's code. Values never enter the spawner's context.
+* **`cuora env`** — the human path: `export VAR='…'` lines for
+  `eval`. Prints plaintext — that's why agents use `run`.
+* **`[secrets]`** — the injectable surface: the `VAR = "cuora://…"`
+  table bounding what `run`/`env` may materialize. Least privilege.
+* **`[guardrails]`** — advisory allow/deny op table honored before any
+  vault touch. Accident prevention, not enforcement.
+* **Audit event** — one ndjson line on stderr per op (actor, op, ref,
+  env, outcome, timestamp); OTLP span when an endpoint is configured.
+* **Sealed pack** — a tamias `type: secrets` package whose payload is
+  age ciphertext only; tamias carries it opaquely, cuora opens it
+  consumer-side via `cuora://<pack>/<secret>` refs.
+* **Deploy sink** — a write-only push target (`[deploy.*]`, e.g. CF
+  Secrets Store). Plaintext crosses once, at push; never a source.
+* **`cuora serve`** — the ndjson JSON-RPC surface orchestrators embed;
+  `[serve.pdp]` is the exec-driven policy-decision consult.
+
+---
+
+---
+url: /cuora/explanation/decisions.md
+---
+# Decisions
+
+ADR-lite: the calls that shaped cuora, the alternatives rejected, and
+the consequences we live with. The repo's own `adrs/` hold the full
+versions — this page is the map.
+
+## age everywhere; ciphertext-only stores
+
+**Decision:** one crypto primitive — age (X25519) — encrypts every
+vault impl client-side; remote stores hold opaque ciphertext and have
+no key material.
+
+**Alternatives:** a managed KMS as the crypto boundary; libsodium;
+SSH keys; a plaintext-capable remote service.
+
+**Consequence:** a compromised worker or stolen `vault.age` yields
+ciphertext, not values — and the same identity unlocks local and
+remote vaults. The cost: key management is ours (identity file /
+keyring), and there's no passphrase-wrapped identity yet.
+
+## Env vars are the interface; no SDK
+
+**Decision:** secrets materialize as process env vars via `cuora
+run`/`cuora env`; there is deliberately no `cuora-sdk`.
+
+**Alternatives:** a Rust-native embed crate; an HTTP secrets API as
+the primary surface.
+
+**Consequence:** every consumer — agents, scripts, CI, other org
+tools — uses the same mechanism with zero coupling, and the child's
+env is the whole contract. `cuora serve` exists for orchestrators
+that need a wire, not a library.
+
+## `Secret` redacts by construction
+
+**Decision:** resolved values live in a `Zeroizing` newtype with no
+`Display`/`Debug`; `.expose()` is the only escape, called at edges.
+
+**Alternatives:** plain `String` with discipline; redact-at-print
+logging filters.
+
+**Consequence:** accidental printing is a compile-time impossibility
+in cuora's own code — `list`, the pavo driver, and audit events are
+metadata-only by construction. The cost: every legit value out
+(exposure to child env, `get`, `env`) must name `.expose()`.
+
+## Values enter via stdin, never argv
+
+**Decision:** `put`/`rotate` read stdin or a hidden `/dev/tty`
+prompt; CLI args are refused for values.
+
+**Alternatives:** `--value` flags; env-var input.
+
+**Consequence:** secrets can't leak into shell history or
+`/proc/*/cmdline` — the two most common accidental-exposure
+channels. Slightly more friction for one-off use; the pipe path is
+the documented norm.
+
+## Audit on stderr, aggregation elsewhere
+
+**Decision:** every materialization emits one ndjson event on
+stderr (+ OTLP when configured); there is no local audit store —
+ADR-0001 removed `audit.jsonl`.
+
+**Alternatives:** a local append-only audit file; direct OTLP only.
+
+**Consequence:** capture is a wrapper away and nothing sensitive is
+persisted by cuora — but *collecting* the stream is the consumer's
+job (sepia captures it per session; peregrin would aggregate). The
+wire stops at stderr by design.
+
+## Guardrails are advisory
+
+**Decision:** `[guardrails]` allow/deny runs before ops but is
+documented as accident prevention — `CUORA_ACTOR` is self-claimed
+and config is editable by the same actor.
+
+**Alternatives:** cryptographic actor identity; enforcement inside
+cuora.
+
+**Consequence:** the honest boundary — cuora *honors* declared rules
+and *records* refusals; real policy is peregrin's
+(`[serve.pdp]` consult, ADR-0003). Claiming enforcement would be a
+lie the threat model refuses to tell.
+
+## The command is a tamias shim
+
+**Decision:** `cuora-cli` is lib-only; the `cuora` command ships as
+the `libraries/cuora` tamias pack (`bins[]` shim →
+`tamias-driver-cuora cli` → `cuora::run_from`).
+
+**Alternatives:** a `[[bin]]` in `cuora-cli`; crates.io releases.
+
+**Consequence:** install/update is tamias's problem and the engine
+is drivable in-process by the driver — but there is no
+`cargo install cuora`, and org policy keeps crates off crates.io.
+
+---
+
+---
+url: /cuora/explanation/flow.md
+---
+# Flow: a secret's life — seal, declare, inject, audit
+
+One end-to-end narrative of cuora's flagship operation: getting a
+value from a human's hands into a running process without it ever
+appearing in a repo, a prompt, an argument list, or an agent's
+context.
+
+## 1. Bootstrap
+
+```sh
+cuora init
+```
+
+Generates (or imports) the age identity — into the session keyring
+by default, the `0600` keyfile on headless hosts — and verifies the
+vault opens. One audit event lands on stderr: `{"op":"init",…}`.
+
+## 2. Seal
+
+```sh
+printf '%s' "$STRIPE_KEY" | cuora put cuora://billing/stripe
+# stored cuora://billing/stripe (v1)
+```
+
+The value crosses stdin → age encryption → `vault.age` ciphertext.
+It is never an argument (no shell history, no `/proc`), never a
+file, never printed. `list` shows the ref and metadata — not the
+value.
+
+## 3. Declare
+
+```toml
+# cuora.toml
+[secrets]
+STRIPE_KEY = "cuora://billing/stripe"
+```
+
+The `[secrets]` table is the *injectable surface* — least
+privilege. `cuora check` verifies every declared ref resolves
+before anything runs.
+
+## 4. Inject
+
+```sh
+cuora run -- 'curl -H "Authorization: Bearer $STRIPE_KEY" \
+    https://api.stripe.com/v1/charges'
+```
+
+`run` resolves the declared refs, spawns the child with the values
+as env vars, and exits with the child's code. The agent that typed
+the command sees the child's *output* — the variable itself only
+exists inside the child. Missing refs fail closed before spawn;
+partial injection is worse than none.
+
+## 5. Audit
+
+Every hop emitted ndjson on stderr:
+
+```json
+{"op":"init","outcome":"ok"}
+{"op":"put","rref":"billing/stripe","env":"dev","outcome":"ok"}
+{"op":"run","rref":"billing/stripe","env":"dev","outcome":"ok"}
+```
+
+Capture is `2> audit.jsonl` or a session wrapper; OTLP spans flow
+when `OTEL_EXPORTER_OTLP_ENDPOINT` is set. Rotation is `cuora
+rotate` (version bump + `rotated_at`); re-deploy to sinks is
+`cuora deploy` — write-only, one-way.
+
+## The shape underneath
+
+```
+plaintext ──stdin──► age encrypt ──► ciphertext at rest (vault/pack)
+                                              │
+config [secrets] ──refs──► resolve ──► child env ──► process
+                          (never the spawner's context)
+        every op ──► ndjson audit event on stderr
+```
+
+See [architecture](architecture.md) for the ports,
+[the threat model](threat-model.md) for what this does and doesn't
+buy, and [concepts](concepts.md) for the vocabulary.
 
 ---
 

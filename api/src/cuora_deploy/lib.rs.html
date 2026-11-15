@@ -5,7 +5,7 @@
 <a href=#5 id=5 data-nosnippet>5</a>//! Store is the motivating case: `POST`/`PATCH` a value in and the
 <a href=#6 id=6 data-nosnippet>6</a>//! API literally cannot return it. A [`Deploy`] therefore has
 <a href=#7 id=7 data-nosnippet>7</a>//! `push`/`remove` and deliberately no `get`/`list` — anything
-<a href=#8 id=8 data-nosnippet>8</a>//! readable belongs behind the [`cuora_vault::Vault`] port instead.
+<a href=#8 id=8 data-nosnippet>8</a>//! readable belongs behind the `cuora_vault::Vault` port instead.
 <a href=#9 id=9 data-nosnippet>9</a>//!
 <a href=#10 id=10 data-nosnippet>10</a>//! The value pushed is **plaintext** (decrypted at the edge by the
 <a href=#11 id=11 data-nosnippet>11</a>//! caller): the sink is the thing Workers/CI read the secret from

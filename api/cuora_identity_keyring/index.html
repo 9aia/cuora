@@ -16,7 +16,7 @@ fails with <a href="../cuora_identity/enum.IdentityError.html#variant.Unavailabl
 <code>cuora-identity-file</code> — never a crash. Tests drive any
 <code>keyring-core</code> store through <a href="struct.KeyringIdentity.html#method.with_store" title="associated function cuora_identity_keyring::KeyringIdentity::with_store"><code>KeyringIdentity::with_store</code></a>
 (the mock store needs no daemon).</p>
-<p>Store calls run under a bounded wait ([<code>bounded</code>]): a locked
+<p>Store calls run under a bounded wait (<code>bounded</code>): a locked
 collection’s unlock prompt has no client-side deadline on the
 dbus store, so an unanswered prompt would hang the caller
 forever. <code>CUORA_KEYRING_TIMEOUT_MS</code> tunes the bound (<code>0</code>

@@ -48,7 +48,7 @@ an env’s vault would use — for <code>init</code>/<code>check</code> reportin
 without opening anything. The middle item is <code>Some</code> only
 when <code>[vaults.*].identity</code> pins a file; identity <em>resolution</em>
 (env → keyring → default file) happens in
-<a href="struct.Ops.html#method.resolve_identity" title="method cuora_ops::Ops::resolve_identity"><code>Self::resolve_identity</code></a>.</p>
+<code>Self::resolve_identity</code>.</p>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.init" class="method"><a class="src rightside" href="../src/cuora_ops/lib.rs.html#674-700">Source</a><h4 class="code-header">pub fn <a href="#method.init" class="fn">init</a>(&amp;self, opts: &amp;<a class="struct" href="struct.InitOpts.html" title="struct cuora_ops::InitOpts">InitOpts</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.99.1/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="struct.InitInfo.html" title="struct cuora_ops::InitInfo">InitInfo</a>, <a class="enum" href="enum.OpsError.html" title="enum cuora_ops::OpsError">OpsError</a>&gt;</h4></section></summary><div class="docblock"><p><code>cuora init</code> — store the identity per <code>[identity] backend</code>
 (default <code>keyring</code>: fail closed when no session store is
 reachable; <code>auto</code> falls back to the keyfile; <code>file</code> forces
@@ -63,7 +63,7 @@ the pre-alias path.</p>
 <p><strong>Sealed-pack fallback:</strong> a vault miss on an unpinned
 two-segment ref (<code>cuora://&lt;pack&gt;/&lt;secret&gt;</code>) is retried
 against installed sealed tamias packs (see
-<a href="struct.Ops.html#method.get_from_pack" title="method cuora_ops::Ops::get_from_pack"><code>Self::get_from_pack</code></a>) — and so is a vault that can’t even
+<code>Self::get_from_pack</code>) — and so is a vault that can’t even
 <em>open</em> (no creds, unreachable), since the ref names a pack
 outright (T-053: packs are the vault-less path). Vault hits
 always win — packs are the migration target, not an override.</p>

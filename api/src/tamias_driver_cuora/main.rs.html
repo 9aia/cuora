@@ -3,7 +3,7 @@
 <a href=#3 id=3 data-nosnippet>3</a>//!
 <a href=#4 id=4 data-nosnippet>4</a>//! Verbs (the tamias driver contract):
 <a href=#5 id=5 data-nosnippet>5</a>//!
-<a href=#6 id=6 data-nosnippet>6</a>//! - `manifest` — print the [`DriverManifest`] JSON (discovery
+<a href=#6 id=6 data-nosnippet>6</a>//! - `manifest` — print the [`DriverManifest`](pavo_protocol::DriverManifest) JSON (discovery
 <a href=#7 id=7 data-nosnippet>7</a>//!   probe; never touches vault state).
 <a href=#8 id=8 data-nosnippet>8</a>//! - `capabilities` — `{"capabilities": ["pavo"], "verbs": […]}`.
 <a href=#9 id=9 data-nosnippet>9</a>//! - `ops` — the engine ops manifest: every bounded `cuora` CLI
@@ -128,7 +128,7 @@
 <a href=#128 id=128 data-nosnippet>128</a>    }
 <a href=#129 id=129 data-nosnippet>129</a>}
 <a href=#130 id=130 data-nosnippet>130</a>
-<a href=#131 id=131 data-nosnippet>131</a><span class="doccomment">/// `cli` verb argv (after the `cli` token) → engine argv (argv[0]
+<a href=#131 id=131 data-nosnippet>131</a><span class="doccomment">/// `cli` verb argv (after the `cli` token) → engine argv (argv\[0\]
 <a href=#132 id=132 data-nosnippet>132</a>/// included). `tamias bin exec`/`driver exec` prepend the standard
 <a href=#133 id=133 data-nosnippet>133</a>/// driver flags — `--dir &lt;payload&gt;` `--name &lt;pkg&gt;` — which the
 <a href=#134 id=134 data-nosnippet>134</a>/// engine doesn't know; consume the leading run of those two

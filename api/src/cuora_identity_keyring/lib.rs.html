@@ -18,7 +18,7 @@
 <a href=#18 id=18 data-nosnippet>18</a>//! `keyring-core` store through [`KeyringIdentity::with_store`]
 <a href=#19 id=19 data-nosnippet>19</a>//! (the mock store needs no daemon).
 <a href=#20 id=20 data-nosnippet>20</a>//!
-<a href=#21 id=21 data-nosnippet>21</a>//! Store calls run under a bounded wait ([`bounded`]): a locked
+<a href=#21 id=21 data-nosnippet>21</a>//! Store calls run under a bounded wait (`bounded`): a locked
 <a href=#22 id=22 data-nosnippet>22</a>//! collection's unlock prompt has no client-side deadline on the
 <a href=#23 id=23 data-nosnippet>23</a>//! dbus store, so an unanswered prompt would hang the caller
 <a href=#24 id=24 data-nosnippet>24</a>//! forever. `CUORA_KEYRING_TIMEOUT_MS` tunes the bound (`0`
@@ -175,7 +175,7 @@
 <a href=#175 id=175 data-nosnippet>175</a>    }
 <a href=#176 id=176 data-nosnippet>176</a>
 <a href=#177 id=177 data-nosnippet>177</a>    <span class="doccomment">/// Write the identity into the store (upsert — the platform
-<a href=#178 id=178 data-nosnippet>178</a>    /// store owns unlock/prompt policy, bounded by [`bounded`]).
+<a href=#178 id=178 data-nosnippet>178</a>    /// store owns unlock/prompt policy, bounded by `bounded`).
 <a href=#179 id=179 data-nosnippet>179</a>    </span><span class="kw">fn </span>store(<span class="kw-2">&amp;</span><span class="self">self</span>, identity: <span class="kw-2">&amp;</span>x25519::Identity) -&gt; <span class="prelude-ty">Result</span>&lt;(), IdentityError&gt; {
 <a href=#180 id=180 data-nosnippet>180</a>        <span class="kw">let </span>store = Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.store);
 <a href=#181 id=181 data-nosnippet>181</a>        <span class="kw">let </span>key = identity.to_string();

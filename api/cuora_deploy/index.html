@@ -4,7 +4,7 @@ value and never give it back — Cloudflare’s account Secrets
 Store is the motivating case: <code>POST</code>/<code>PATCH</code> a value in and the
 API literally cannot return it. A <a href="trait.Deploy.html" title="trait cuora_deploy::Deploy"><code>Deploy</code></a> therefore has
 <code>push</code>/<code>remove</code> and deliberately no <code>get</code>/<code>list</code> — anything
-readable belongs behind the [<code>cuora_vault::Vault</code>] port instead.</p>
+readable belongs behind the <code>cuora_vault::Vault</code> port instead.</p>
 <p>The value pushed is <strong>plaintext</strong> (decrypted at the edge by the
 caller): the sink is the thing Workers/CI read the secret from
 directly — the age-ciphertext boundary lives at cuora’s own
