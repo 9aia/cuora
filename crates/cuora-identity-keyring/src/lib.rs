@@ -18,7 +18,7 @@
 //! `keyring-core` store through [`KeyringIdentity::with_store`]
 //! (the mock store needs no daemon).
 //!
-//! Store calls run under a bounded wait ([`bounded`]): a locked
+//! Store calls run under a bounded wait (`bounded`): a locked
 //! collection's unlock prompt has no client-side deadline on the
 //! dbus store, so an unanswered prompt would hang the caller
 //! forever. `CUORA_KEYRING_TIMEOUT_MS` tunes the bound (`0`
@@ -175,7 +175,7 @@ impl IdentitySource for KeyringIdentity {
     }
 
     /// Write the identity into the store (upsert — the platform
-    /// store owns unlock/prompt policy, bounded by [`bounded`]).
+    /// store owns unlock/prompt policy, bounded by `bounded`).
     fn store(&self, identity: &x25519::Identity) -> Result<(), IdentityError> {
         let store = Arc::clone(&self.store);
         let key = identity.to_string();

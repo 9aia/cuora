@@ -5,7 +5,7 @@
 //! Store is the motivating case: `POST`/`PATCH` a value in and the
 //! API literally cannot return it. A [`Deploy`] therefore has
 //! `push`/`remove` and deliberately no `get`/`list` — anything
-//! readable belongs behind the [`cuora_vault::Vault`] port instead.
+//! readable belongs behind the `cuora_vault::Vault` port instead.
 //!
 //! The value pushed is **plaintext** (decrypted at the edge by the
 //! caller): the sink is the thing Workers/CI read the secret from

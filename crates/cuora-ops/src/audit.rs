@@ -5,7 +5,7 @@
 //! a peregrin/sepia wrapper can capture them, a human sees a
 //! breadcrumb — and, when `OTEL_EXPORTER_OTLP_ENDPOINT` is set,
 //! buffers each event for an OTLP/HTTP JSON span export on
-//! [`flush`] (see [`crate::otel`]).
+//! [`flush`] (see `crate::otel`).
 //!
 //! stderr stays the default human wire; `CUORA_AUDIT_STDERR=0`
 //! silences it (the OTLP-only mode). [`mute_stderr`] suspends

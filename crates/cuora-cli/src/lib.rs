@@ -1,5 +1,5 @@
 //! cuora — the engine as a library. Everything that used to live
-//! in the binary lives here: [`Cli`]/[`Cmd`], config load, verb
+//! in the binary lives here: [`Cli`]/`Cmd`, config load, verb
 //! dispatch, audit. `run()` is the compat CLI's whole body; drivers
 //! (the `cuora` bin, tamias-driver-cuora's `run`/ops surfaces)
 //! split it into [`parse`]/[`parse_from`] + [`dispatch`] — argv in,

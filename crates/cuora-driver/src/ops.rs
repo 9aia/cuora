@@ -196,7 +196,7 @@ fn values(v: &Value) -> Vec<String> {
     }
 }
 
-/// `cli.<verb>` params → cuora argv (no argv[0] — `run` prepends
+/// `cli.<verb>` params → cuora argv (no argv\[0\] — `run` prepends
 /// it). Globals come first: `config` resolves to `--config`, and
 /// `env`/`actor`/`json` map to the CLI's globals by hand — clap
 /// globals never appear in a subcommand's `get_arguments()`, so

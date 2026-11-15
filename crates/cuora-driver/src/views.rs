@@ -1,5 +1,5 @@
 //! views — the driver's manifest: every ViewSpec plus the wiring
-//! that turns query bindings into [`ViewResult`] data.
+//! that turns query bindings into [`ViewResult`](pavo_protocol::wire::ViewResult) data.
 //!
 //! Read path: all data comes from [`crate::data::Ctx`] — one
 //! `cuora_ops::Ops` per wire op, loaded exactly like the CLI

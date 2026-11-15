@@ -554,7 +554,7 @@ impl Ops {
     /// without opening anything. The middle item is `Some` only
     /// when `[vaults.*].identity` pins a file; identity *resolution*
     /// (env → keyring → default file) happens in
-    /// [`Self::resolve_identity`].
+    /// `Self::resolve_identity`.
     pub fn vault_paths(
         &self,
         env: &Env,
@@ -802,7 +802,7 @@ impl Ops {
     /// **Sealed-pack fallback:** a vault miss on an unpinned
     /// two-segment ref (`cuora://<pack>/<secret>`) is retried
     /// against installed sealed tamias packs (see
-    /// [`Self::get_from_pack`]) — and so is a vault that can't even
+    /// `Self::get_from_pack`) — and so is a vault that can't even
     /// *open* (no creds, unreachable), since the ref names a pack
     /// outright (T-053: packs are the vault-less path). Vault hits
     /// always win — packs are the migration target, not an override.

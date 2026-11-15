@@ -147,7 +147,7 @@ impl Config {
     /// path that itself matches keeps resolving. The matched key's
     /// segments are replaced by the target's; the unmatched tail is
     /// appended verbatim. Segment-boundary prefix match, longest
-    /// key wins — see [`Self::alias_entry`].
+    /// key wins — see `Self::alias_entry`.
     ///
     /// The result is a plain path ref: env pins inside an alias
     /// *target* are not re-evaluated (the caller already resolved
