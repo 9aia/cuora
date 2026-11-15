@@ -7,3 +7,8 @@ set -euo pipefail
 
 cargo xtask check
 cargo xtask test
+
+# Docs contract — cypera check + docs/ drift gate. Materializes a
+# detached docs-branch worktree when the run tree lacks one (bupha
+# gate runs), so it is hermetic in CI.
+bash scripts/docs-check.sh
