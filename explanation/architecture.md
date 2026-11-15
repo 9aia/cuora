@@ -50,6 +50,7 @@ Design rules:
 | `cuora-vault-age` | adapter | Local vault impl: one age-x25519-encrypted JSON doc — the v1 default backend |
 | `cuora-vault-cached` | adapter | Composite vault impl: read-through age-encrypted local cache in front of any backend (P-007) |
 | `cuora-vault-cf` | adapter | Remote vault impl: self-hosted Cloudflare Worker + D1 holding per-secret age ciphertext — the Worker never sees plaintext |
+| `cuora-xtask` | adapter | Repo chores: check / test / coverage / install / site |
 
 ## Front-ends
 
