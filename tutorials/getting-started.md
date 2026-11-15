@@ -97,6 +97,37 @@ the child only, and exits with the child's code. One arg after
 exec `argv[0]` directly with no shell. The value lives only in
 that process — agents never see it.
 
+## List, rotate, audit
+
+`list` shows names plus metadata — never values:
+
+```sh
+cuora list
+cuora list --json
+```
+
+The only surfaces that print a value are `get` (the escape hatch)
+and `env` (exports for `eval`). Rotate bumps the version and
+stamps `rotated_at` — it requires the ref to exist, so it's
+deliberate rotation, not upsert:
+
+```sh
+printf '%s' "$NEW_VALUE" | cuora rotate cuora://billing/stripe
+```
+
+Every cuora op emits one ndjson audit line on stderr:
+
+```json
+{"ts":"2026-01-01T00:00:00Z","actor":"you","op":"run","rref":"billing/stripe","env":"dev","outcome":"ok"}
+```
+
+See [the audit wire](/reference/audit-events) for the full contract.
+
+To try all of this without touching your real config, run the whole
+tutorial in a throwaway `HOME` (`export HOME="$(mktemp -d)"` plus
+`CUORA_IDENTITY_BACKEND=file` — the keyring is per-session, not
+per-HOME) and `rm -rf "$HOME"` when done.
+
 ## Check the setup
 
 ```sh
@@ -121,9 +152,8 @@ teaches agents the verbs.
 
 ## Where next
 
-- [Your first secret](/tutorials/first-secret.md) — a guided
-  end-to-end in a throwaway HOME.
-- [Inject into a process](/how-to/inject-into-a-process.md) — run
+- [Add a secret](/how-to/add-a-secret) — multi-env and pinning.
+- [Inject into a process](/how-to/inject-into-a-process) — run
   modes, ad-hoc `-s` pairs, the `eval "$(cuora env)"` human path.
 - [The threat model](/explanation/threat-model.md) — what cuora
   does and does not protect against.

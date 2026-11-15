@@ -10,8 +10,8 @@ hero:
       text: Getting Started
       link: /tutorials/getting-started
     - theme: alt
-      text: Tutorial
-      link: /tutorials/first-secret
+      text: Add a secret
+      link: /how-to/add-a-secret
 
 features:
   - icon: 🦪
