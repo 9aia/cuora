@@ -26,3 +26,4 @@ documented at source (doc comments).
 * [cuora-vault-age](/cuora/api/cuora_vault_age/index.html) — adapter
 * [cuora-vault-cached](/cuora/api/cuora_vault_cached/index.html) — adapter
 * [cuora-vault-cf](/cuora/api/cuora_vault_cf/index.html) — adapter
+* [cuora-xtask](/cuora/api/cuora_xtask/index.html) — adapter
