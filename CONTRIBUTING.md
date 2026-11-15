@@ -6,10 +6,13 @@ dogfoods its own PM ledger (`project/`). Fork freely under MIT.
 ## Layout
 
 `crates/` — flat rust workspace, ports-and-adapters. `cuora-core` is
-pure domain (no I/O); `cuora-config`/`cuora-vault`/`cuora-deploy` are
-ports, `-toml`/`-age`/`-cf` crates their impls; `cuora-ops` is the ops
-shell; `cuora` (`crates/cuora-cli`) is the composition root. `xtask/`
-is repo chores.
+pure domain (no I/O); `cuora-config`/`cuora-vault`/`cuora-deploy`/
+`cuora-identity` are ports, `-toml`/`-age`/`-cf`/`-file`/`-keyring`
+crates their impls; `cuora-ops` is the ops shell; `cuora-cli`
+(`crates/cuora-cli`, package `cuora`) is the engine lib — the
+`tamias-driver-cuora` bin in `cuora-driver` is the composition
+root. `xtask/` is repo chores. See the crate table in
+[AGENTS.md](AGENTS.md#layout) for the full map.
 
 ## Rules of thumb
 

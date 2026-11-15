@@ -72,6 +72,7 @@ hand-rolled `cuora` binary: the command ships as the tamias pack in
 | `crates/cuora-vault-age` | Local vault impl — age-encrypted file (v1) |
 | `crates/cuora-vault-cf` | Remote vault impl — self-hosted CF Worker + D1, per-secret client-side age ciphertext (`worker/` has the deployable JS) |
 | `crates/cuora-vault-cached` | Composite vault — read-through age-encrypted cache wrapping any impl; `cache`/`cache_ttl_secs` on `[vaults.*]` (P-007) |
+| `crates/cuora-identity` + `-file`/`-keyring` | Identity port — where the age identity comes from: `-file` is the `~/.config/cuora/identity.txt` keyfile (0600, headless/CI path), `-keyring` the platform session secret store (secret-service / macOS keychain / Credential Manager) |
 | `crates/cuora-deploy` | Deploy port — write-only push targets (sinks, never sources) |
 | `crates/cuora-deploy-cf` | Deploy impl — CF account Secrets Store via API v4 |
 | `crates/cuora-shell` | `bash -c <cmd>` + env injection — the `cuora run` path |
