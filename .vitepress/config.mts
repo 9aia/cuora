@@ -12,6 +12,7 @@ export default defineConfig({
   ignoreDeadLinks: [/\/api\//],
   themeConfig: {
     nav: [
+      { text: "9aia", link: "https://9aia.com", target: "_blank" },
       { text: "Getting Started", link: "/tutorials/getting-started" },
       { text: "How-to", link: "/how-to/add-a-secret" },
       { text: "Explanation", link: "/explanation/architecture" },
