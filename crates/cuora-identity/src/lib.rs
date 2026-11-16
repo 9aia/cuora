@@ -6,12 +6,16 @@
 //! key material is held is a port — same convention as
 //! `cuora-vault`/`cuora-config`/`cuora-deploy`:
 //!
-//! - `cuora-identity-file` — the `~/.config/cuora/identity.txt`
-//!   keyfile (mode `0600`); the headless/CI path, overridable via
-//!   `CUORA_IDENTITY_FILE` or `[vaults.*].identity`.
+//! - `cuora-identity-file` — the shared tardigrada identity
+//!   keyfile (`<config>/tardigrada/identity.txt`, mode `0600`;
+//!   legacy `cuora`/`arca` paths still resolve); the
+//!   headless/CI path, overridable via `CUORA_IDENTITY_FILE` or
+//!   `[vaults.*].identity`.
 //! - `cuora-identity-keyring` — the platform session secret store
 //!   (secret-service / Keychain / Credential Manager) via the
-//!   keyring-core `CredentialStore` model.
+//!   keyring-core `CredentialStore` model; canonical entry
+//!   `tardigrada/age-identity`, legacy `cuora`/`arca` entries read
+//!   as fallbacks.
 //!
 //! Resolution order (in `cuora-ops`): an explicit file override
 //! wins; else the session keyring is preferred; else the default

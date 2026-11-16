@@ -1,6 +1,6 @@
 [package]
 name = "cuora-identity-file"
-description = "Identity impl: the ~/.config/cuora/identity.txt age keyfile (0600) — the explicit file backend (headless/CI opt-out)"
+description = "Identity impl: the shared tardigrada identity keyfile (<config>/tardigrada/identity.txt; legacy cuora/arca paths resolve) (0600) — the explicit file backend (headless/CI opt-out)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

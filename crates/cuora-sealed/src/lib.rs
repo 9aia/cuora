@@ -8,7 +8,7 @@
 //!   (`$TAMIAS_HOME/store` → XDG → `~/.local/share/tamias/store`
 //!   → `./.tamias/store`, `--store`/`store` param overrides);
 //! - the age identity keyfile (`FileIdentity` —
-//!   `~/.config/cuora/identity.txt`, `$CUORA_IDENTITY_FILE`
+//!   `<config>/tardigrada/identity.txt`, `$CUORA_IDENTITY_FILE`
 //!   override, `--keyfile` override);
 //! - `encrypt`/`decrypt` over `Zeroizing` buffers — plaintext
 //!   exists only between read and write, never logged;
@@ -312,8 +312,9 @@ pub fn parse_pack_ref(arg: &str) -> Result<(String, String), String> {
 // ---------------------------------------------------------------- identity
 
 /// The identity keyfile source — `--keyfile` or the default
-/// (`$CUORA_IDENTITY_FILE` → `~/.config/cuora/identity.txt`, mode
-/// 0600, legacy `arca` fallback — all inside `FileIdentity`).
+/// (`$CUORA_IDENTITY_FILE` → `<config>/tardigrada/identity.txt`,
+/// mode 0600, legacy `cuora`/`arca` fallbacks — all inside
+/// `FileIdentity`).
 pub fn identity_source(keyfile: Option<&Path>) -> FileIdentity {
     match keyfile {
         Some(p) => FileIdentity::new(p.to_path_buf()),

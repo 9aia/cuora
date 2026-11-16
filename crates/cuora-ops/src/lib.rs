@@ -665,7 +665,11 @@ impl Ops {
         load_required(&FileIdentity::default())
     }
 
-    /// `cuora init` — store the identity per `[identity] backend`
+    /// `cuora init` — bootstrap the shared age identity (the
+    /// tardigrada identity: canonical keyring entry
+    /// `tardigrada/age-identity`, canonical keyfile
+    /// `<config>/tardigrada/identity.txt`; legacy `cuora`/`arca`
+    /// entries still read as fallbacks) per `[identity] backend`
     /// (default `keyring`: fail closed when no session store is
     /// reachable; `auto` falls back to the keyfile; `file` forces
     /// it), importing an existing keyfile identity rather than
@@ -1449,7 +1453,7 @@ fn keyring_required(src: &dyn IdentitySource) -> Result<x25519::Identity, OpsErr
     match src.load() {
         Ok(Some(id)) => Ok(id),
         Ok(None) => Err(OpsError::Config(format!(
-            "identity backend=keyring: no cuora identity in {} — run `cuora init`",
+            "identity backend=keyring: no identity in {} — run `cuora init`",
             src.describe()
         ))),
         Err(e) => Err(OpsError::Identity(e)),

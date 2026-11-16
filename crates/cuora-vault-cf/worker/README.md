@@ -121,7 +121,7 @@ kind = "cf"
 url = "https://cuora-vault.<you>.workers.dev"
 token_env = "CUORA_CF_TOKEN"        # env var name, not the token
                                    # (legacy bearer fallback)
-identity = "~/.config/cuora/identity.txt"   # optional; same default as local
+identity = "~/.config/tardigrada/identity.txt"   # optional; same default as local
 recipients = ["age1…"]             # optional extra encrypt-to keys
 private_refs = true                # optional; hide ref names (P-004)
 

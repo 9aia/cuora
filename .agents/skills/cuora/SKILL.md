@@ -31,8 +31,9 @@ process — not in your output, not in logs, not in history.
 ```bash
 command -v cuora   # missing? it's a tamias pack — from a cuora checkout:
 cargo xtask pack && tamias install --allow-drivers ./libraries/cuora
-cuora init          # bootstrap the per-machine age identity
-                    # (keyring on desktop, 0600 keyfile headless)
+cuora init          # bootstrap the shared age identity (tardigrada)
+                    # (keyring on desktop, 0600 keyfile headless;
+                    #  legacy cuora/arca entries still resolve)
 ```
 
 ## Discovery — prefer asking the CLI over reading docs
@@ -68,7 +69,7 @@ cuora <verb> --help   # every verb, self-documenting
 | Exports for a human shell | `cuora env [-s VAR=ref]` → `export VAR='…'` lines for `eval` |
 | Push to a write-only sink | `cuora deploy <ref> [--target NAME]` |
 | Validate config + surface | `cuora check [--json]` — exit 1 on findings |
-| Bootstrap | `cuora init` — per-machine age identity, not repo setup |
+| Bootstrap | `cuora init` — shared tardigrada age identity, not repo setup |
 
 Two `run` exec modes: **one arg** after `--` → `bash -c` (pipes,
 quoting); **several args** → `argv[0]` exec'd directly, no shell —

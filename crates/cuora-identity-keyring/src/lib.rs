@@ -1,7 +1,9 @@
-//! cuora-identity-keyring — the age identity in the platform's
-//! session secret store.
+//! cuora-identity-keyring — the shared age identity in the
+//! platform's session secret store.
 //!
-//! The `AGE-SECRET-KEY-…` string lives as a keyed secret in the
+//! The org has ONE age identity per human/machine, owned by the
+//! `tardigrada` tool; cuora resolves that same identity. The
+//! `AGE-SECRET-KEY-…` string lives as a keyed secret in the
 //! user-session credential store — it unlocks with the login
 //! session, so reads need no prompt:
 //!
@@ -32,13 +34,15 @@ use age::x25519;
 use cuora_identity::{IdentityError, IdentitySource};
 use keyring_core::{CredentialStore, Entry};
 
-/// The secret-store service name cuora registers under.
-pub const SERVICE: &str = "cuora";
+/// The canonical secret-store service name — the shared
+/// `tardigrada` identity entry cuora reads and writes.
+pub const CANONICAL_SERVICE: &str = "tardigrada";
 /// The entry/user name the age identity is stored under.
 pub const USER: &str = "age-identity";
-/// Pre-rename service name — `load` falls back to it so identities
-/// stored by `arca` keep resolving; `store` always writes `cuora`.
-const LEGACY_SERVICE: &str = "arca";
+/// Legacy service names `load` falls back to, in order — identities
+/// stored by `cuora`/`arca` keep resolving; `store` always writes
+/// [`CANONICAL_SERVICE`] only.
+pub const LEGACY_SERVICES: &[&str] = &["cuora", "arca"];
 
 /// Upper bound on one blocking credential-store call. The dbus
 /// secret-service store connects via `SecretService::connect`,
@@ -101,9 +105,9 @@ where
     }
 }
 
-/// The `cuora`/`age-identity` entry in `store` — the store-level
-/// twin of [`KeyringIdentity::entry_as`], for calls that run on
-/// the bounded worker thread.
+/// The `<service>`/`age-identity` entry in `store` — the
+/// store-level twin of [`KeyringIdentity::entry_as`], for calls
+/// that run on the bounded worker thread.
 fn entry_in(store: &CredentialStore, service: &str) -> Result<Entry, IdentityError> {
     store
         .build(service, USER, None)
@@ -111,26 +115,25 @@ fn entry_in(store: &CredentialStore, service: &str) -> Result<Entry, IdentityErr
 }
 
 /// The `load` body, run inside [`bounded`] — `store` is the
-/// `Arc`'d credential store moved onto the worker thread.
+/// `Arc`'d credential store moved onto the worker thread. Reads
+/// probe [`CANONICAL_SERVICE`] first, then each of
+/// [`LEGACY_SERVICES`] in order — the first entry that exists
+/// wins, so a tardigrada-canonical identity shadows stale
+/// cuora/arca copies.
 fn load_from(store: &CredentialStore) -> Result<Option<x25519::Identity>, IdentityError> {
-    let entry = entry_in(store, SERVICE)?;
-    let text = match entry.get_password() {
-        Ok(t) => t,
-        Err(keyring_core::Error::NoEntry) => {
-            // Pre-rename `arca/age-identity` entries still
-            // resolve — the identity itself is unchanged.
-            match entry_in(store, LEGACY_SERVICE)?.get_password() {
-                Ok(t) => t,
-                Err(keyring_core::Error::NoEntry) => return Ok(None),
-                Err(e) => return Err(IdentityError::Store(format!("keyring get: {e}"))),
-            }
-        }
-        Err(e) => return Err(IdentityError::Store(format!("keyring get: {e}"))),
-    };
-    let line = text.trim();
-    x25519::Identity::from_str(line)
-        .map(Some)
-        .map_err(|e| IdentityError::Parse(format!("keyring identity {SERVICE}/{USER}: {e}")))
+    for service in std::iter::once(CANONICAL_SERVICE).chain(LEGACY_SERVICES.iter().copied()) {
+        let entry = entry_in(store, service)?;
+        let text = match entry.get_password() {
+            Ok(t) => t,
+            Err(keyring_core::Error::NoEntry) => continue,
+            Err(e) => return Err(IdentityError::Store(format!("keyring get: {e}"))),
+        };
+        let line = text.trim();
+        return x25519::Identity::from_str(line)
+            .map(Some)
+            .map_err(|e| IdentityError::Parse(format!("keyring identity {service}/{USER}: {e}")));
+    }
+    Ok(None)
 }
 
 /// An age identity held in a `keyring-core` credential store.
@@ -155,13 +158,13 @@ impl KeyringIdentity {
         KeyringIdentity { store }
     }
 
-    /// The `cuora`/`age-identity` entry in this store — test
+    /// The `tardigrada`/`age-identity` entry in this store — test
     /// surface only; ops go through [`entry_in`] on the bounded
     /// worker thread.
     #[cfg(test)]
     fn entry(&self) -> Result<Entry, IdentityError> {
         self.store
-            .build(SERVICE, USER, None)
+            .build(CANONICAL_SERVICE, USER, None)
             .map_err(|e| IdentityError::Store(format!("keyring entry: {e}")))
     }
 }
@@ -180,7 +183,7 @@ impl IdentitySource for KeyringIdentity {
         let store = Arc::clone(&self.store);
         let key = identity.to_string();
         bounded("store", move || {
-            entry_in(&*store, SERVICE)?
+            entry_in(&*store, CANONICAL_SERVICE)?
                 .set_password(key.expose_secret())
                 .map_err(|e| IdentityError::Store(format!("keyring set: {e}")))
         })
@@ -191,7 +194,7 @@ impl IdentitySource for KeyringIdentity {
     }
 
     fn describe(&self) -> String {
-        format!("system keyring (entry {SERVICE}/{USER})")
+        format!("system keyring (entry {CANONICAL_SERVICE}/{USER})")
     }
 }
 
@@ -254,11 +257,11 @@ fn ensure_default_collection() {
     }
     // No usable collection — create one, then claim `default`
     // explicitly: CreateCollection's alias arg is only a hint.
-    if ss.create_collection("cuora", "default").is_ok() {
+    if ss.create_collection("tardigrada", "default").is_ok() {
         if let Ok(cols) = ss.get_all_collections() {
             if let Some(col) = cols
                 .iter()
-                .find(|c| c.get_label().ok().as_deref() == Some("cuora"))
+                .find(|c| c.get_label().ok().as_deref() == Some("tardigrada"))
             {
                 set_default_alias(&col.path);
             }
@@ -360,7 +363,89 @@ mod tests {
         assert!(!created);
         assert_eq!(id.to_public(), again.to_public());
         assert_eq!(k.kind(), "keyring");
-        assert!(k.describe().contains("cuora"));
+        assert!(k.describe().contains("tardigrada"));
+    }
+
+    /// Write `key` into the mock store under `service`/`USER` —
+    /// seeds legacy entries the canonical `store` never writes.
+    fn seed(store: &Arc<keyring_core::mock::Store>, service: &str, key: &str) {
+        use keyring_core::api::CredentialStoreApi;
+        store
+            .build(service, USER, None)
+            .unwrap()
+            .set_password(key)
+            .unwrap();
+    }
+
+    /// Read the mock store's `service`/`USER` entry — `None` when
+    /// absent.
+    fn stored(store: &Arc<keyring_core::mock::Store>, service: &str) -> Option<String> {
+        use keyring_core::api::CredentialStoreApi;
+        store
+            .build(service, USER, None)
+            .unwrap()
+            .get_password()
+            .ok()
+    }
+
+    #[test]
+    fn store_writes_only_the_canonical_service() {
+        let (k, store) = mock();
+        let id = x25519::Identity::generate();
+        k.store(&id).unwrap();
+        use age::secrecy::ExposeSecret;
+        let want = id.to_string().expose_secret().to_string();
+        assert_eq!(
+            stored(&store, CANONICAL_SERVICE).as_deref(),
+            Some(want.as_str())
+        );
+        for legacy in LEGACY_SERVICES {
+            assert_eq!(stored(&store, legacy), None, "{legacy} must stay empty");
+        }
+    }
+
+    #[test]
+    fn load_falls_back_canonical_then_cuora_then_arca() {
+        use age::secrecy::ExposeSecret;
+        let (k, store) = mock();
+        let arca_id = x25519::Identity::generate();
+        let cuora_id = x25519::Identity::generate();
+        let tardigrada_id = x25519::Identity::generate();
+        // arca alone still resolves — the oldest legacy entry.
+        seed(&store, "arca", arca_id.to_string().expose_secret());
+        assert_eq!(k.load().unwrap().unwrap().to_public(), arca_id.to_public());
+        // cuora shadows arca — legacy order is preserved.
+        seed(&store, "cuora", cuora_id.to_string().expose_secret());
+        assert_eq!(k.load().unwrap().unwrap().to_public(), cuora_id.to_public());
+        // the canonical tardigrada entry wins outright.
+        seed(
+            &store,
+            CANONICAL_SERVICE,
+            tardigrada_id.to_string().expose_secret(),
+        );
+        assert_eq!(
+            k.load().unwrap().unwrap().to_public(),
+            tardigrada_id.to_public()
+        );
+    }
+
+    #[test]
+    fn ensure_migrates_a_legacy_entry_into_tardigrada() {
+        // A cuora-only identity is found by `load`, so `ensure`
+        // reports it as existing — never clobbered, never
+        // duplicated under the canonical name until `store` runs.
+        use age::secrecy::ExposeSecret;
+        let (k, store) = mock();
+        let id = x25519::Identity::generate();
+        seed(&store, "cuora", id.to_string().expose_secret());
+        let (loaded, created) = cuora_identity::ensure(&k).unwrap();
+        assert!(!created);
+        assert_eq!(loaded.to_public(), id.to_public());
+        // an explicit re-store lands under tardigrada only
+        k.store(&loaded).unwrap();
+        assert!(stored(&store, CANONICAL_SERVICE).is_some());
+        assert!(stored(&store, "cuora").is_some());
+        assert_eq!(stored(&store, "arca"), None);
     }
 
     #[test]

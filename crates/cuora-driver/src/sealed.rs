@@ -38,7 +38,7 @@
 //! materialization trail survives outside the vault path too.
 //!
 //! **Identity:** opening needs an age private key — the same
-//! keyfile `cuora init` manages (`~/.config/cuora/identity.txt`,
+//! keyfile `cuora init` manages (`<config>/tardigrada/identity.txt`,
 //! mode 0600, `$CUORA_IDENTITY_FILE` override). `--keyfile` points
 //! at another file in the same format. There is no passphrase
 //! prompt: sealed packs are recipient-key only.

@@ -142,9 +142,10 @@ everything that touches keys or plaintext (`src/sealed.rs`):
   secrets` packs (`capabilities.types` claims the kind); a
   non-sealed payload is refused loudly.
 
-Identity is the cuora age keyfile (`~/.config/cuora/identity.txt`,
-0600, `$CUORA_IDENTITY_FILE` / `--keyfile` override) — the same file
-`cuora init` manages. Store resolution mirrors tamias:
+Identity is the shared tardigrada age keyfile
+(`<config>/tardigrada/identity.txt`, 0600 — legacy `cuora`/`arca`
+paths still resolve; `$CUORA_IDENTITY_FILE` / `--keyfile` override)
+— the same file `cuora init` manages. Store resolution mirrors tamias:
 `$TAMIAS_HOME/store` → XDG → `~/.local/share/tamias/store` →
 `./.tamias/store` (`--store` overrides). Every open/materialize
 emits an `Op::Get` audit event (`env: "sealed"`); plaintext lives

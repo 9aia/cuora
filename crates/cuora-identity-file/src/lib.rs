@@ -1,9 +1,13 @@
-//! cuora-identity-file — the age identity keyfile impl.
+//! cuora-identity-file — the shared age identity keyfile impl.
 //!
 //! One `AGE-SECRET-KEY-…` line in a plain file (`#` comments
-//! allowed), mode `0600`, at `~/.config/cuora/identity.txt` —
-//! exactly the behavior `cuora` shipped at v1, extracted behind the
-//! [`IdentitySource`] port. It stays the default for headless and
+//! allowed), mode `0600`. The canonical location is the
+//! `tardigrada` config dir — `$XDG_CONFIG_HOME/tardigrada/
+//! identity.txt`, else `~/.config/tardigrada/identity.txt` — the
+//! same identity file the `tardigrada` tool owns; cuora's
+//! historical `~/.config/cuora/identity.txt` and
+//! `~/.config/arca/identity.txt` still resolve as legacy
+//! fallbacks. It stays the default for headless and
 //! CI: `CUORA_IDENTITY_FILE` (or `[vaults.*].identity` in config)
 //! pins an explicit path and skips the keyring entirely.
 //!
@@ -31,9 +35,13 @@ impl FileIdentity {
     }
 
     /// The default keyfile — `$CUORA_IDENTITY_FILE` (or legacy
-    /// `$ARCA_IDENTITY_FILE`), else `$XDG_CONFIG_HOME/cuora/
-    /// identity.txt`, else the pre-rename `~/.config/arca/
-    /// identity.txt` when it still exists.
+    /// `$ARCA_IDENTITY_FILE`), else the first existing of, in
+    /// order: `<config>/tardigrada/identity.txt` (canonical — the
+    /// shared tardigrada identity), `<config>/cuora/identity.txt`,
+    /// `<config>/arca/identity.txt`, across both the XDG config
+    /// home and `~/.config`. When none exists the canonical
+    /// tardigrada path wins — that's where a fresh identity is
+    /// created.
     pub fn default_path() -> PathBuf {
         if let Some(p) = std::env::var("CUORA_IDENTITY_FILE")
             .ok()
@@ -43,14 +51,30 @@ impl FileIdentity {
                 return PathBuf::from(p);
             }
         }
-        let home = config_home();
-        let cuora = home.join("cuora/identity.txt");
-        let legacy = home.join("arca/identity.txt");
-        if cuora.exists() || !legacy.exists() {
-            cuora
-        } else {
-            legacy
+        // Config roots in precedence order: XDG_CONFIG_HOME (or
+        // ~/.config when unset), then ~/.config itself so a
+        // tardigrada file parked outside XDG still resolves when
+        // XDG points elsewhere. Dedup keeps the common case to one
+        // root.
+        let xdg = config_home();
+        let dot_config = home().join(".config");
+        let mut roots = vec![xdg];
+        if dot_config != roots[0] {
+            roots.push(dot_config);
         }
+        // Namespace order is canonical-first: any tardigrada file
+        // shadows every legacy one, cuora shadows arca.
+        for ns in ["tardigrada", "cuora", "arca"] {
+            for root in &roots {
+                let p = root.join(ns).join("identity.txt");
+                if p.exists() {
+                    return p;
+                }
+            }
+        }
+        // Nothing on disk — creation targets the canonical
+        // tardigrada path under the primary config root.
+        roots[0].join("tardigrada/identity.txt")
     }
 
     /// Does the keyfile exist on disk?
@@ -116,7 +140,7 @@ impl IdentitySource for FileIdentity {
         }
         let key = identity.to_string();
         let body = format!(
-            "# cuora identity — created {}\n# public: {}\n{}\n",
+            "# shared age identity (tardigrada) — created {}\n# public: {}\n{}\n",
             OffsetDateTime::now_utc(),
             identity.to_public(),
             key.expose_secret(),
@@ -368,7 +392,9 @@ mod tests {
                 );
             },
         );
-        // empty override is ignored; XDG drives the rest
+        // empty override is ignored; XDG drives the rest — and
+        // with nothing on disk the canonical tardigrada path is
+        // the creation target
         temp_env::with_vars(
             [
                 ("CUORA_IDENTITY_FILE", Some("")),
@@ -378,7 +404,7 @@ mod tests {
             || {
                 assert_eq!(
                     FileIdentity::default_path(),
-                    PathBuf::from("/tmp/xdg-c/cuora/identity.txt")
+                    PathBuf::from("/tmp/xdg-c/tardigrada/identity.txt")
                 );
             },
         );
@@ -392,7 +418,7 @@ mod tests {
             || {
                 assert_eq!(
                     FileIdentity::default_path(),
-                    PathBuf::from("/tmp/fakehome/.config/cuora/identity.txt")
+                    PathBuf::from("/tmp/fakehome/.config/tardigrada/identity.txt")
                 );
             },
         );
@@ -406,9 +432,59 @@ mod tests {
             || {
                 assert_eq!(
                     FileIdentity::default_path(),
-                    PathBuf::from("./.config/cuora/identity.txt")
+                    PathBuf::from("./.config/tardigrada/identity.txt")
                 );
             },
         );
+    }
+
+    #[test]
+    fn default_path_prefers_tardigrada_then_legacy_in_order() {
+        let dir = tempfile::tempdir().unwrap();
+        let xdg = dir.path().join("xdg");
+        let home = dir.path().join("home");
+        let mk = |root: &Path, ns: &str| {
+            let p = root.join(ns).join("identity.txt");
+            std::fs::create_dir_all(p.parent().unwrap()).unwrap();
+            std::fs::write(&p, "x").unwrap();
+            p
+        };
+        temp_env::with_vars(
+            [
+                ("CUORA_IDENTITY_FILE", None::<&str>),
+                ("ARCA_IDENTITY_FILE", None::<&str>),
+                ("XDG_CONFIG_HOME", Some(xdg.to_str().unwrap())),
+                ("HOME", Some(home.to_str().unwrap())),
+            ],
+            || {
+                // nothing on disk → canonical tardigrada under XDG
+                assert_eq!(
+                    FileIdentity::default_path(),
+                    xdg.join("tardigrada/identity.txt")
+                );
+                // legacy arca alone still resolves
+                let arca = mk(&home.join(".config"), "arca");
+                assert_eq!(FileIdentity::default_path(), arca);
+                // cuora shadows arca — under either config root
+                let cuora = mk(&xdg, "cuora");
+                assert_eq!(FileIdentity::default_path(), cuora);
+                // canonical tardigrada shadows every legacy entry —
+                // even a ~/.config tardigrada beats XDG cuora
+                let tard = mk(&home.join(".config"), "tardigrada");
+                assert_eq!(FileIdentity::default_path(), tard);
+                let xdg_tard = mk(&xdg, "tardigrada");
+                assert_eq!(FileIdentity::default_path(), xdg_tard);
+            },
+        );
+    }
+
+    #[test]
+    fn explicit_paths_never_fall_back() {
+        // FileIdentity::new pins exactly one path — default_path's
+        // namespace search is irrelevant to it.
+        let dir = tempfile::tempdir().unwrap();
+        let f = FileIdentity::new(dir.path().join("explicit.txt"));
+        assert_eq!(f.path(), dir.path().join("explicit.txt"));
+        assert!(!f.exists());
     }
 }

@@ -61,9 +61,10 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 enum Cmd {
-    /// Bootstrap: initialize the local age identity — per-machine,
-    /// per-human, NOT repo setup (vault access is `cuora check`'s
-    /// job). Stores the identity per `[identity] backend` /
+    /// Bootstrap: initialize the shared age identity (the
+    /// tardigrada identity — per-human/per-machine, NOT repo
+    /// setup; vault access is `cuora check`'s job). Stores the
+    /// identity per `[identity] backend` /
     /// `CUORA_IDENTITY_BACKEND` — `keyring` (default) fails closed
     /// when no session store is reachable, `auto` falls back to the
     /// keyfile with a note, `file` never probes. Imports an
@@ -806,7 +807,7 @@ fn manifest() -> serde_json::Value {
         "protocol": "cuora/1",
         "ops": cuora_core::Op::ALL.iter().map(|o| o.as_str()).collect::<Vec<_>>(),
         "verbs": {
-            "init": "store the age identity per [identity] backend / CUORA_IDENTITY_BACKEND — keyring (default, fail closed), auto (keyring → keyfile fallback), file (never probe); imports an existing keyfile; verify the vault opens",
+            "init": "bootstrap the shared age identity (tardigrada namespace; legacy cuora/arca entries read as fallbacks) per [identity] backend / CUORA_IDENTITY_BACKEND — keyring (default, fail closed), auto (keyring → keyfile fallback), file (never probe); imports an existing keyfile; verify the vault opens",
             "put": "store a secret — value via stdin or hidden /dev/tty prompt, never args",
             "get": "print a secret's value (the escape hatch — prefer run)",
             "list": "refs stored in the selected env — names only, never values",
