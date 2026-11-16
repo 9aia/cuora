@@ -1,14 +1,14 @@
 +++
 id = "I-011"
 title = "add `cuora identity` subcommands alongside `init`"
-status = "open"
+status = "done"
 created = "2026-11-16"
 priority = "med"
 +++
 
 # add `cuora identity` subcommands alongside `init`
 
-Status: **open** · Created: 2026-11-16
+Status: **done** · Created: 2026-11-16
 
 ## Description
 
@@ -47,3 +47,6 @@ keep doing it harmlessly, but help shouldn't advertise it).
 - [ ] gen-cli-docs regenerated if applicable
 
 ## Comments
+
+- 2026-11-16 DONE — `cuora identity show|import|backend` shipped in cuora-v1.0.0 (merge 50e187eb, pack 9aia:cuora@1.0.0). `init` kept + help clarified. Follow-up: standalone `tardigrade` tool will own generic identity lifecycle; cuora identity verbs get removed once it lands.
+
