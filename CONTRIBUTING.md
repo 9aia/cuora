@@ -33,11 +33,12 @@ No crates.io publish — the install path is the tamias pack
 (`libraries/cuora`): `cargo xtask pack` stages the compiled
 `tamias-driver-cuora` payload and `tamias install
 --allow-drivers ./libraries/cuora` deploys the generated `cuora`
-shim. `scripts/release.sh` is run manually by an operator on
-`main`: one workspace version bump (`cargo set-version
---workspace`), a sync of the version refs in
-`libraries/cuora/tamias.yaml`/`README.md`, and a `cuora-v<ver>`
-tag. After the tag the operator ships the pack with `tamias
+shim. Releases are run manually by an operator on `main` via
+`tarsi-serve release --dir . --yes` (the org release plane,
+project ADR-0005; repo config: `tarsi.toml` — the per-repo
+`scripts/release.sh` shims were removed org-wide): plan →
+changelog → bump → tag → push. After the tag the operator ships
+the pack with `tamias
 publish libraries/cuora` (`9aia:cuora@<ver>`). The
 `cuora`/`tamias-driver-cuora` crates still build under
 plain `cargo build`/`cargo test` — the `mcp` surface stays
