@@ -12,3 +12,13 @@ docs/
 
 # tamias pack payload — built by `cargo xtask pack`
 /libraries/cuora/drivers/
+
+# local vault/identity material — defaults live outside the repo
+# (~/.local/share, ~/.config); these catch repo-local paths a
+# cuora.toml [vaults.*].path / CUORA_IDENTITY_FILE override picks
+vault.age
+vault.age.lock
+vault.age.tmp
+*.listed.json
+cuora/identity.txt
+tardigrada/identity.txt
