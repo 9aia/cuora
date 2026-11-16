@@ -14,6 +14,7 @@ same table.)
 | `CUORA_ACTOR` | `$USER` → `anon` | audit attribution (`--actor` wins). Self-claimed |
 | `CUORA_IDENTITY_FILE` | `<config>/tardigrada/identity.txt` (legacy `cuora`/`arca` paths resolve) | age identity keyfile for every vault impl — pins file mode outright |
 | `CUORA_IDENTITY_BACKEND` | `keyring` | `keyring` (default — fail closed, no file fallback) | `auto` (keyring → keyfile fallback, for headless) | `file` (never probe the keyring); wins over `[identity] backend` |
+| `CUORA_KEYRING_TIMEOUT_MS` | `120000` | bound on one blocking session-store call — a locked collection's unlock prompt has no client-side deadline; `0` waits forever |
 | `CUORA_CF_TOKEN` | — | bearer token for `kind = "cf"` vaults — *default* name; `[vaults.*].token_env` picks another |
 | `CLOUDFLARE_API_TOKEN` | — | API token for `cf-secrets-store` deploy sinks — *default* name; `[deploy.*].token_env` picks another |
 | `CUORA_AUDIT_STDERR` | on | `0`/`false`/`off`/`no` silences the stderr ndjson audit wire — OTLP-only mode |

@@ -1628,6 +1628,7 @@ same table.)
 | `CUORA_ACTOR` | `$USER` → `anon` | audit attribution (`--actor` wins). Self-claimed |
 | `CUORA_IDENTITY_FILE` | `<config>/tardigrada/identity.txt` (legacy `cuora`/`arca` paths resolve) | age identity keyfile for every vault impl — pins file mode outright |
 | `CUORA_IDENTITY_BACKEND` | `keyring` | `keyring` (default — fail closed, no file fallback) | `auto` (keyring → keyfile fallback, for headless) | `file` (never probe the keyring); wins over `[identity] backend` |
+| `CUORA_KEYRING_TIMEOUT_MS` | `120000` | bound on one blocking session-store call — a locked collection's unlock prompt has no client-side deadline; `0` waits forever |
 | `CUORA_CF_TOKEN` | — | bearer token for `kind = "cf"` vaults — *default* name; `[vaults.*].token_env` picks another |
 | `CLOUDFLARE_API_TOKEN` | — | API token for `cf-secrets-store` deploy sinks — *default* name; `[deploy.*].token_env` picks another |
 | `CUORA_AUDIT_STDERR` | on | `0`/`false`/`off`/`no` silences the stderr ndjson audit wire — OTLP-only mode |
@@ -1936,8 +1937,11 @@ unlocks the local file vault and the remote `cf` vault alike.
   bootstraps whichever backend applies and prints the public
   `age1…` recipient. On a reachable-but-empty Secret Service (fresh
   daemon, no collections yet) the keyring impl claims the `default`
-  collection alias on first use — `dbus-secret-service-keyring-store`'s
-  create path can't bootstrap one itself (I-006).
+  collection alias on the first identity *write* — reads and the
+  availability probe stay read-only, so a consumer that only loads
+  the identity never creates a collection. The fixup exists because
+  `dbus-secret-service-keyring-store`'s create path can't bootstrap
+  one itself (I-006).
 * **Recipients** — `[vaults.*].recipients` encrypts to extra
   public keys beyond the identity's own — a team recipient list
   without sharing the private key.
