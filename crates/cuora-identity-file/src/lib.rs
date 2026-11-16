@@ -168,6 +168,16 @@ impl IdentitySource for FileIdentity {
         }
         use std::io::Write;
         opts.open(&self.path).and_then(|mut f| {
+            // Tighten *before* the key bytes land — `mode(0600)`
+            // only applies at creation, so a pre-existing file
+            // with a looser mode would expose the material for
+            // the whole write+sync window (and forever, if the
+            // trailing chmod were ever skipped).
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                f.set_permissions(std::fs::Permissions::from_mode(0o600))?;
+            }
             f.write_all(body.as_bytes())?;
             // fsync before the chmod — a crash mid-write must not
             // leave a truncated keyfile looking stored.
@@ -319,6 +329,29 @@ mod tests {
         // a non-key line → Parse
         std::fs::write(src.path(), "not-a-key\n").unwrap();
         assert!(matches!(src.load(), Err(IdentityError::Parse(_))));
+    }
+
+    #[test]
+    #[cfg(unix)]
+    fn store_tightens_a_preexisting_loose_file() {
+        use std::os::unix::fs::PermissionsExt;
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("id.txt");
+        // A pre-existing world-readable file — `mode(0600)` at
+        // open() does not apply to it, so the chmod must happen
+        // on the open handle before key material is written.
+        std::fs::write(&path, "placeholder\n").unwrap();
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o644)).unwrap();
+        let src = FileIdentity::new(&path);
+        let id = x25519::Identity::generate();
+        src.store(&id).unwrap();
+        assert_eq!(
+            std::fs::metadata(&path).unwrap().permissions().mode() & 0o777,
+            0o600
+        );
+        assert!(std::fs::read_to_string(&path)
+            .unwrap()
+            .contains("AGE-SECRET-KEY-"));
     }
 
     #[test]
