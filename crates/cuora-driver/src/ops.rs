@@ -52,7 +52,7 @@ const SKIP_PARAMS: &[&str] = &[];
 /// writes (`init`/`rm`/`migrate`/`deploy`) and arbitrary child exec
 /// (`run`). Mutators belong behind a deliberate trigger, not
 /// ambient view polling.
-const MUTATES: &[&str] = &["init", "identity.import", "rm", "migrate", "deploy", "run"];
+const MUTATES: &[&str] = &["init", "rm", "migrate", "deploy", "run"];
 
 /// `(name, clap spec)` for every leaf verb. Hidden plumbing
 /// (`gen-cli-docs`) is a docs-pipeline verb, not an engine op —
@@ -359,14 +359,7 @@ mod tests {
             .collect();
         assert_eq!(
             mutators,
-            vec![
-                "cli.init",
-                "cli.identity.import",
-                "cli.rm",
-                "cli.run",
-                "cli.migrate",
-                "cli.deploy"
-            ]
+            vec!["cli.init", "cli.rm", "cli.run", "cli.migrate", "cli.deploy"]
         );
     }
 

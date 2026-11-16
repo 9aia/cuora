@@ -14,8 +14,6 @@ use std::str::FromStr;
 pub enum Op {
     /// Bootstrap identity + vault.
     Init,
-    /// Inspect/import the age identity (`identity` group).
-    Identity,
     /// Store a secret.
     Put,
     /// Read a secret's value.
@@ -46,9 +44,8 @@ pub enum Op {
 
 impl Op {
     /// All ops, in declaration order.
-    pub const ALL: [Op; 15] = [
+    pub const ALL: [Op; 14] = [
         Op::Init,
-        Op::Identity,
         Op::Put,
         Op::Get,
         Op::List,
@@ -75,7 +72,6 @@ impl Op {
     pub fn as_str(&self) -> &'static str {
         match self {
             Op::Init => "init",
-            Op::Identity => "identity",
             Op::Put => "put",
             Op::Get => "get",
             Op::List => "list",

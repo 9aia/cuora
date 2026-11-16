@@ -33,7 +33,7 @@ pub fn env_var(name: &str) -> Option<String> {
 }
 
 use std::collections::BTreeMap;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
@@ -96,50 +96,6 @@ pub struct InitInfo {
     pub file_remains: Option<PathBuf>,
     /// The identity's public recipient (`age1…`).
     pub recipient: String,
-}
-
-/// What `identity show` reports — the recipient teammates paste
-/// into `[vaults.*].recipients`.
-#[derive(Debug)]
-pub struct IdentityShow {
-    /// The resolved identity's public recipient (`age1…`).
-    pub recipient: String,
-    /// The source kind that actually resolved — `"file"` or
-    /// `"keyring"` (an `auto` backend still reports the arm it
-    /// landed on).
-    pub backend: &'static str,
-    /// Where the identity material lives — keyfile path or store
-    /// locator. Never key material.
-    pub source: String,
-}
-
-/// What `identity import` reports.
-#[derive(Debug)]
-pub struct IdentityImport {
-    /// The backend the identity was stored into — `"file"` or
-    /// `"keyring"`.
-    pub backend: &'static str,
-    /// Where it landed — keyfile path or store locator.
-    pub source: String,
-    /// The imported identity's public recipient (`age1…`).
-    pub recipient: String,
-    /// The keyfile the identity was adopted from.
-    pub imported_from: PathBuf,
-}
-
-/// What `identity backend` inspects — the configured selection,
-/// not a store probe.
-#[derive(Debug)]
-pub struct IdentityBackendInfo {
-    /// The effective backend — `"keyring"` | `"auto"` | `"file"`.
-    pub backend: &'static str,
-    /// Provenance — `"env"` (`CUORA_IDENTITY_BACKEND`), `"config"`
-    /// (`[identity] backend`), or `"default"`.
-    pub source: &'static str,
-    /// The explicit identity-file pin in effect for the selected
-    /// env's vault (`CUORA_IDENTITY_FILE` / `[vaults.*].identity`),
-    /// if any — it wins over `backend` at resolve time.
-    pub pinned_file: Option<String>,
 }
 
 /// What `check` reports about one vault — the backend is
@@ -641,16 +597,6 @@ impl Ops {
     ///    session, not a crash; `file` skips the store probe
     ///    entirely.
     fn resolve_identity(&self, cfg: Option<&VaultConfig>) -> Result<x25519::Identity, OpsError> {
-        self.resolve_identity_located(cfg).map(|(id, _, _)| id)
-    }
-
-    /// [`Self::resolve_identity`] plus *where* the identity came
-    /// from — `(identity, source kind, locator)` for
-    /// `identity show`.
-    fn resolve_identity_located(
-        &self,
-        cfg: Option<&VaultConfig>,
-    ) -> Result<(x25519::Identity, &'static str, String), OpsError> {
         // An explicit file pins the source — skip the store probe
         // entirely (no dbus round-trip, no misleading fallback note).
         if explicit_identity_file(cfg).is_some() {
@@ -666,11 +612,7 @@ impl Ops {
             IdentityBackend::File => self.resolve_identity_in(cfg, None),
             // `keyring` — fail closed: unreachable store or missing
             // identity is an error, never a silent file read.
-            IdentityBackend::Keyring => {
-                let k = strict_keyring()?;
-                let id = keyring_required(&*k)?;
-                Ok((id, k.kind(), k.describe()))
-            }
+            IdentityBackend::Keyring => keyring_required(&*strict_keyring()?),
             IdentityBackend::Auto => {
                 let keyring = auto_keyring_probe();
                 self.resolve_identity_in(cfg, keyring.as_deref())
@@ -681,56 +623,46 @@ impl Ops {
     /// Which identity backend this run uses — `CUORA_IDENTITY_BACKEND`
     /// env wins over `[identity] backend`, absent both → `keyring`
     /// (fail closed). An unrecognized env value is ignored with
-    /// a stderr note (config/default apply). Also reports the
-    /// provenance — `identity backend` inspects it.
-    fn identity_backend_source(&self) -> (IdentityBackend, &'static str) {
-        if let Some(v) = env_var("CUORA_IDENTITY_BACKEND") {
-            match v.to_ascii_lowercase().as_str() {
-                "auto" => return (IdentityBackend::Auto, "env"),
-                "keyring" => return (IdentityBackend::Keyring, "env"),
-                "file" => return (IdentityBackend::File, "env"),
+    /// a stderr note (config/default apply).
+    fn identity_backend(&self) -> IdentityBackend {
+        env_var("CUORA_IDENTITY_BACKEND")
+            .and_then(|v| match v.to_ascii_lowercase().as_str() {
+                "auto" => Some(IdentityBackend::Auto),
+                "keyring" => Some(IdentityBackend::Keyring),
+                "file" => Some(IdentityBackend::File),
                 _ => {
                     // A typo'd opt-out must not silently fail
                     // closed — say the value was ignored.
                     fallback_note(&format!(
                         "unrecognized CUORA_IDENTITY_BACKEND {v:?} — ignoring"
                     ));
+                    None
                 }
-            }
-        }
-        match self.config.identity.as_ref().map(|i| i.backend) {
-            Some(b) => (b, "config"),
-            None => (IdentityBackend::default(), "default"),
-        }
-    }
-
-    /// [`Self::identity_backend_source`]'s selection.
-    fn identity_backend(&self) -> IdentityBackend {
-        self.identity_backend_source().0
+            })
+            .or_else(|| self.config.identity.as_ref().map(|i| i.backend))
+            .unwrap_or_default()
     }
 
     /// The injectable core of [`Self::resolve_identity`] — tests
     /// pass a mock-backed `IdentitySource` through `keyring`.
-    /// Returns `(identity, source kind, locator)`.
     fn resolve_identity_in(
         &self,
         cfg: Option<&VaultConfig>,
         keyring: Option<&dyn IdentitySource>,
-    ) -> Result<(x25519::Identity, &'static str, String), OpsError> {
+    ) -> Result<x25519::Identity, OpsError> {
         if let Some(src) = explicit_identity_file(cfg) {
-            return load_required(&src).map(|id| (id, src.kind(), src.describe()));
+            return load_required(&src);
         }
         if let Some(k) = keyring {
             match k.load() {
-                Ok(Some(id)) => return Ok((id, k.kind(), k.describe())),
+                Ok(Some(id)) => return Ok(id),
                 Ok(None) => {}
                 Err(e) => fallback_note(&format!(
                     "keyring identity unreadable ({e}) — using the identity file"
                 )),
             }
         }
-        let f = FileIdentity::default();
-        load_required(&f).map(|id| (id, f.kind(), f.describe()))
+        load_required(&FileIdentity::default())
     }
 
     /// `cuora init` — store the identity per `[identity] backend`
@@ -852,105 +784,6 @@ impl Ops {
             file_remains,
             recipient: vault.public_recipient(),
         })
-    }
-
-    /// `cuora identity show` — the `age1…` recipient the current
-    /// identity resolves to: the value shared for
-    /// `[vaults.*].recipients`.
-    pub fn identity_show(&self) -> Result<IdentityShow, OpsError> {
-        let name = self.config.vault_for(&self.env);
-        let cfg = self.config.vault_config(name);
-        let (id, kind, source) = self.resolve_identity_located(cfg)?;
-        Ok(IdentityShow {
-            recipient: id.to_public().to_string(),
-            backend: kind,
-            source,
-        })
-    }
-
-    /// `cuora identity import <file>` — adopt an existing
-    /// `identity.txt` keyfile: parse it, then store the identity
-    /// into the source the configured backend resolves to (an
-    /// explicit file pin → that file; `file` → the default
-    /// keyfile; `keyring` → the session store, fail closed;
-    /// `auto` → keyring when reachable, else the keyfile).
-    pub fn identity_import(&self, path: &Path) -> Result<IdentityImport, OpsError> {
-        let name = self.config.vault_for(&self.env);
-        let cfg = self.config.vault_config(name);
-        let explicit = explicit_identity_file(cfg);
-        if explicit.is_some() && self.identity_backend() == IdentityBackend::Keyring {
-            fallback_note("explicit identity file pin overrides backend=keyring");
-        }
-        let keyring = if explicit.is_some() {
-            None
-        } else {
-            match self.identity_backend() {
-                IdentityBackend::File => None,
-                // Fail closed — same posture as `init`: no silent
-                // file write when the operator asked for keyring.
-                IdentityBackend::Keyring => Some(strict_keyring()?),
-                IdentityBackend::Auto => auto_keyring_probe(),
-            }
-        };
-        self.identity_import_in(path, cfg, keyring.as_deref())
-    }
-
-    /// [`Self::identity_import`] with the keyring injected — the
-    /// testable core, same split as [`Self::init`]/`init_in`.
-    fn identity_import_in(
-        &self,
-        path: &Path,
-        cfg: Option<&VaultConfig>,
-        keyring: Option<&dyn IdentitySource>,
-    ) -> Result<IdentityImport, OpsError> {
-        let src = FileIdentity::new(path);
-        let id = match src.load() {
-            Ok(Some(id)) => id,
-            Ok(None) => {
-                return Err(OpsError::Config(format!(
-                    "no identity at {} — nothing to import",
-                    src.describe()
-                )))
-            }
-            Err(e) => return Err(OpsError::Identity(e)),
-        };
-        let (backend, source) = if let Some(dst) = explicit_identity_file(cfg) {
-            dst.store(&id).map_err(OpsError::Identity)?;
-            ("file", dst.describe())
-        } else if let Some(k) = keyring {
-            k.store(&id).map_err(OpsError::Identity)?;
-            ("keyring", k.describe())
-        } else {
-            let dst = FileIdentity::default();
-            dst.store(&id).map_err(OpsError::Identity)?;
-            ("file", dst.describe())
-        };
-        Ok(IdentityImport {
-            backend,
-            source,
-            recipient: id.to_public().to_string(),
-            imported_from: path.to_path_buf(),
-        })
-    }
-
-    /// `cuora identity backend` — the configured backend
-    /// selection (`keyring` | `auto` | `file`) and where it came
-    /// from. Inspect-only: cuora has no config-write path —
-    /// switching means editing `[identity] backend` or
-    /// `CUORA_IDENTITY_BACKEND`.
-    pub fn identity_backend_info(&self) -> IdentityBackendInfo {
-        let name = self.config.vault_for(&self.env);
-        let cfg = self.config.vault_config(name);
-        let (backend, source) = self.identity_backend_source();
-        IdentityBackendInfo {
-            backend: match backend {
-                IdentityBackend::Keyring => "keyring",
-                IdentityBackend::Auto => "auto",
-                IdentityBackend::File => "file",
-            },
-            source,
-            pinned_file: explicit_identity_file(cfg).map(|f| f.path().display().to_string()),
-        }
     }
 
     /// Store a secret (env-pin + alias aware); emits an audit event.
@@ -2743,7 +2576,7 @@ mod tests {
         isolate_home(&home, || {
             temp_env::with_var_unset("CUORA_IDENTITY_FILE", || {
                 let ops = mk_ops(Config::default());
-                let (got, _, _) = ops.resolve_identity_in(None, Some(&keyring)).unwrap();
+                let got = ops.resolve_identity_in(None, Some(&keyring)).unwrap();
                 assert_eq!(got.to_public(), a.to_public());
             });
         });
@@ -2757,12 +2590,12 @@ mod tests {
                 let (file_id, _) = cuora_identity::ensure(&default).unwrap();
                 let ops = mk_ops(Config::default());
                 let keyring = StubSource::empty();
-                let (got, _, _) = ops.resolve_identity_in(None, Some(&keyring)).unwrap();
+                let got = ops.resolve_identity_in(None, Some(&keyring)).unwrap();
                 assert_eq!(got.to_public(), file_id.to_public());
                 // a failing keyring also falls back — note on
                 // stderr, not a crash
                 let keyring = StubSource::failing(IdentityError::Store("dead".into()));
-                let (got, _, _) = ops.resolve_identity_in(None, Some(&keyring)).unwrap();
+                let got = ops.resolve_identity_in(None, Some(&keyring)).unwrap();
                 assert_eq!(got.to_public(), file_id.to_public());
             });
         });
@@ -2786,7 +2619,7 @@ mod tests {
         // mutate it under temp_env's lock and this call sits
         // outside any guard.
         temp_env::with_var("CUORA_IDENTITY_FILE", None::<&str>, || {
-            let (got, _, _) = ops.resolve_identity_in(cfg, Some(&keyring)).unwrap();
+            let got = ops.resolve_identity_in(cfg, Some(&keyring)).unwrap();
             assert_eq!(got.to_public(), file_id.to_public());
         });
         // env override beats config path — and a missing explicit
@@ -2907,130 +2740,6 @@ mod tests {
                     assert_eq!(got.to_public(), file_id.to_public());
                 },
             );
-        });
-    }
-
-    #[test]
-    fn identity_show_reports_the_resolved_recipient() {
-        let home = tempfile::tempdir().unwrap();
-        isolate_home(&home, || {
-            // isolate_home pins CUORA_IDENTITY_FILE — ensure the
-            // identity there, then show must name its recipient.
-            let pinned = FileIdentity::default();
-            let (id, _) = cuora_identity::ensure(&pinned).unwrap();
-            let ops = mk_ops(Config::default());
-            let info = ops.identity_show().unwrap();
-            assert_eq!(info.recipient, id.to_public().to_string());
-            assert_eq!(info.backend, "file");
-            assert_eq!(info.source, pinned.path().display().to_string());
-        });
-    }
-
-    #[test]
-    fn identity_show_errors_when_no_identity_exists() {
-        let home = tempfile::tempdir().unwrap();
-        isolate_home(&home, || {
-            temp_env::with_var_unset("CUORA_IDENTITY_FILE", || {
-                // backend=file for a deterministic keyfile miss —
-                // the keyring default would probe the real store.
-                let ops = mk_ops(Config {
-                    identity: Some(cuora_core::IdentityConfig {
-                        backend: IdentityBackend::File,
-                    }),
-                    ..Config::default()
-                });
-                let e = ops.identity_show().err().unwrap().to_string();
-                assert!(e.contains("run `cuora init`"), "{e}");
-            });
-        });
-    }
-
-    #[test]
-    fn identity_import_adopts_a_keyfile() {
-        let home = tempfile::tempdir().unwrap();
-        // a foreign identity.txt living outside cuora's paths
-        let foreign = write_identity(&home.path().join("foreign"));
-        let foreign_id = FileIdentity::new(&foreign).load().unwrap().unwrap();
-        isolate_home(&home, || {
-            // CUORA_IDENTITY_FILE is pinned → the import lands there
-            let ops = mk_ops(Config::default());
-            let info = ops.identity_import(&foreign).unwrap();
-            assert_eq!(info.backend, "file");
-            assert_eq!(info.recipient, foreign_id.to_public().to_string());
-            assert_eq!(info.imported_from, foreign);
-            // and resolution now yields the imported identity
-            let got = ops.identity_show().unwrap();
-            assert_eq!(got.recipient, foreign_id.to_public().to_string());
-        });
-    }
-
-    #[test]
-    fn identity_import_into_an_injected_keyring() {
-        let home = tempfile::tempdir().unwrap();
-        let foreign = write_identity(&home.path().join("foreign"));
-        let foreign_id = FileIdentity::new(&foreign).load().unwrap().unwrap();
-        let keyring = StubSource::empty();
-        isolate_home(&home, || {
-            temp_env::with_var_unset("CUORA_IDENTITY_FILE", || {
-                let ops = mk_ops(Config::default());
-                let info = ops
-                    .identity_import_in(&foreign, None, Some(&keyring))
-                    .unwrap();
-                assert_eq!(info.backend, "keyring");
-                assert_eq!(info.source, keyring.describe());
-                let stored = keyring.load().unwrap().unwrap();
-                assert_eq!(stored.to_public(), foreign_id.to_public());
-            });
-        });
-    }
-
-    #[test]
-    fn identity_import_missing_or_corrupt_file_errors() {
-        let home = tempfile::tempdir().unwrap();
-        isolate_home(&home, || {
-            let ops = mk_ops(Config::default());
-            let e = ops
-                .identity_import(&home.path().join("missing.txt"))
-                .err()
-                .unwrap()
-                .to_string();
-            assert!(e.contains("nothing to import"), "{e}");
-            // corrupt material is an error, never an overwrite
-            let bad = home.path().join("bad.txt");
-            std::fs::write(&bad, "not-a-key\n").unwrap();
-            assert!(ops.identity_import(&bad).is_err());
-        });
-    }
-
-    #[test]
-    fn identity_backend_info_reports_selection_and_pin() {
-        let home = tempfile::tempdir().unwrap();
-        isolate_home(&home, || {
-            let ops = mk_ops(Config::default());
-            temp_env::with_var_unset("CUORA_IDENTITY_BACKEND", || {
-                // absent both → keyring default; the env pin still shows
-                let info = ops.identity_backend_info();
-                assert_eq!(info.backend, "keyring");
-                assert_eq!(info.source, "default");
-                assert!(info.pinned_file.is_some());
-            });
-            temp_env::with_var("CUORA_IDENTITY_BACKEND", Some("file"), || {
-                let info = ops.identity_backend_info();
-                assert_eq!(info.backend, "file");
-                assert_eq!(info.source, "env");
-            });
-            // config [identity] backend is the middle provenance
-            let ops = mk_ops(Config {
-                identity: Some(cuora_core::IdentityConfig {
-                    backend: IdentityBackend::Auto,
-                }),
-                ..Config::default()
-            });
-            temp_env::with_var_unset("CUORA_IDENTITY_BACKEND", || {
-                let info = ops.identity_backend_info();
-                assert_eq!(info.backend, "auto");
-                assert_eq!(info.source, "config");
-            });
         });
     }
 
