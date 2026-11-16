@@ -12,6 +12,9 @@ styleguide = "keep-a-changelog"
 changelog_path = "CHANGELOG.md"
 diff_exclude = ["docs/**", "project/**", "*.md", ".github/**"]
 tag_format = "{unit}-v{version}"
+# Fallback when commit-type inference finds nothing (refactor/chore
+# releases still need a version move).
+default_bump = "patch"
 
 [release.unit_overrides.cuora-xtask]
 skip = true
