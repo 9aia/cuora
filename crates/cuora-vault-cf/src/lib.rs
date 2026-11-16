@@ -786,7 +786,11 @@ fn validate_base_url(url: &str) -> Result<(), VaultError> {
         .or_else(|| url.strip_prefix("http://").map(|h| (false, h)))
         .and_then(|(secure, rest)| {
             let hostport = rest.split(['/', '?', '#']).next().unwrap_or_default();
-            (!hostport.is_empty()).then_some((secure, hostport))
+            // `@` in the authority is userinfo — credentials in the
+            // URL would ride every request and leak into error
+            // messages that print it.
+            (!hostport.is_empty() && !hostport.contains('@'))
+                .then_some((secure, hostport))
         });
     match host {
         Some((true, _)) => Ok(()),
@@ -798,13 +802,26 @@ fn validate_base_url(url: &str) -> Result<(), VaultError> {
     }
 }
 
-/// `localhost`, `127.0.0.0/8`, or `[::1]` — with an optional `:port`.
+/// `localhost`, a loopback `127.0.0.0/8` literal, or `[::1]` —
+/// with an optional `:port`. The host is *parsed*, never
+/// prefix-matched: `127.evil.example`, `127.0.0.1@evil.example`,
+/// and `localhost.evil.example` are remote hosts and must not
+/// downgrade the vault URL to plaintext HTTP.
 fn is_loopback_host(hostport: &str) -> bool {
-    if let Some(rest) = hostport.strip_prefix('[') {
-        return rest.split(']').next() == Some("::1");
+    let host = match hostport.strip_prefix('[') {
+        Some(rest) => match rest.split_once(']') {
+            Some((h, tail)) if tail.is_empty() || tail.starts_with(':') => h,
+            _ => return false,
+        },
+        None => hostport.split(':').next().unwrap_or_default(),
+    };
+    if host.eq_ignore_ascii_case("localhost") {
+        return true;
     }
-    let host = hostport.split(':').next().unwrap_or_default();
-    host.eq_ignore_ascii_case("localhost") || host.starts_with("127.")
+    host.parse::<std::net::Ipv4Addr>()
+        .map(|ip| ip.is_loopback())
+        .unwrap_or(false)
+        || host == "::1"
 }
 
 /// The path component of `url` (no query) — what the CuoraHmac
@@ -938,6 +955,22 @@ mod tests {
             assert!(
                 CfVault::with_auth(ok, auth(), id.clone(), &[], false).is_ok(),
                 "{ok}"
+            );
+        }
+        // lookalike hosts and userinfo are NOT loopback — the
+        // plaintext-http escape hatch is for mocks only
+        for bad in [
+            "http://127.evil.example",
+            "http://127.0.0.1.evil.example",
+            "http://127.0.0.1@evil.example",
+            "http://localhost.evil.example",
+            "http://localhost.",
+            "http://[::1]evil.example",
+            "https://user:pw@vault.example",
+        ] {
+            assert!(
+                CfVault::with_auth(bad, auth(), id.clone(), &[], false).is_err(),
+                "{bad} must be rejected"
             );
         }
         // plaintext http off-loopback, missing scheme, and empty
