@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.3] - 2026-11-16
+
+### Fixed
+
+- **deploy-cf,cli:** same loopback parse fix; bound piped secret reads (`255c673`)
+
 ## [1.0.2] - 2026-11-16
 
 ## [1.0.1] - 2026-11-16

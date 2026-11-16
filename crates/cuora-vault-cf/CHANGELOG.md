@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.3] - 2026-11-16
+
+### Fixed
+
+- **vault-cf:** parse the loopback host instead of prefix-matching (`6bafa52`)
+
 ## [1.0.2] - 2026-11-16
 
 ## [1.0.1] - 2026-11-16

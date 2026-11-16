@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.3] - 2026-11-16
+
+### Fixed
+
+- **sealed:** confine payload reads to the payload dir; tighten secret-file mode (`99c6e43`)
+
 ## [1.1.0] - 2026-11-16
 
 ### Added

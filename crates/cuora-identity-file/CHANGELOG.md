@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.3] - 2026-11-16
+
+### Fixed
+
+- **identity-file:** tighten keyfile mode before writing key material (`8ab9e87`)
+
 ## [1.1.0] - 2026-11-16
 
 ### Added
