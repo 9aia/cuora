@@ -50,3 +50,4 @@ keep doing it harmlessly, but help shouldn't advertise it).
 
 - 2026-11-16 DONE — `cuora identity show|import|backend` shipped in cuora-v1.0.0 (merge 50e187eb, pack 9aia:cuora@1.0.0). `init` kept + help clarified. Follow-up: standalone `tardigrade` tool will own generic identity lifecycle; cuora identity verbs get removed once it lands.
 
+- 2026-11-16 UPDATE — the `cuora identity` verbs were retired on main in favor of the standalone `tardigrada` tool (github.com/9aia/tardigrada, published as a tamias pack): identity lifecycle now lives there. `cuora init` stays as cuora's own bootstrap; only the `identity` group was removed.
