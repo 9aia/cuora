@@ -68,16 +68,17 @@ Design rules:
 
 ## Where it sits
 
-Cuora is an **engine** in the 9aia stack — it owns one domain
-(secret materialization) and is consumed by everything that runs
-code:
+Cuora is a **process-layer** engine in the 9aia stack — it owns one
+domain (secret materialization) and is consumed by everything that
+runs code:
 
 ```
-tamias (distribution)  →  engines  →  orchestration  →  surfaces
-                          cuora ◄───     peregrin           pavo,
-                          myco,         campaigns,         cuora run,
-                          kuda,          bupha CI          agents
-                          mimus…
+delivery  →  memory  →  process  →  agency
+tamias,     myco,       cuora ◄───   peregrin,
+scarab,     kuda,       mimus,       pavo,
+tarsi,      sturn,      cicada,      cuora run,
+bupha       hypha       lasius,      agents
+                        sepia
 ```
 
 Peregrin campaigns consume secrets via `cuora run`; mimus resolves
