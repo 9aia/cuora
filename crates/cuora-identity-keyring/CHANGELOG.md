@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.4] - 2026-11-16
+
+### Fixed
+
+- **identity:** read-only keyring probe, zeroized key material, honest timeout hint (`7bd0e07`)
+
 ## [1.0.3] - 2026-11-16
 
 ## [1.1.0] - 2026-11-16
