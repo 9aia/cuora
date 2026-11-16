@@ -31,9 +31,12 @@ itself on `PATH` (`~/.cargo/bin`).
 cuora init
 ```
 
-`init` stores your age identity where it's safest available and
-verifies the vault at `~/.local/share/cuora/vault.age` opens. It's
-idempotent — run it any time.
+`init` initializes your **local age identity** — the per-machine,
+per-human key every vault decrypts with. It is *not* repo setup:
+it stores the identity where it's safest available (the session
+keyring on a desktop, the `0600` keyfile on headless boxes) and is
+idempotent — run it any time. To verify vault access and the
+declared surface, that's `cuora check`'s job (below).
 
 On a desktop session (GNOME Keyring, KeePassXC, KDE Wallet, macOS
 Keychain, Windows Credential Manager) the identity lands in the
@@ -56,6 +59,15 @@ keyring rather than orphaning it, and leaves the file as a backup
 you can delete when ready. (On a brand-new keyring with no
 collections yet, cuora claims the `default` collection alias
 automatically — no manual step.)
+
+The `cuora identity` group manages that identity after bootstrap:
+
+```sh
+cuora identity show      # the age1… recipient — the value teammates
+                         # paste into [vaults.*].recipients
+cuora identity import ~/old/identity.txt   # adopt an existing keyfile
+cuora identity backend   # inspect keyring|auto|file (config read-only)
+```
 
 ## Seal a secret
 

@@ -8,6 +8,10 @@ cuora — secrets broker for agents: `cuora://` refs, redaction, env-injection i
 
 * [`cuora`↴](#cuora)
 * [`cuora init`↴](#cuora-init)
+* [`cuora identity`↴](#cuora-identity)
+* [`cuora identity show`↴](#cuora-identity-show)
+* [`cuora identity import`↴](#cuora-identity-import)
+* [`cuora identity backend`↴](#cuora-identity-backend)
 * [`cuora put`↴](#cuora-put)
 * [`cuora get`↴](#cuora-get)
 * [`cuora list`↴](#cuora-list)
@@ -30,7 +34,8 @@ cuora — secrets broker for agents: `cuora://` refs, redaction, env-injection i
 
 ###### **Commands:**
 
-* `init` — Bootstrap: store the age identity per `[identity] backend` / `CUORA_IDENTITY_BACKEND` — `keyring` (default) fails closed when no session store is reachable, `auto` falls back to the keyfile with a note, `file` never probes. Imports an existing identity.txt rather than orphaning it. Verifies the vault opens
+* `init` — Bootstrap: initialize the local age identity — per-machine, per-human, NOT repo setup (vault access is `cuora check`'s job). Stores the identity per `[identity] backend` / `CUORA_IDENTITY_BACKEND` — `keyring` (default) fails closed when no session store is reachable, `auto` falls back to the keyfile with a note, `file` never probes. Imports an existing identity.txt rather than orphaning it. Manage the identity afterwards with `cuora identity`
+* `identity` — Manage the local age identity — the per-machine, per-human key `init` bootstraps. `show` prints the `age1…` recipient to share for `[vaults.*].recipients`; `import` adopts an existing identity.txt; `backend` inspects the configured storage backend
 * `put` — Store a secret. The value comes from stdin (`printf … | cuora put cuora://ns/name`) or a hidden terminal prompt — never args, which land in shell history and `/proc`
 * `get` — Print a secret's value to stdout — the escape hatch. Prefer `cuora run` so values never enter agent context; guardrails can deny this op
 * `list` — List the refs stored in the selected env — names only, never values
@@ -56,7 +61,7 @@ cuora — secrets broker for agents: `cuora://` refs, redaction, env-injection i
 
 ## `cuora init`
 
-Bootstrap: store the age identity per `[identity] backend` / `CUORA_IDENTITY_BACKEND` — `keyring` (default) fails closed when no session store is reachable, `auto` falls back to the keyfile with a note, `file` never probes. Imports an existing identity.txt rather than orphaning it. Verifies the vault opens
+Bootstrap: initialize the local age identity — per-machine, per-human, NOT repo setup (vault access is `cuora check`'s job). Stores the identity per `[identity] backend` / `CUORA_IDENTITY_BACKEND` — `keyring` (default) fails closed when no session store is reachable, `auto` falls back to the keyfile with a note, `file` never probes. Imports an existing identity.txt rather than orphaning it. Manage the identity afterwards with `cuora identity`
 
 **Usage:** `cuora init [OPTIONS]`
 
@@ -64,6 +69,72 @@ Bootstrap: store the age identity per `[identity] backend` / `CUORA_IDENTITY_BAC
 
 * `--json` — Emit JSON — stable machine shapes on every verb; errors are `{"error": "…"}` on stderr with a non-zero exit
 * `--with-file` — Force the identity keyfile even when a keyring is available — the headless/CI mode
+* `--env <ENV>` — Env context — `dev`/`staging`/`prod`/custom. Overrides `CUORA_ENV`; default `dev`
+* `--config <PATH>` — Config file, overriding the search ($CUORA_CONFIG → ./cuora.toml → ~/.config/cuora/cuora.toml)
+* `--actor <ACTOR>` — Actor attribution for audit events (default $CUORA_ACTOR, else $USER)
+* `-h, --help` — Print help
+
+## `cuora identity`
+
+Manage the local age identity — the per-machine, per-human key `init` bootstraps. `show` prints the `age1…` recipient to share for `[vaults.*].recipients`; `import` adopts an existing identity.txt; `backend` inspects the configured storage backend
+
+**Usage:** `cuora identity [OPTIONS] <COMMAND>`
+
+###### **Commands:**
+
+* `show` — Print the `age1…` recipient pubkey of the current identity — the value shared for `[vaults.*].recipients`. Goes to stdout bare (scriptable); backend/source context on stderr
+* `import` — Adopt an existing `identity.txt` keyfile as this machine's identity — stored per the configured backend (explicit file pin → that file; `file` → the default keyfile; `keyring` → the session store, fail closed; `auto` → keyring when reachable, else the keyfile)
+* `backend` — Inspect the configured identity backend — `keyring` | `auto` | `file` per `[identity] backend` / `CUORA_IDENTITY_BACKEND`. Inspect-only: cuora has no config-write path — set the backend in cuora.toml or the env var
+
+###### **Options:**
+
+* `--json` — Emit JSON — stable machine shapes on every verb; errors are `{"error": "…"}` on stderr with a non-zero exit
+* `--env <ENV>` — Env context — `dev`/`staging`/`prod`/custom. Overrides `CUORA_ENV`; default `dev`
+* `--config <PATH>` — Config file, overriding the search ($CUORA_CONFIG → ./cuora.toml → ~/.config/cuora/cuora.toml)
+* `--actor <ACTOR>` — Actor attribution for audit events (default $CUORA_ACTOR, else $USER)
+* `-h, --help` — Print help
+
+## `cuora identity show`
+
+Print the `age1…` recipient pubkey of the current identity — the value shared for `[vaults.*].recipients`. Goes to stdout bare (scriptable); backend/source context on stderr
+
+**Usage:** `cuora identity show [OPTIONS]`
+
+###### **Options:**
+
+* `--json` — Emit JSON — stable machine shapes on every verb; errors are `{"error": "…"}` on stderr with a non-zero exit
+* `--env <ENV>` — Env context — `dev`/`staging`/`prod`/custom. Overrides `CUORA_ENV`; default `dev`
+* `--config <PATH>` — Config file, overriding the search ($CUORA_CONFIG → ./cuora.toml → ~/.config/cuora/cuora.toml)
+* `--actor <ACTOR>` — Actor attribution for audit events (default $CUORA_ACTOR, else $USER)
+* `-h, --help` — Print help
+
+## `cuora identity import`
+
+Adopt an existing `identity.txt` keyfile as this machine's identity — stored per the configured backend (explicit file pin → that file; `file` → the default keyfile; `keyring` → the session store, fail closed; `auto` → keyring when reachable, else the keyfile)
+
+**Usage:** `cuora identity import [OPTIONS] <FILE>`
+
+###### **Arguments:**
+
+* `<FILE>` — Path to the identity.txt keyfile to adopt
+
+###### **Options:**
+
+* `--json` — Emit JSON — stable machine shapes on every verb; errors are `{"error": "…"}` on stderr with a non-zero exit
+* `--env <ENV>` — Env context — `dev`/`staging`/`prod`/custom. Overrides `CUORA_ENV`; default `dev`
+* `--config <PATH>` — Config file, overriding the search ($CUORA_CONFIG → ./cuora.toml → ~/.config/cuora/cuora.toml)
+* `--actor <ACTOR>` — Actor attribution for audit events (default $CUORA_ACTOR, else $USER)
+* `-h, --help` — Print help
+
+## `cuora identity backend`
+
+Inspect the configured identity backend — `keyring` | `auto` | `file` per `[identity] backend` / `CUORA_IDENTITY_BACKEND`. Inspect-only: cuora has no config-write path — set the backend in cuora.toml or the env var
+
+**Usage:** `cuora identity backend [OPTIONS]`
+
+###### **Options:**
+
+* `--json` — Emit JSON — stable machine shapes on every verb; errors are `{"error": "…"}` on stderr with a non-zero exit
 * `--env <ENV>` — Env context — `dev`/`staging`/`prod`/custom. Overrides `CUORA_ENV`; default `dev`
 * `--config <PATH>` — Config file, overriding the search ($CUORA_CONFIG → ./cuora.toml → ~/.config/cuora/cuora.toml)
 * `--actor <ACTOR>` — Actor attribution for audit events (default $CUORA_ACTOR, else $USER)
