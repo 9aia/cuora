@@ -395,6 +395,30 @@ pub fn parse_recipient_lines(text: &str) -> Result<Vec<String>, String> {
     Ok(out)
 }
 
+/// Join a manifest-declared payload-relative path onto `dir` and
+/// prove the result stays inside `dir`. `Sealed::check` already
+/// rejects `..`/absolute/empty segments, but a *symlink* inside the
+/// payload can still point outside it — a hostile pack could ship
+/// `sealed/x.age -> ~/.config/cuora/vault.age` and have `open`
+/// decrypt-dump the user's whole vault. Canonicalizing both sides
+/// resolves every symlink hop before the read.
+pub fn payload_path(dir: &Path, rel: &str) -> Result<PathBuf, String> {
+    let joined = dir.join(rel);
+    let canon_dir = dir
+        .canonicalize()
+        .map_err(|e| format!("resolve {}: {e}", dir.display()))?;
+    let canon = joined
+        .canonicalize()
+        .map_err(|e| format!("resolve {}: {e}", joined.display()))?;
+    if !canon.starts_with(&canon_dir) {
+        return Err(format!(
+            "{} escapes the payload dir (symlink) — refusing",
+            joined.display()
+        ));
+    }
+    Ok(canon)
+}
+
 /// Write `bytes` to `path` with parent dirs created; on unix the
 /// file lands `0600` at open (no world-readable window) — materialized
 /// secrets are as sensitive as the keyfile.
@@ -412,6 +436,15 @@ pub fn write_secret_file(path: &Path, bytes: &[u8]) -> Result<(), String> {
     let mut f = opts
         .open(path)
         .map_err(|e| format!("write {}: {e}", path.display()))?;
+    // `mode(0600)` only applies at creation — tighten a
+    // pre-existing file *before* the secret bytes land, or a
+    // loose mode would persist past the write.
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        f.set_permissions(std::fs::Permissions::from_mode(0o600))
+            .map_err(|e| format!("chmod {}: {e}", path.display()))?;
+    }
     f.write_all(bytes)
         .map_err(|e| format!("write {}: {e}", path.display()))?;
     f.sync_all()
@@ -460,7 +493,7 @@ pub fn open_pack_ref(
     let Some(rel) = sealed.files.get(secret) else {
         return Ok(PackOpen::NoSecret);
     };
-    let cipher_path = target.dir.join(rel);
+    let cipher_path = payload_path(&target.dir, rel)?;
     let cipher =
         std::fs::read(&cipher_path).map_err(|e| format!("read {}: {e}", cipher_path.display()))?;
     let identity = load_identity(keyfile)?;
@@ -597,6 +630,42 @@ mod tests {
                 0o600
             );
         }
+    }
+
+    #[test]
+    #[cfg(unix)]
+    fn write_secret_file_tightens_a_preexisting_loose_file() {
+        use std::os::unix::fs::PermissionsExt;
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("s.txt");
+        std::fs::write(&path, "old").unwrap();
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o644)).unwrap();
+        write_secret_file(&path, b"new-secret").unwrap();
+        assert_eq!(
+            std::fs::metadata(&path).unwrap().permissions().mode() & 0o777,
+            0o600
+        );
+        assert_eq!(std::fs::read(&path).unwrap(), b"new-secret");
+    }
+
+    #[test]
+    #[cfg(unix)]
+    fn payload_path_refuses_symlink_escape() {
+        let dir = tempfile::tempdir().unwrap();
+        let payload = dir.path().join("payload");
+        std::fs::create_dir_all(payload.join("sealed")).unwrap();
+        // An in-payload file resolves; a symlink pointing outside
+        // the payload dir is refused before any read — the
+        // manifest's `..` rules can't see symlinks.
+        std::fs::write(payload.join("sealed/good.age"), b"y").unwrap();
+        let outside = dir.path().join("vault.age");
+        std::fs::write(&outside, b"x").unwrap();
+        std::os::unix::fs::symlink(&outside, payload.join("sealed/evil.age")).unwrap();
+        assert!(payload_path(&payload, "sealed/good.age").is_ok());
+        let e = payload_path(&payload, "sealed/evil.age").unwrap_err();
+        assert!(e.contains("escapes the payload dir"), "{e}");
+        // A missing file errors as a resolve failure, not a panic.
+        assert!(payload_path(&payload, "sealed/nope.age").is_err());
     }
 
     /// Write a FileIdentity-format keyfile, returning the public key.

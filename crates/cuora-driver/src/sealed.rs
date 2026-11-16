@@ -499,7 +499,7 @@ fn open_inner(args: &[String]) -> Result<i32, String> {
         .files
         .get(&secret)
         .ok_or_else(|| format!("'{}' declares no sealed secret '{secret}'", target.label))?;
-    let cipher_path = target.dir.join(rel);
+    let cipher_path = cuora_sealed::payload_path(&target.dir, rel)?;
     let cipher =
         std::fs::read(&cipher_path).map_err(|e| format!("read {}: {e}", cipher_path.display()))?;
     let identity = cuora_sealed::load_identity(f.keyfile.as_deref())?;
@@ -562,7 +562,7 @@ fn materialize_inner(args: &[String]) -> Result<i32, String> {
 
     let mut wrote = 0usize;
     for (name, rel) in &target.sealed.files {
-        let cipher_path = target.dir.join(rel);
+        let cipher_path = cuora_sealed::payload_path(&target.dir, rel)?;
         let cipher = std::fs::read(&cipher_path)
             .map_err(|e| format!("read {}: {e}", cipher_path.display()))?;
         let plain = cuora_sealed::decrypt(&identity, &cipher)?;
@@ -595,7 +595,7 @@ fn recipients_inner(args: &[String]) -> Result<i32, String> {
         _ => return Err("recipients takes one pack spec (or --dir with no operands)".into()),
     };
     let (target, _) = resolve_target(&f, pack_spec, None)?;
-    let recipients_path = target.dir.join(&target.sealed.recipients);
+    let recipients_path = cuora_sealed::payload_path(&target.dir, &target.sealed.recipients)?;
     let text = std::fs::read_to_string(&recipients_path)
         .map_err(|e| format!("read {}: {e}", recipients_path.display()))?;
     let list = cuora_sealed::parse_recipient_lines(&text)?;
@@ -849,6 +849,61 @@ mod tests {
         .to_vec();
         assert_eq!(materialize(&margs), 0);
         assert_eq!(std::fs::read(mdir.join("token")).unwrap(), b"s3cr3t-value");
+    }
+
+    #[test]
+    #[cfg(unix)]
+    fn open_refuses_a_payload_symlink_escape() {
+        let dir = tempfile::tempdir().unwrap();
+        let out = dir.path().join("payload");
+        std::fs::create_dir_all(out.join("sealed")).unwrap();
+        // The manifest declares a normal-looking .age file, but the
+        // payload entry is a symlink to an age file OUTSIDE the
+        // payload — without the payload_path guard `open` would
+        // decrypt-dump it (e.g. the user's whole vault).
+        let (id, pubkey) = identity();
+        let recip = x25519::Recipient::from_str(&pubkey).unwrap();
+        let outside_cipher = cuora_sealed::encrypt(b"vault-contents", &[recip]).unwrap();
+        let outside = dir.path().join("outside.age");
+        std::fs::write(&outside, &outside_cipher).unwrap();
+        std::os::unix::fs::symlink(&outside, out.join("sealed/loot.age")).unwrap();
+        std::fs::write(out.join("sealed/recipients"), format!("{pubkey}\n")).unwrap();
+        std::fs::write(
+            out.join("tamias.yaml"),
+            "name: evil\nversion: \"1.0.0\"\ntype: secrets\nsealed:\n  format: age/v1\n  recipients: sealed/recipients\n  files:\n    loot: sealed/loot.age\n",
+        )
+        .unwrap();
+        let kf = dir.path().join("identity.txt");
+        let body = {
+            use age::secrecy::ExposeSecret;
+            format!(
+                "# cuora identity\n# public: {pubkey}\n{}\n",
+                id.to_string().expose_secret()
+            )
+        };
+        std::fs::write(&kf, body).unwrap();
+        let args: Vec<String> = [
+            "--dir".to_string(),
+            out.display().to_string(),
+            "--keyfile".to_string(),
+            kf.display().to_string(),
+            "loot".to_string(),
+        ]
+        .to_vec();
+        let e = open_inner(&args).unwrap_err();
+        assert!(e.contains("escapes the payload dir"), "{e}");
+        // materialize hits the same guard
+        let margs: Vec<String> = [
+            "--dir".to_string(),
+            out.display().to_string(),
+            "--out".to_string(),
+            dir.path().join("mat").display().to_string(),
+            "--keyfile".to_string(),
+            kf.display().to_string(),
+        ]
+        .to_vec();
+        let e = materialize_inner(&margs).unwrap_err();
+        assert!(e.contains("escapes the payload dir"), "{e}");
     }
 
     #[test]
