@@ -20,6 +20,7 @@ fn cuora(home: &Path, args: &[&str]) -> Command {
         .env_remove("CUORA_CONFIG")
         .env_remove("CUORA_ENV")
         .env_remove("CUORA_ACTOR")
+        .env_remove("CUORA_IDENTITY_BACKEND")
         .env(
             "CUORA_IDENTITY_FILE",
             home.join("xdg-config/cuora/identity.txt"),
@@ -417,4 +418,47 @@ fn env_pin_and_declared_surface() {
     assert_eq!(stdout(&o).trim_end(), "fake-prod");
     // audit records the pinned env
     assert!(stderr(&o).contains("\"env\":\"prod\""), "{}", stderr(&o));
+}
+
+#[test]
+fn identity_group_shows_imports_and_inspects_backend() {
+    let a = tempfile::tempdir().unwrap();
+    let b = tempfile::tempdir().unwrap();
+    init(a.path());
+
+    // show — the age1… recipient, bare on stdout for scripting
+    let o = run(a.path(), &["identity", "show"]);
+    assert!(o.status.success(), "identity show: {}", stderr(&o));
+    let recipient = stdout(&o).trim().to_string();
+    assert!(recipient.starts_with("age1"), "{recipient}");
+    let v = json_stdout(&run(a.path(), &["identity", "show", "--json"]));
+    assert_eq!(v["recipient"], recipient);
+    assert_eq!(v["backend"], "file"); // CUORA_IDENTITY_FILE pin
+
+    // a fresh home has no identity — show fails with init guidance
+    let o = run(b.path(), &["identity", "show"]);
+    assert!(!o.status.success());
+    assert!(stderr(&o).contains("run `cuora init`"), "{}", stderr(&o));
+
+    // backend — inspect-only config report (env > config > default)
+    let v = json_stdout(&run(a.path(), &["identity", "backend", "--json"]));
+    assert_eq!(v["backend"], "keyring");
+    assert_eq!(v["source"], "default");
+    assert!(v["pinned_file"].is_string());
+    let o = cuora(a.path(), &["identity", "backend", "--json"])
+        .env("CUORA_IDENTITY_BACKEND", "file")
+        .output()
+        .unwrap();
+    let v = json_stdout(&o);
+    assert_eq!(v["backend"], "file");
+    assert_eq!(v["source"], "env");
+
+    // import — adopt a foreign keyfile into the pinned file; the
+    // recipient then matches the source machine's
+    let foreign = a.path().join("foreign-identity.txt");
+    std::fs::copy(a.path().join("xdg-config/cuora/identity.txt"), &foreign).unwrap();
+    let o = run(b.path(), &["identity", "import", foreign.to_str().unwrap()]);
+    assert!(o.status.success(), "identity import: {}", stderr(&o));
+    let v = json_stdout(&run(b.path(), &["identity", "show", "--json"]));
+    assert_eq!(v["recipient"], recipient);
 }

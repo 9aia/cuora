@@ -61,17 +61,28 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 enum Cmd {
-    /// Bootstrap: store the age identity per `[identity] backend`
-    /// / `CUORA_IDENTITY_BACKEND` — `keyring` (default) fails
-    /// closed when no session store is reachable, `auto` falls
-    /// back to the keyfile with a note, `file` never probes.
-    /// Imports an existing identity.txt rather than orphaning
-    /// it. Verifies the vault opens.
+    /// Bootstrap: initialize the local age identity — per-machine,
+    /// per-human, NOT repo setup (vault access is `cuora check`'s
+    /// job). Stores the identity per `[identity] backend` /
+    /// `CUORA_IDENTITY_BACKEND` — `keyring` (default) fails closed
+    /// when no session store is reachable, `auto` falls back to the
+    /// keyfile with a note, `file` never probes. Imports an
+    /// existing identity.txt rather than orphaning it. Manage the
+    /// identity afterwards with `cuora identity`.
     Init {
         /// Force the identity keyfile even when a keyring is
         /// available — the headless/CI mode.
         #[arg(long)]
         with_file: bool,
+    },
+    /// Manage the local age identity — the per-machine, per-human
+    /// key `init` bootstraps. `show` prints the `age1…` recipient
+    /// to share for `[vaults.*].recipients`; `import` adopts an
+    /// existing identity.txt; `backend` inspects the configured
+    /// storage backend.
+    Identity {
+        #[command(subcommand)]
+        sub: IdentityCmd,
     },
     /// Store a secret. The value comes from stdin (`printf … | cuora
     /// put cuora://ns/name`) or a hidden terminal prompt — never
@@ -175,6 +186,29 @@ enum Cmd {
     /// `bun run docs:cli` pipes it to `docs/reference/cli.md`).
     #[command(hide = true, name = "gen-cli-docs")]
     GenCliDocs,
+}
+
+#[derive(Subcommand)]
+enum IdentityCmd {
+    /// Print the `age1…` recipient pubkey of the current identity —
+    /// the value shared for `[vaults.*].recipients`. Goes to stdout
+    /// bare (scriptable); backend/source context on stderr.
+    Show,
+    /// Adopt an existing `identity.txt` keyfile as this machine's
+    /// identity — stored per the configured backend (explicit file
+    /// pin → that file; `file` → the default keyfile; `keyring` →
+    /// the session store, fail closed; `auto` → keyring when
+    /// reachable, else the keyfile).
+    Import {
+        /// Path to the identity.txt keyfile to adopt.
+        file: String,
+    },
+    /// Inspect the configured identity backend — `keyring` |
+    /// `auto` | `file` per `[identity] backend` /
+    /// `CUORA_IDENTITY_BACKEND`. Inspect-only: cuora has no
+    /// config-write path — set the backend in cuora.toml or the
+    /// env var.
+    Backend,
 }
 
 /// Process argv → a parsed [`Cli`]. Split from [`dispatch`] so
@@ -285,6 +319,7 @@ where
 fn cmd_op(cmd: &Cmd) -> Op {
     match cmd {
         Cmd::Init { .. } => Op::Init,
+        Cmd::Identity { .. } => Op::Identity,
         Cmd::Put { .. } => Op::Put,
         Cmd::Get { .. } => Op::Get,
         Cmd::List => Op::List,
@@ -406,6 +441,68 @@ fn run_cmd(cmd: &Cmd, cli: &Cli, ops: &Ops) -> Result<i32, OpsError> {
             eprintln!("vault:     {}", info.vault_path.display());
             Ok(0)
         }
+        Cmd::Identity { sub } => match sub {
+            IdentityCmd::Show => {
+                let info = ops.identity_show()?;
+                ops.emit(Op::Identity, None, Outcome::Ok);
+                if cli.json {
+                    return Ok(json_out(&serde_json::json!({
+                        "recipient": info.recipient,
+                        "backend": info.backend,
+                        "source": info.source,
+                    })));
+                }
+                eprintln!("backend: {}", info.backend);
+                eprintln!("source:  {}", info.source);
+                println!("{}", info.recipient);
+                Ok(0)
+            }
+            IdentityCmd::Import { file } => {
+                let info = ops.identity_import(std::path::Path::new(file))?;
+                ops.emit(Op::Identity, None, Outcome::Ok);
+                if cli.json {
+                    return Ok(json_out(&serde_json::json!({
+                        "ok": true,
+                        "backend": info.backend,
+                        "source": info.source,
+                        "recipient": info.recipient,
+                        "imported_from": info.imported_from.display().to_string(),
+                    })));
+                }
+                eprintln!(
+                    "imported {} → {} ({})",
+                    info.imported_from.display(),
+                    info.backend,
+                    info.source
+                );
+                eprintln!("recipient: {}", info.recipient);
+                Ok(0)
+            }
+            IdentityCmd::Backend => {
+                let info = ops.identity_backend_info();
+                ops.emit(Op::Identity, None, Outcome::Ok);
+                if cli.json {
+                    return Ok(json_out(&serde_json::json!({
+                        "backend": info.backend,
+                        "source": info.source,
+                        "pinned_file": info.pinned_file,
+                    })));
+                }
+                eprintln!("backend: {}", info.backend);
+                eprintln!(
+                    "source:  {}",
+                    match info.source {
+                        "env" => "CUORA_IDENTITY_BACKEND",
+                        "config" => "[identity] backend in cuora.toml",
+                        _ => "default (keyring, fail closed)",
+                    }
+                );
+                if let Some(p) = &info.pinned_file {
+                    eprintln!("pinned:  {p} (explicit file wins at resolve time)");
+                }
+                Ok(0)
+            }
+        },
         Cmd::Put { rref } => {
             let parsed = parse_ref(rref)?;
             let secret = read_secret(&format!("value for {rref}: "))?;
@@ -804,7 +901,8 @@ fn manifest() -> serde_json::Value {
         "protocol": "cuora/1",
         "ops": cuora_core::Op::ALL.iter().map(|o| o.as_str()).collect::<Vec<_>>(),
         "verbs": {
-            "init": "store the age identity per [identity] backend / CUORA_IDENTITY_BACKEND — keyring (default, fail closed), auto (keyring → keyfile fallback), file (never probe); imports an existing keyfile; verify the vault opens",
+            "init": "initialize the local age identity (per-machine, per-human — not repo setup) per [identity] backend / CUORA_IDENTITY_BACKEND — keyring (default, fail closed), auto (keyring → keyfile fallback), file (never probe); imports an existing keyfile; `cuora check` verifies vault access",
+            "identity": "manage the age identity — `identity show` prints the age1… recipient for [vaults.*].recipients, `identity import <file>` adopts an identity.txt, `identity backend` inspects the configured backend (inspect-only)",
             "put": "store a secret — value via stdin or hidden /dev/tty prompt, never args",
             "get": "print a secret's value (the escape hatch — prefer run)",
             "list": "refs stored in the selected env — names only, never values",
@@ -832,6 +930,9 @@ fn manifest() -> serde_json::Value {
         },
         "json_shapes": {
             "init": {"identity": "path|keyring locator", "backend": "file|keyring", "created": true, "migrated": false, "file_remains": "path|null", "recipient": "age1…", "vault": "path"},
+            "identity.show": {"recipient": "age1…", "backend": "file|keyring", "source": "path|store locator"},
+            "identity.import": {"ok": true, "backend": "file|keyring", "source": "path|store locator", "recipient": "age1…", "imported_from": "path"},
+            "identity.backend": {"backend": "keyring|auto|file", "source": "env|config|default", "pinned_file": "path|null"},
             "put": {"ok": true, "ref": "cuora://ns/name", "env": "dev", "version": 1, "created_at": "rfc3339", "rotated_at": "rfc3339|null"},
             "rotate": "same as put",
             "get": {"ref": "cuora://ns/name", "env": "dev", "value": "plaintext", "version": 1, "created_at": "rfc3339", "rotated_at": "rfc3339|null"},
@@ -889,7 +990,7 @@ fn manifest() -> serde_json::Value {
         "audit": {
             "wire": "ndjson lines on stderr (default; CUORA_AUDIT_STDERR=0 silences) + OTLP/HTTP JSON spans to $OTEL_EXPORTER_OTLP_ENDPOINT/v1/traces when set — span per event named cuora.<op>, attributes cuora.op/cuora.rref/cuora.env/cuora.actor/cuora.outcome (+cuora.policy.* on serve)",
             "event": {"ts": "rfc3339", "actor": "…", "op": "…", "rref": "…|absent when op-scoped", "env": "…", "outcome": "ok|denied|error", "policy?": "{allow, reason?, obligations?} — serve-path PDP verdicts only"},
-            "shape": "per-ref event per materialized/mutated ref (put/get/rotate/rm/deploy, run/env); op-scoped event for init/list/check/serve; denied on guardrail refusal; error on op failure; manifest/schema emit none; a run child's exit code is not an cuora failure",
+            "shape": "per-ref event per materialized/mutated ref (put/get/rotate/rm/deploy, run/env); op-scoped event for init/identity/list/check/serve; denied on guardrail refusal; error on op failure; manifest/schema emit none; a run child's exit code is not an cuora failure",
             "surfaces": "serve flushes OTLP per request; CLI verbs flush once at exit; export failures warn once, never fail the op",
         },
         "notes": [
@@ -950,6 +1051,12 @@ mod tests {
         // to the audit [`Op`].
         let cases = [
             (Cmd::Init { with_file: false }, Op::Init),
+            (
+                Cmd::Identity {
+                    sub: IdentityCmd::Show,
+                },
+                Op::Identity,
+            ),
             (
                 Cmd::Put {
                     rref: "cuora://a/b".into(),
