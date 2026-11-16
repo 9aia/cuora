@@ -789,8 +789,7 @@ fn validate_base_url(url: &str) -> Result<(), VaultError> {
             // `@` in the authority is userinfo — credentials in the
             // URL would ride every request and leak into error
             // messages that print it.
-            (!hostport.is_empty() && !hostport.contains('@'))
-                .then_some((secure, hostport))
+            (!hostport.is_empty() && !hostport.contains('@')).then_some((secure, hostport))
         });
     match host {
         Some((true, _)) => Ok(()),
