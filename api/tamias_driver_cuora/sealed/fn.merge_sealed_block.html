@@ -9,7 +9,7 @@ indented lines belonging to it. Anything weirder (a <code>sealed:</code> key
 hidden inside a literal block scalar is impossible at column 0;
 a column-0 comment <em>inside</em> the sealed mapping truncates the
 replaced region) either merges correctly or fails the post-merge
-<a href="../../tamias_core/manifest/struct.Manifest.html#method.load_at" title="associated function tamias_core::manifest::Manifest::load_at"><code>Manifest::load_at</code></a> validation with the file left untouched.</p>
+[<code>Manifest::load_at</code>] validation with the file left untouched.</p>
 <p>The merge is validated before it lands: the result is written to
 a sibling temp file, parsed as a tamias manifest, and only then
 renamed over the original (permissions carried over).</p>
