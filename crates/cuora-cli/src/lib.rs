@@ -746,6 +746,11 @@ fn parse_pairs(raw: &[String]) -> Result<Vec<(String, String)>, OpsError> {
         .collect()
 }
 
+/// Upper bound on a piped `put`/`rotate` value — secrets are
+/// kilobytes at most; anything larger is a mistake or an attack
+/// on memory, not a credential.
+const MAX_STDIN_SECRET: u64 = 1024 * 1024;
+
 /// Secrets arrive on stdin (the scripted path) or a hidden
 /// `/dev/tty` prompt (the human path) — never args. One trailing
 /// line terminator is stripped; the rest is the value verbatim
@@ -757,10 +762,19 @@ fn read_secret(prompt: &str) -> Result<Secret, OpsError> {
             .map_err(|e| OpsError::Msg(format!("read secret: {e}")))?
     } else {
         let mut buf = String::new();
+        // Bounded read — an unbounded `read_to_string` lets an
+        // endless pipe (`cuora put < /dev/zero`) grow memory
+        // without limit. 1 MiB is far past any real secret.
         stdin
             .lock()
+            .take(MAX_STDIN_SECRET + 1)
             .read_to_string(&mut buf)
             .map_err(|e| OpsError::Msg(format!("read stdin: {e}")))?;
+        if buf.len() as u64 > MAX_STDIN_SECRET {
+            return Err(OpsError::Msg(format!(
+                "stdin secret exceeds {MAX_STDIN_SECRET} bytes"
+            )));
+        }
         buf
     };
     let v = raw
