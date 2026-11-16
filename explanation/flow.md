@@ -11,8 +11,11 @@ context.
 cuora init
 ```
 
-Generates (or imports) the age identity — into the session keyring
-by default, the `0600` keyfile on headless hosts — and verifies the
+Generates (or imports) the shared tardigrada age identity — into
+the session keyring
+by default (canonical `tardigrada/age-identity` entry), the `0600`
+keyfile (`<config>/tardigrada/identity.txt`) on headless hosts —
+and verifies the
 vault opens. One audit event lands on stderr: `{"op":"init",…}`.
 
 ## 2. Seal

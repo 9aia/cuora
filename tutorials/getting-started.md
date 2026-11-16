@@ -31,8 +31,12 @@ itself on `PATH` (`~/.cargo/bin`).
 cuora init
 ```
 
-`init` initializes your **local age identity** — the per-machine,
-per-human key every vault decrypts with. It is *not* repo setup:
+`init` initializes your **local age identity** — the shared
+*tardigrada* identity (one per human/machine, canonical keyring
+entry `tardigrada/age-identity`, canonical keyfile
+`<config>/tardigrada/identity.txt`; legacy `cuora`/`arca`
+entries and paths still resolve as fallbacks) — the key every
+vault decrypts with. It is *not* repo setup:
 it stores the identity where it's safest available (the session
 keyring on a desktop, the `0600` keyfile on headless boxes) and is
 idempotent — run it any time. To verify vault access and the
@@ -49,7 +53,7 @@ containers, plain SSH) have no session bus, so there you opt out
 explicitly — `[identity] backend = "auto"` in `cuora.toml` (probe
 the keyring, fall back to the keyfile with a note), `"file"`
 (never probe), or the `CUORA_IDENTITY_BACKEND` env var. The
-fallback writes `~/.config/cuora/identity.txt` (mode `0600`) —
+fallback writes `<config>/tardigrada/identity.txt` (mode `0600`) —
 raw age key material, protect it like a private SSH key.
 `cuora init --with-file` forces the keyfile; pinning
 `CUORA_IDENTITY_FILE` or `[vaults.*].identity` in config does the

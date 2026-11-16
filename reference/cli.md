@@ -30,7 +30,7 @@ cuora — secrets broker for agents: `cuora://` refs, redaction, env-injection i
 
 ###### **Commands:**
 
-* `init` — Bootstrap: initialize the local age identity — per-machine, per-human, NOT repo setup (vault access is `cuora check`'s job). Stores the identity per `[identity] backend` / `CUORA_IDENTITY_BACKEND` — `keyring` (default) fails closed when no session store is reachable, `auto` falls back to the keyfile with a note, `file` never probes. Imports an existing identity.txt rather than orphaning it. Manage or move the identity afterwards with `tardigrada`
+* `init` — Bootstrap: initialize the shared age identity (the tardigrada identity — per-human/per-machine, NOT repo setup; vault access is `cuora check`'s job). Stores the identity per `[identity] backend` / `CUORA_IDENTITY_BACKEND` — `keyring` (default) fails closed when no session store is reachable, `auto` falls back to the keyfile with a note, `file` never probes. Imports an existing identity.txt rather than orphaning it. Manage or move the identity afterwards with `tardigrada`
 * `put` — Store a secret. The value comes from stdin (`printf … | cuora put cuora://ns/name`) or a hidden terminal prompt — never args, which land in shell history and `/proc`
 * `get` — Print a secret's value to stdout — the escape hatch. Prefer `cuora run` so values never enter agent context; guardrails can deny this op
 * `list` — List the refs stored in the selected env — names only, never values
@@ -56,7 +56,7 @@ cuora — secrets broker for agents: `cuora://` refs, redaction, env-injection i
 
 ## `cuora init`
 
-Bootstrap: initialize the local age identity — per-machine, per-human, NOT repo setup (vault access is `cuora check`'s job). Stores the identity per `[identity] backend` / `CUORA_IDENTITY_BACKEND` — `keyring` (default) fails closed when no session store is reachable, `auto` falls back to the keyfile with a note, `file` never probes. Imports an existing identity.txt rather than orphaning it. Manage or move the identity afterwards with `tardigrada`
+Bootstrap: initialize the shared age identity (the tardigrada identity — per-human/per-machine, NOT repo setup; vault access is `cuora check`'s job). Stores the identity per `[identity] backend` / `CUORA_IDENTITY_BACKEND` — `keyring` (default) fails closed when no session store is reachable, `auto` falls back to the keyfile with a note, `file` never probes. Imports an existing identity.txt rather than orphaning it. Manage or move the identity afterwards with `tardigrada`
 
 **Usage:** `cuora init [OPTIONS]`
 

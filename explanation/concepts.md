@@ -22,9 +22,13 @@ The vocabulary of the cuora secrets broker — each term defined once.
   `get`/`put`/`list`/`rotate`/`rm`, per-env variants, ciphertext-only
   at rest. Impls: `age` (local file), `cf` (self-hosted Worker + D1),
   `cached` (read-through local mirror).
-- **Identity** — the one X25519 age keypair that unlocks every vault.
-  Held by an `cuora-identity` impl: session keyring (default, fails
-  closed) or `identity.txt` keyfile (headless/CI opt-in).
+- **Identity** — the one X25519 age keypair that unlocks every vault —
+  the shared *tardigrada* identity, one per human/machine. Held by an
+  `cuora-identity` impl: session keyring (default, fails
+  closed; canonical entry `tardigrada/age-identity`) or
+  `identity.txt` keyfile (`<config>/tardigrada/identity.txt`,
+  headless/CI opt-in; legacy `cuora`/`arca` entries/paths still
+  resolve as fallbacks).
 - **Recipient** — a public `age1…` key a vault encrypts to;
   `[vaults.*].recipients` adds team keys without sharing the private
   one.

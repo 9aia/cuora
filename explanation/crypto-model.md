@@ -6,10 +6,15 @@ unlocks the local file vault and the remote `cf` vault alike.
 
 ## The pieces
 
-- **Identity** — one X25519 keypair, held by an `cuora-identity`
+- **Identity** — one X25519 keypair per human/machine — the shared
+  *tardigrada* identity, owned by the `tardigrada` tool — held by
+  an `cuora-identity`
   impl (ADR-0002): the **session keyring** (secret-service,
   macOS Keychain, Credential Manager) by default — fail closed —
-  or the `~/.config/cuora/identity.txt` keyfile (mode `0600`)
+  under the canonical `tardigrada/age-identity` entry (legacy
+  `cuora`/`arca` entries still read as fallbacks), or the
+  `<config>/tardigrada/identity.txt` keyfile (mode `0600`; legacy
+  `cuora`/`arca` paths resolve too)
   under `auto`/`file` modes or an explicit pin. An explicit
   file — `CUORA_IDENTITY_FILE` or `[vaults.*].identity` — pins the
   keyfile outright; that is the headless/CI path. `[identity]

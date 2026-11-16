@@ -49,7 +49,8 @@ does not.
   the session keyring by default (ADR-0002), which protects it
   about as well as your login session — and the default backend
   fails closed rather than silently downgrading. The `0600`
-  keyfile (`identity.txt`, raw key material like an unencrypted
+  keyfile (`identity.txt` under the tardigrada config dir, raw key
+  material like an unencrypted
   SSH key) is reached only via explicit opt-in: `backend =
   "auto"`/`"file"`, `CUORA_IDENTITY_FILE`, or `[vaults.*].identity`
   — the headless/CI path, where no session store exists anyway.

@@ -4,7 +4,8 @@ A **sealed pack** is a tamias package whose payload is age
 ciphertext only (tamias ADR-0004). Tamias carries, digests, verifies,
 and signs the bytes opaquely — it has no decrypt path. Opening is
 cuora's job, consumer-side, with the recipient private key
-(`~/.config/cuora/identity.txt`, mode 0600).
+(`~/.config/tardigrada/identity.txt`, mode 0600 — the shared
+tardigrada identity; legacy `cuora`/`arca` paths still resolve).
 
 Use this when a secret should distribute like code — versioned,
 registry-published, installed on every machine — instead of living
