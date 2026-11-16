@@ -28,8 +28,11 @@ unlocks the local file vault and the remote `cf` vault alike.
   bootstraps whichever backend applies and prints the public
   `age1…` recipient. On a reachable-but-empty Secret Service (fresh
   daemon, no collections yet) the keyring impl claims the `default`
-  collection alias on first use — `dbus-secret-service-keyring-store`'s
-  create path can't bootstrap one itself (I-006).
+  collection alias on the first identity *write* — reads and the
+  availability probe stay read-only, so a consumer that only loads
+  the identity never creates a collection. The fixup exists because
+  `dbus-secret-service-keyring-store`'s create path can't bootstrap
+  one itself (I-006).
 - **Recipients** — `[vaults.*].recipients` encrypts to extra
   public keys beyond the identity's own — a team recipient list
   without sharing the private key.
