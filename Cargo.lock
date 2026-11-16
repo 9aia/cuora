@@ -658,6 +658,7 @@ dependencies = [
  "temp-env",
  "tempfile",
  "time",
+ "zeroize",
 ]
 
 [[package]]
@@ -672,6 +673,7 @@ dependencies = [
  "dbus-secret-service-keyring-store",
  "keyring-core",
  "windows-native-keyring-store",
+ "zeroize",
 ]
 
 [[package]]

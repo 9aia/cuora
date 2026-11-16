@@ -12,6 +12,7 @@ categories = ["development-tools"]
 age.workspace = true
 cuora-identity.workspace = true
 keyring-core.workspace = true
+zeroize.workspace = true
 
 # One native, synchronous credential store per platform — no async
 # runtime in the binary (AGENTS.md). Linux/*nix: secret-service via
@@ -19,7 +20,7 @@ keyring-core.workspace = true
 # login keychain. Windows: Credential Manager.
 [target.'cfg(all(unix, not(any(target_os = "macos", target_os = "ios", target_os = "android"))))'.dependencies]
 dbus-secret-service-keyring-store.workspace = true
-# Direct dep for the default-collection ensure in platform_store —
+# Direct dep for the default-collection ensure on the store path —
 # already in the tree transitively via the store above.
 dbus-secret-service.workspace = true
 # Raw SetAlias call — dbus-secret-service keeps its proxy private.

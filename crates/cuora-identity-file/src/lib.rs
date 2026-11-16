@@ -102,8 +102,10 @@ impl IdentitySource for FileIdentity {
     /// (never silently treated as empty — that would risk
     /// clobbering a good key on `store`).
     fn load(&self) -> Result<Option<x25519::Identity>, IdentityError> {
+        // The file text holds raw key material — zeroize on drop
+        // like the store path's body below.
         let text = match std::fs::read_to_string(&self.path) {
-            Ok(t) => t,
+            Ok(t) => zeroize::Zeroizing::new(t),
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(None),
             Err(e) => {
                 return Err(IdentityError::Io(format!(
@@ -139,12 +141,14 @@ impl IdentitySource for FileIdentity {
             std::fs::create_dir_all(parent)?;
         }
         let key = identity.to_string();
-        let body = format!(
+        // The serialized body holds the secret key — zeroize on
+        // drop; a plain String would leave it in freed heap.
+        let body = zeroize::Zeroizing::new(format!(
             "# shared age identity (tardigrada) — created {}\n# public: {}\n{}\n",
             OffsetDateTime::now_utc(),
             identity.to_public(),
             key.expose_secret(),
-        );
+        ));
         // Create 0600 at open() — a write+chmod sequence leaves the
         // key material world/group-readable for a window (L10).
         let mut opts = std::fs::OpenOptions::new();

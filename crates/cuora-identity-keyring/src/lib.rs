@@ -97,9 +97,10 @@ where
         Ok(res) => res,
         Err(_) => Err(IdentityError::Store(format!(
             "keyring {what} timed out after {}s — the session store is \
-             waiting on an unlock prompt; unlock it, or set \
-             CUORA_IDENTITY_BACKEND=file|auto (CUORA_KEYRING_TIMEOUT_MS \
-             adjusts the bound, 0 waits forever)",
+             waiting on an unlock prompt; unlock it, or configure your \
+             tool to use its identity-file backend instead \
+             (CUORA_KEYRING_TIMEOUT_MS adjusts the bound, 0 waits \
+             forever)",
             timeout.as_secs()
         ))),
     }
@@ -128,7 +129,15 @@ fn load_from(store: &CredentialStore) -> Result<Option<x25519::Identity>, Identi
             Err(keyring_core::Error::NoEntry) => continue,
             Err(e) => return Err(IdentityError::Store(format!("keyring get: {e}"))),
         };
+        // get_password returns a plain String holding raw key
+        // material — zeroize on drop (same hygiene as the
+        // keyfile body in cuora-identity-file).
+        let text = zeroize::Zeroizing::new(text);
         let line = text.trim();
+        // Deliberate: a present-but-corrupt entry is a hard error,
+        // never a skip to the next service — silently falling back
+        // to an older identity could decrypt with the WRONG key and
+        // look like data loss. Surface the corruption.
         return x25519::Identity::from_str(line)
             .map(Some)
             .map_err(|e| IdentityError::Parse(format!("keyring identity {service}/{USER}: {e}")));
@@ -139,23 +148,58 @@ fn load_from(store: &CredentialStore) -> Result<Option<x25519::Identity>, Identi
 /// An age identity held in a `keyring-core` credential store.
 pub struct KeyringIdentity {
     store: Arc<CredentialStore>,
+    /// Whether `store()` must claim the `default` collection alias
+    /// first — true only for the platform secret-service store
+    /// (the I-006 fixup). `with_store` callers own their store's
+    /// semantics, so a test/embedded store never triggers a real
+    /// dbus mutation.
+    ensure_collection: bool,
 }
+
+/// Does the platform store need the `default`-alias ensure before
+/// writes? Only the unix secret-service backend — Keychain and
+/// Credential Manager have no collection-alias concept.
+#[cfg(all(
+    unix,
+    not(any(target_os = "macos", target_os = "ios", target_os = "android")),
+    not(coverage)
+))]
+const PLATFORM_NEEDS_DEFAULT_COLLECTION: bool = true;
+
+#[cfg(not(all(
+    unix,
+    not(any(target_os = "macos", target_os = "ios", target_os = "android")),
+    not(coverage)
+)))]
+const PLATFORM_NEEDS_DEFAULT_COLLECTION: bool = false;
 
 impl KeyringIdentity {
     /// The platform session store — the availability probe.
+    ///
+    /// Read-only: probing (and every `load`) never creates
+    /// collections or claims aliases — `tardigrada show`-style
+    /// consumers that only *load* the identity must not mutate the
+    /// keyring. The default-collection fixup runs lazily inside
+    /// `store`, the only mutating op.
     ///
     /// `Err(Unavailable)` means no session secret store is
     /// reachable right now (headless, no dbus session, no
     /// daemon); `Ok` means ops are possible but can still fail
     /// per-call (daemon dies, collection locked).
     pub fn platform() -> Result<Self, IdentityError> {
-        Ok(Self::with_store(platform_store()?))
+        Ok(Self {
+            store: platform_store()?,
+            ensure_collection: PLATFORM_NEEDS_DEFAULT_COLLECTION,
+        })
     }
 
     /// Any `keyring-core` credential store — tests (the mock),
     /// alternative backends, embeddings.
     pub fn with_store(store: Arc<CredentialStore>) -> Self {
-        KeyringIdentity { store }
+        KeyringIdentity {
+            store,
+            ensure_collection: false,
+        }
     }
 
     /// The `tardigrada`/`age-identity` entry in this store — test
@@ -181,8 +225,16 @@ impl IdentitySource for KeyringIdentity {
     /// store owns unlock/prompt policy, bounded by `bounded`).
     fn store(&self, identity: &x25519::Identity) -> Result<(), IdentityError> {
         let store = Arc::clone(&self.store);
+        let ensure = self.ensure_collection;
         let key = identity.to_string();
         bounded("store", move || {
+            // The only mutation point — claim the `default`
+            // collection alias here, never on the load/probe
+            // path (a read-only consumer must not create a
+            // `tardigrada` collection).
+            if ensure {
+                ensure_default_collection();
+            }
             entry_in(&*store, CANONICAL_SERVICE)?
                 .set_password(key.expose_secret())
                 .map_err(|e| IdentityError::Store(format!("keyring set: {e}")))
@@ -209,11 +261,16 @@ impl IdentitySource for KeyringIdentity {
 fn platform_store() -> Result<Arc<CredentialStore>, IdentityError> {
     let store = dbus_secret_service_keyring_store::Store::new()
         .map_err(|e| IdentityError::Unavailable(format!("secret-service: {e}")))?;
-    ensure_default_collection();
+    // Probe stays read-only — the default-collection fixup runs
+    // inside `store` (see KeyringIdentity::ensure_collection).
     Ok(store as Arc<CredentialStore>)
 }
 
 /// Claim the `default` collection alias when the service has none.
+///
+/// Called only from the `store` path on platform-built identities —
+/// writes are the sole mutation this crate performs on the session
+/// store; `load`/probe stay read-only.
 ///
 /// `dbus-secret-service-keyring-store`'s create-item path resolves
 /// the literal `default` alias; on a fresh Secret Service (daemon
@@ -295,6 +352,18 @@ fn set_default_alias(collection: &dbus_secret_service::Path) -> bool {
         )
         .is_ok()
 }
+
+/// No-op twin of [`ensure_default_collection`] for platforms
+/// without the secret-service alias problem (Keychain, Credential
+/// Manager, coverage/headless) — `store` calls it unconditionally
+/// when the platform flag is set, and the flag is only set where
+/// the real fixup exists.
+#[cfg(not(all(
+    unix,
+    not(any(target_os = "macos", target_os = "ios", target_os = "android")),
+    not(coverage)
+)))]
+fn ensure_default_collection() {}
 
 /// The coverage build's probe — coverage/CI envs are headless, so
 /// the dbus store can never connect; the Ok-arm expression would
@@ -457,6 +526,42 @@ mod tests {
     }
 
     #[test]
+    fn corrupt_canonical_entry_never_falls_back_to_legacy() {
+        // Deliberate (see load_from): a corrupt tardigrada entry is
+        // a hard Parse error even when a valid legacy `cuora`
+        // identity sits behind it — falling back could decrypt
+        // with the wrong key and look like data loss.
+        use age::secrecy::ExposeSecret;
+        let (k, store) = mock();
+        let legacy_id = x25519::Identity::generate();
+        seed(&store, "cuora", legacy_id.to_string().expose_secret());
+        let entry = k.entry().unwrap();
+        entry.set_password("not-an-age-key").unwrap();
+        assert!(matches!(k.load(), Err(IdentityError::Parse(_))));
+    }
+
+    #[test]
+    fn probe_and_load_never_claim_the_default_collection() {
+        // The I-006 default-alias fixup is write-path only: a
+        // with_store identity (tests, embeddings, tardigrada-style
+        // read-only consumers) must carry ensure_collection=false
+        // so load/store never run the dbus alias claim — only
+        // platform()-built identities on the secret-service
+        // backend set it.
+        let (k, _) = mock();
+        assert!(!k.ensure_collection);
+        k.load().unwrap();
+        let id = x25519::Identity::generate();
+        k.store(&id).unwrap();
+        // A real platform probe sets the flag exactly on the
+        // secret-service backend (headless CI → Err, either way
+        // the contract holds: Ok ⇒ flag matches the cfg).
+        if let Ok(k) = KeyringIdentity::platform() {
+            assert_eq!(k.ensure_collection, PLATFORM_NEEDS_DEFAULT_COLLECTION);
+        }
+    }
+
+    #[test]
     fn store_failures_are_store_errors_not_none() {
         let (k, _) = mock();
         // arm the mock's next call to fail — get must surface the
@@ -556,6 +661,11 @@ mod store_error_tests {
         let e = k.load().err().unwrap().to_string();
         std::env::remove_var("CUORA_KEYRING_TIMEOUT_MS");
         assert!(e.contains("timed out"), "{e}");
-        assert!(e.contains("CUORA_IDENTITY_BACKEND"), "{e}");
+        // The timeout hint must stay backend-agnostic — this crate
+        // is shared (tardigrada consumes it too), so it names only
+        // the shared CUORA_KEYRING_TIMEOUT_MS knob, never cuora's
+        // own CUORA_IDENTITY_BACKEND.
+        assert!(e.contains("CUORA_KEYRING_TIMEOUT_MS"), "{e}");
+        assert!(!e.contains("CUORA_IDENTITY_BACKEND"), "{e}");
     }
 }
