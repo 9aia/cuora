@@ -2,70 +2,85 @@ name: cuora-identity-keyring
 path: crates/cuora-identity-keyring/Cargo.toml
 purpose: 'Identity impl: the platform session secret store (secret-service / Keychain / Credential Manager) via keyring-core'
 api:
+- name: CANONICAL_SERVICE
+  kind: const
+  file: crates/cuora-identity-keyring/src/lib.rs
+  line: 39
+  module: cuora-identity-keyring
 - name: DeadStore
   kind: type
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 409
+  line: 599
   module: cuora-identity-keyring
 - name: KeyringIdentity
   kind: type
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 137
+  line: 149
   module: cuora-identity-keyring
-- name: LEGACY_SERVICE
+- name: LEGACY_SERVICES
   kind: const
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 41
+  line: 45
   module: cuora-identity-keyring
 - name: OP_TIMEOUT
   kind: const
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 53
+  line: 57
   module: cuora-identity-keyring
-- name: SERVICE
+- name: PLATFORM_NEEDS_DEFAULT_COLLECTION
   kind: const
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 36
+  line: 167
+  module: cuora-identity-keyring
+- name: PLATFORM_NEEDS_DEFAULT_COLLECTION
+  kind: const
+  file: crates/cuora-identity-keyring/src/lib.rs
+  line: 174
   module: cuora-identity-keyring
 - name: StuckStore
   kind: type
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 446
+  line: 636
   module: cuora-identity-keyring
 - name: USER
   kind: const
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 38
+  line: 41
   module: cuora-identity-keyring
 - name: a_blocked_store_call_times_out_instead_of_hanging
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 465
+  line: 655
   module: cuora-identity-keyring
 - name: as_any
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 421
+  line: 611
   module: cuora-identity-keyring
 - name: as_any
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 459
+  line: 649
   module: cuora-identity-keyring
 - name: bounded
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 75
+  line: 79
   module: cuora-identity-keyring
 - name: build
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 418
+  line: 608
   module: cuora-identity-keyring
 - name: build
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 455
+  line: 645
+  module: cuora-identity-keyring
+- name: corrupt_canonical_entry_never_falls_back_to_legacy
+  kind: function
+  file: crates/cuora-identity-keyring/src/lib.rs
+  line: 529
   module: cuora-identity-keyring
 - name: cuora-identity-keyring
   kind: module
@@ -75,138 +90,124 @@ api:
 - name: describe
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 193
+  line: 248
   module: cuora-identity-keyring
 - name: ensure_default_collection
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 231
+  line: 291
+  module: cuora-identity-keyring
+- name: ensure_default_collection
+  kind: function
+  file: crates/cuora-identity-keyring/src/lib.rs
+  line: 366
+  module: cuora-identity-keyring
+- name: ensure_migrates_a_legacy_entry_into_tardigrada
+  kind: function
+  file: crates/cuora-identity-keyring/src/lib.rs
+  line: 502
   module: cuora-identity-keyring
 - name: entry
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 162
+  line: 209
   module: cuora-identity-keyring
 - name: entry_build_failures_surface_as_store_errors
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 427
+  line: 617
   module: cuora-identity-keyring
 - name: entry_in
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 107
+  line: 112
   module: cuora-identity-keyring
 - name: id
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 415
+  line: 605
   module: cuora-identity-keyring
 - name: id
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 452
+  line: 642
   module: cuora-identity-keyring
 - name: kind
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 189
+  line: 244
   module: cuora-identity-keyring
 - name: load
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 172
+  line: 219
+  module: cuora-identity-keyring
+- name: load_falls_back_canonical_then_cuora_then_arca
+  kind: function
+  file: crates/cuora-identity-keyring/src/lib.rs
+  line: 477
   module: cuora-identity-keyring
 - name: load_from
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 115
+  line: 124
   module: cuora-identity-keyring
 - name: load_rejects_garbage_material
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 367
+  line: 521
   module: cuora-identity-keyring
 - name: mock
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 345
+  line: 417
   module: cuora-identity-keyring
 - name: op_timeout
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 59
+  line: 63
   module: cuora-identity-keyring
 - name: platform
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 148
+  line: 189
   module: cuora-identity-keyring
 - name: platform_probe_never_panics
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 391
+  line: 581
   module: cuora-identity-keyring
 - name: platform_store
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 206
+  line: 261
   module: cuora-identity-keyring
 - name: platform_store
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 304
+  line: 376
   module: cuora-identity-keyring
 - name: platform_store
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 311
+  line: 383
   module: cuora-identity-keyring
 - name: platform_store
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 318
+  line: 390
   module: cuora-identity-keyring
 - name: platform_store
   kind: function
   file: crates/cuora-identity-keyring/src/lib.rs
-  line: 332
+  line: 404
   module: cuora-identity-keyring
-- name: set_default_alias
-  kind: function
-  file: crates/cuora-identity-keyring/src/lib.rs
-  line: 278
-  module: cuora-identity-keyring
-- name: store
-  kind: function
-  file: crates/cuora-identity-keyring/src/lib.rs
-  line: 179
-  module: cuora-identity-keyring
-- name: store_error_tests
-  kind: module
-  file: crates/cuora-identity-keyring/src/lib.rs
-  line: 402
-  module: cuora-identity-keyring
-- name: store_failures_are_store_errors_not_none
-  kind: function
-  file: crates/cuora-identity-keyring/src/lib.rs
-  line: 375
-  module: cuora-identity-keyring
-- name: store_then_load_roundtrips
-  kind: function
-  file: crates/cuora-identity-keyring/src/lib.rs
-  line: 354
-  module: cuora-identity-keyring
-- name: tests
-  kind: module
-  file: crates/cuora-identity-keyring/src/lib.rs
-  line: 340
-  module: cuora-identity-keyring
-api_omitted: 3
+api_omitted: 13
 deps:
 - age
 - cuora-identity
 - keyring-core
+- zeroize
 - age
 - cuora-identity
 - keyring_core
@@ -220,8 +221,8 @@ provenance:
   - crates/cuora-identity-keyring/Cargo.toml
   - crates/cuora-identity-keyring/src/lib.rs
   hashes:
-  - f1b047a37b1d9ebf50b0ca5c43cd946617a89ac7
-  - 49938b5643409f8da49d74236f63ceaec2e68220
-  commit_sha: dbfe05134ed0ad7e9bdc134af06bec4bd17c9d3e
-  generated_at: '1794583335'
+  - 85562442425338ba57cdf88a54b5e2b0c8c2338d
+  - cc82fb5d8e4efeab438355289b3fed55506d15c6
+  commit_sha: c23ae18e2361762fb70befab4d791c29bdc7847d
+  generated_at: '1794813848'
   generator: kuda-template/0.1.4

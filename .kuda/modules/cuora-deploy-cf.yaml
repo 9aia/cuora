@@ -35,7 +35,7 @@ api:
 - name: a_body_short_of_content_length_is_an_io_error
   kind: function
   file: crates/cuora-deploy-cf/src/lib.rs
-  line: 449
+  line: 480
   module: cuora-deploy-cf
 - name: a_body_short_of_content_length_is_an_io_error
   kind: function
@@ -50,7 +50,7 @@ api:
 - name: base_url_must_be_https_or_loopback_http
   kind: function
   file: crates/cuora-deploy-cf/src/lib.rs
-  line: 385
+  line: 401
   module: cuora-deploy-cf
 - name: cuora-deploy-cf
   kind: module
@@ -80,7 +80,7 @@ api:
 - name: envelope_reads_the_cf_contract
   kind: function
   file: crates/cuora-deploy-cf/src/lib.rs
-  line: 490
+  line: 521
   module: cuora-deploy-cf
 - name: find_id
   kind: function
@@ -90,7 +90,7 @@ api:
 - name: find_id_and_transport_errors_are_clean
   kind: function
   file: crates/cuora-deploy-cf/src/lib.rs
-  line: 515
+  line: 546
   module: cuora-deploy-cf
 - name: find_id_treats_malformed_and_missing_results_as_absent
   kind: function
@@ -105,7 +105,7 @@ api:
 - name: is_loopback_host
   kind: function
   file: crates/cuora-deploy-cf/src/lib.rs
-  line: 294
+  line: 301
   module: cuora-deploy-cf
 - name: malformed_requests_get_cf_errors_not_panics
   kind: function
@@ -120,7 +120,7 @@ api:
 - name: name
   kind: function
   file: crates/cuora-deploy-cf/src/lib.rs
-  line: 303
+  line: 319
   module: cuora-deploy-cf
 - name: new
   kind: function
@@ -130,7 +130,7 @@ api:
 - name: new_reads_the_token_env_var
   kind: function
   file: crates/cuora-deploy-cf/src/lib.rs
-  line: 365
+  line: 381
   module: cuora-deploy-cf
 - name: post_and_delete_envelope_failures_are_errors
   kind: function
@@ -140,7 +140,7 @@ api:
 - name: push
   kind: function
   file: crates/cuora-deploy-cf/src/lib.rs
-  line: 307
+  line: 323
   module: cuora-deploy-cf
 - name: push_creates_then_updates
   kind: function
@@ -150,7 +150,7 @@ api:
 - name: remove
   kind: function
   file: crates/cuora-deploy-cf/src/lib.rs
-  line: 340
+  line: 356
   module: cuora-deploy-cf
 - name: remove_true_then_false
   kind: function
@@ -165,12 +165,12 @@ api:
 - name: request_rejects_unknown_method_body_shapes
   kind: function
   file: crates/cuora-deploy-cf/src/lib.rs
-  line: 430
+  line: 461
   module: cuora-deploy-cf
 - name: request_serves_every_verb_shape
   kind: function
   file: crates/cuora-deploy-cf/src/lib.rs
-  line: 474
+  line: 505
   module: cuora-deploy-cf
 - name: secrets_url
   kind: function
@@ -190,7 +190,7 @@ api:
 - name: target
   kind: function
   file: crates/cuora-deploy-cf/src/lib.rs
-  line: 359
+  line: 375
   module: cuora-deploy-cf
 - name: target
   kind: function
@@ -200,7 +200,7 @@ api:
 - name: tests
   kind: module
   file: crates/cuora-deploy-cf/src/lib.rs
-  line: 356
+  line: 372
   module: cuora-deploy-cf
 api_omitted: 3
 deps:
@@ -227,8 +227,8 @@ provenance:
   - crates/cuora-deploy-cf/tests/deploy.rs
   hashes:
   - c140ab8aed34d70490289b50e722c42ac084fadd
-  - 1c69d7fa417c8bbf6109beb0446021de679e48b7
+  - 4ac129615a6766b9133217525c88506058234250
   - c4420d7e90572a10edea36412a630db2c2c80eba
-  commit_sha: 9aa078807f3d952dd07e69bd48851e3ce8243869
-  generated_at: '1794488905'
+  commit_sha: c23ae18e2361762fb70befab4d791c29bdc7847d
+  generated_at: '1794813848'
   generator: kuda-template/0.1.4

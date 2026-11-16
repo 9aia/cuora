@@ -5,17 +5,17 @@ api:
 - name: IdentityError
   kind: type
   file: crates/cuora-identity/src/lib.rs
-  line: 69
+  line: 73
   module: cuora-identity
 - name: IdentitySource
   kind: trait
   file: crates/cuora-identity/src/lib.rs
-  line: 30
+  line: 34
   module: cuora-identity
 - name: Mem
   kind: type
   file: crates/cuora-identity/src/lib.rs
-  line: 99
+  line: 103
   module: cuora-identity
 - name: cuora-identity
   kind: module
@@ -25,67 +25,67 @@ api:
 - name: describe
   kind: function
   file: crates/cuora-identity/src/lib.rs
-  line: 138
+  line: 142
   module: cuora-identity
 - name: ensure
   kind: function
   file: crates/cuora-identity/src/lib.rs
-  line: 55
+  line: 59
   module: cuora-identity
 - name: ensure_generates_once_then_loads
   kind: function
   file: crates/cuora-identity/src/lib.rs
-  line: 144
+  line: 148
   module: cuora-identity
 - name: ensure_propagates_store_failures
   kind: function
   file: crates/cuora-identity/src/lib.rs
-  line: 154
+  line: 158
   module: cuora-identity
 - name: failing
   kind: function
   file: crates/cuora-identity/src/lib.rs
-  line: 112
+  line: 116
   module: cuora-identity
 - name: from
   kind: function
   file: crates/cuora-identity/src/lib.rs
-  line: 87
+  line: 91
   module: cuora-identity
 - name: io_error_maps_to_the_io_variant
   kind: function
   file: crates/cuora-identity/src/lib.rs
-  line: 170
+  line: 174
   module: cuora-identity
 - name: kind
   kind: function
   file: crates/cuora-identity/src/lib.rs
-  line: 134
+  line: 138
   module: cuora-identity
 - name: load
   kind: function
   file: crates/cuora-identity/src/lib.rs
-  line: 121
+  line: 125
   module: cuora-identity
 - name: mem_names_itself_like_any_source
   kind: function
   file: crates/cuora-identity/src/lib.rs
-  line: 163
+  line: 167
   module: cuora-identity
 - name: new
   kind: function
   file: crates/cuora-identity/src/lib.rs
-  line: 105
+  line: 109
   module: cuora-identity
 - name: store
   kind: function
   file: crates/cuora-identity/src/lib.rs
-  line: 126
+  line: 130
   module: cuora-identity
 - name: tests
   kind: module
   file: crates/cuora-identity/src/lib.rs
-  line: 94
+  line: 98
   module: cuora-identity
 deps:
 - age
@@ -101,7 +101,7 @@ provenance:
   - crates/cuora-identity/src/lib.rs
   hashes:
   - 61f701f21c7a5745cc8e5b624533b590af330534
-  - 5419d5840a79a19827be1e0788bd2f84e3db2346
-  commit_sha: 9aa078807f3d952dd07e69bd48851e3ce8243869
-  generated_at: '1794488905'
+  - ecc96ccb7628cdf9a0037057418a3e223fc6a0ce
+  commit_sha: c23ae18e2361762fb70befab4d791c29bdc7847d
+  generated_at: '1794813848'
   generator: kuda-template/0.1.4

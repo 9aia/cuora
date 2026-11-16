@@ -5,27 +5,28 @@ api: []
 deps: []
 notes: ''
 verify:
+- docs/.vitepress/theme/index.ts
 - docs/package.json
 - docs/README.md
 - docs/explanation/architecture.md
 - docs/explanation/boundaries.md
+- docs/explanation/concepts.md
 - docs/explanation/crypto-model.md
+- docs/explanation/decisions.md
+- docs/explanation/flow.md
 - docs/explanation/threat-model.md
-- docs/explanation/worktree-model.md
-- docs/gen-api-index.py
-- docs/gen-api.py
-- docs/getting-started.md
 provenance:
   files:
+  - docs/.vitepress/theme/index.ts
   - docs/README.md
   - docs/explanation/architecture.md
   - docs/explanation/boundaries.md
+  - docs/explanation/concepts.md
   - docs/explanation/crypto-model.md
+  - docs/explanation/decisions.md
+  - docs/explanation/flow.md
   - docs/explanation/threat-model.md
   - docs/explanation/worktree-model.md
-  - docs/gen-api-index.py
-  - docs/gen-api.py
-  - docs/getting-started.md
   - docs/how-to/add-a-secret.md
   - docs/how-to/cached-vaults.md
   - docs/how-to/cloudflare-worker-setup.md
@@ -44,17 +45,18 @@ provenance:
   - docs/reference/crate-api.md
   - docs/reference/env-vars.md
   - docs/reference/serve-protocol.md
-  - docs/tutorials/first-secret.md
+  - docs/tutorials/getting-started.md
   hashes:
-  - 66fe00b11a1a060dca8f99b2d58f507ba3d6f998
-  - af827611e923f70e3f6c0299fb8eb1e41011f0b1
-  - ea111f15e91e9bb57c2b6a87fbe2bc46b13f3229
-  - 25e3590e47b333471fd4c59b4de377f2f865185f
-  - 6e16b6ccc7891fd3d731b16ff4365a429ef4d523
-  - dc21de1f8acfcb179081ea3c188adf7d0ce0d80d
-  - f54808e08ec28d73f117e5763421765d064099db
-  - c61b3a9ae5bf6b6027e30e2ff6026044d75f413c
-  - c4ee9cd00f8c906a9af595db03485e717b3ca9d5
+  - 73ba647e82ab0f8fec74d915003400b21fa6898b
+  - 2c9884c781d22fa450b133a55fbb89ee08af28dd
+  - 046b10c897c23a19346203a63d0cb5dcb7d4ff3f
+  - 7ab0c3534652f79d511604f3b381a5c65fd162cd
+  - 7775a9b956b3c72b60b910b2741244d959834f71
+  - 338d11f180527f73ac3e7f14228a6f5bfdb42377
+  - ba9ac443f2387234983bc1ba34e04f4ede06fbf8
+  - b0686b6fb8e7531ed18a09b5838cbf4afdd6ab6e
+  - ae4e13dfd52e3120b4e159db0cccd7e256186cb3
+  - b70bdf29c99e26261100e85afc0ea0a47bbf99ed
   - d269ad77abc02805150d9a5b86bfe7a008c6ed30
   - 5eb7f27d9f4b6be7b3393863df2e42479c62626a
   - 2e5d178c70b7cebd3a3262263acd076a01243c36
@@ -63,17 +65,17 @@ provenance:
   - e5a9cce080703ddbc30a25c13de47d95a91756de
   - 670cb0090984c21c3431482011958034474e2621
   - 378a3b81a727e8633afc94b495a2cec78754aec6
-  - cc8a725cce3289ea67bfae955782b39acfd9fe5c
-  - 0dd953ee7ef517251f9e046f4d1ecc0fe4bafcb9
-  - 7c22124d7e49b533877d4ee48e60afc1a95303eb
+  - 6b41d4e4b45c33e580b46dbddd1ac1b1454d59dd
+  - 550ac1fa7eee3e91d1dd00559ad9cb77f7074ce4
+  - 503efeb4a5e378f6537748d86657bfe5b1cb29bd
   - 175fa4f47aecdc02e902d243a1c29914eb2ee258
   - 2d2c338c5cf64fed52f38b46edae1d7303f53cba
-  - 590128e311d9344383ed7800a3044247b2e083ef
+  - b93433d12199eaa181f90a3f8cfbfb0c8390d772
   - b9f5de648157bcb5e96f6ee2cd938eb7dbb53e6c
   - c23b42402b00b79898cd52193a7c59b4194346f7
-  - 7732226fa9f5893e4e87f8da152eefc89269cca7
+  - 96ad45ac0e72e4c79bcf7a5549b7afdb3c8e0975
   - c4d9cab3100d66a41396388efec1629e7a12c587
-  - e99cb8872128f852e1d35ddd6966fa09d5c82170
-  commit_sha: 88d69286b3e21767b54ac46d8d19471885c5f9f1
-  generated_at: '1794759785'
+  - 865def847257128504fb56d3515349b814d45245
+  commit_sha: c23ae18e2361762fb70befab4d791c29bdc7847d
+  generated_at: '1794813848'
   generator: kuda-template/0.1.4

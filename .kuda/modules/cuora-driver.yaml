@@ -5,7 +5,7 @@ api:
 - name: BLOCK
   kind: const
   file: crates/cuora-driver/src/sealed.rs
-  line: 873
+  line: 928
   module: cuora-driver
 - name: Ctx
   kind: type
@@ -202,7 +202,7 @@ api:
   file: crates/cuora-driver/src/data.rs
   line: 164
   module: cuora-driver
-api_omitted: 187
+api_omitted: 188
 deps:
 - age
 - clap
@@ -261,11 +261,11 @@ provenance:
   hashes:
   - 4a83471cbe8e2efd6c5582efba8e72e4ace5411c
   - 1f7062a92710f42a027bad587e30385e1a187c2a
-  - deda2f1008631984ca79cdc71c6db704919aa7c0
-  - f2f8af240ad39f65a5442a2fc81d336f8171a394
-  - bbedd5959292f2680266d233681f89d2121d8bc9
+  - 63006496a52d88d4e00e500c076a8f13a6d53e32
+  - afb15b7ea7beb2049cda8b6d97f998d52e44398e
+  - decfeb5d4c670b66fd226502421f4b98c1d86393
   - bbbf269e671b5a963663f9714ca655fff7523c0c
-  - f540ce8f022cad65a59b22765437395be652d2e7
+  - 6604bb4dcce1ce511574bc729abc862f56b1557e
   - 76fd1af00cdbfcfc253ab0ea7654ddeeaf38b044
   - a77bcc051dfbc40a486aa73edbe90599dc23f4ff
   - 813ded7870fb5b58571c0d442840489ffce57261
@@ -273,6 +273,6 @@ provenance:
   - 392de6a337836444626d64ddee933d7a31f37b00
   - 6ab878eb2c227e551b37dedb8af8eea2dc046289
   - eb98cd23a9bc3a8d9a23d5859c5d69428e81889c
-  commit_sha: 3486d41e00334bb9f8e39d9b4885253979c55872
-  generated_at: '1794609706'
+  commit_sha: c23ae18e2361762fb70befab4d791c29bdc7847d
+  generated_at: '1794813848'
   generator: kuda-template/0.1.4

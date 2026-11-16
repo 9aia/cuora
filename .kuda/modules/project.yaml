@@ -53,6 +53,8 @@ provenance:
   - project/issues/issue-0008-rename-arca-cuora-full-incl-dependents-archived-repos.md
   - project/issues/issue-0009-cuora-vault-workers-deployed-secrets-re-put-client-url-flip-pending.md
   - project/issues/issue-0010-post-v0-1-0-hardening-backlog.md
+  - project/issues/issue-0011-split-cuora-init-into-cuora-identity-subcommands.md
+  - project/issues/issue-0012-identity-canonicalized-under-the-tardigrada-namespace.md
   - project/plans/pl-0001-cuora-v1-roadmap-scaffold-domain-verbs-cloud-ship.md
   - project/proposals/proposal-0001-cuora-v1-secrets-broker-for-agents-in-rust.md
   - project/proposals/proposal-0002-keychain-backed-identity-storage.md
@@ -99,6 +101,8 @@ provenance:
   - a5c4193450a8049619917d4f1075354eaff99899
   - ade83991aa45a0f2a9d04ffdd9d2c56768771109
   - 2698756a9a299afaeb8725906cb8aaf57dfd998f
+  - e044c414fa399bd817a738e646b7efd8c4218991
+  - ff1ddb57945635ca5dcfde7cd7081b96263b1e47
   - 340095aaf23025189915b88def95ec44ea0f98b5
   - 3cd49e23f8231f48c186d8eb1fb8449e900e603c
   - a7fce18d17161e7cd4f7fe28144961ee9daa58d9
@@ -108,6 +112,6 @@ provenance:
   - f5ea53eda54409a8922805b45efa218155f2998e
   - 8b93f846e1262c6b19348553a01993d23387dd97
   - 2c9ac77a5f9eecca7cf545fc7ff416efcc569603
-  commit_sha: 88d69286b3e21767b54ac46d8d19471885c5f9f1
-  generated_at: '1794759785'
+  commit_sha: c23ae18e2361762fb70befab4d791c29bdc7847d
+  generated_at: '1794813848'
   generator: kuda-template/0.1.4

@@ -30,7 +30,7 @@ api:
 - name: EMITTED
   kind: const
   file: crates/cuora-ops/src/lib.rs
-  line: 1488
+  line: 1492
   module: cuora-ops
 - name: ENABLED
   kind: const
@@ -40,7 +40,7 @@ api:
 - name: EXACT
   kind: const
   file: crates/cuora-ops/src/lib.rs
-  line: 1464
+  line: 1468
   module: cuora-ops
 - name: EXPORT_WARNED
   kind: const
@@ -90,7 +90,7 @@ api:
 - name: PREFIX
   kind: const
   file: crates/cuora-ops/src/lib.rs
-  line: 1480
+  line: 1484
   module: cuora-ops
 - name: PolicyVerdict
   kind: type
@@ -115,7 +115,7 @@ api:
 - name: StubSource
   kind: type
   file: crates/cuora-ops/src/lib.rs
-  line: 2393
+  line: 2397
   module: cuora-ops
 - name: VaultCheck
   kind: type
@@ -140,7 +140,7 @@ api:
 - name: aliases_rewrite_after_env_pin
   kind: function
   file: crates/cuora-ops/src/lib.rs
-  line: 1553
+  line: 1557
   module: cuora-ops
 - name: audit
   kind: module
@@ -150,57 +150,57 @@ api:
 - name: audit
   kind: function
   file: crates/cuora-ops/src/lib.rs
-  line: 1236
+  line: 1240
   module: cuora-ops
 - name: auto_keyring_probe
   kind: function
   file: crates/cuora-ops/src/lib.rs
-  line: 1399
+  line: 1403
   module: cuora-ops
 - name: backend_file_never_probes_the_store
   kind: function
   file: crates/cuora-ops/src/lib.rs
-  line: 2691
+  line: 2700
   module: cuora-ops
 - name: cache_scope_keeps_unlisted_envs_off_the_disk
   kind: function
   file: crates/cuora-ops/src/lib.rs
-  line: 3083
+  line: 3092
   module: cuora-ops
 - name: cached_cf_env
   kind: function
   file: crates/cuora-ops/src/lib.rs
-  line: 3016
+  line: 3025
   module: cuora-ops
 - name: cached_cf_vault_reads_through_and_serves_offline
   kind: function
   file: crates/cuora-ops/src/lib.rs
-  line: 3030
+  line: 3039
   module: cuora-ops
 - name: cf_backend_errors_propagate_through_verbs
   kind: function
   file: crates/cuora-ops/src/lib.rs
-  line: 2305
+  line: 2309
   module: cuora-ops
 - name: cf_tokens_cant_resolve_against_a_cf_local
   kind: function
   file: crates/cuora-ops/src/lib.rs
-  line: 2957
+  line: 2966
   module: cuora-ops
 - name: check
   kind: function
   file: crates/cuora-ops/src/lib.rs
-  line: 1044
+  line: 1048
   module: cuora-ops
 - name: check_flags_bad_var_names_and_routes
   kind: function
   file: crates/cuora-ops/src/lib.rs
-  line: 1588
+  line: 1592
   module: cuora-ops
 - name: check_flags_cf_only_fields_on_other_kinds
   kind: function
   file: crates/cuora-ops/src/lib.rs
-  line: 2974
+  line: 2983
   module: cuora-ops
 api_omitted: 140
 deps:
@@ -267,11 +267,11 @@ provenance:
   - crates/cuora-ops/tests/props.rs
   hashes:
   - b80c210a0026bc5f405e7a28836317ba83de9ff2
-  - 657dbec33a47edbd13bffb7a3e12c1059a85f751
+  - bf436fdde462b15b2ea5c9b868854e3699cf25ae
   - b43f94e2f8a76773dec34649819652262719a8ba
-  - d962d7dc6b1cd1045f6775ab60f554bec2dc4e3b
+  - c00c9a2bfd0a0f63cce8078dbbd55c0d5feef6b1
   - 2e113a624a55c8049273dd1f57cc79c27abfa1e7
   - 1602bd777393acf7d4df6616e08bbfbaf7726157
-  commit_sha: 3486d41e00334bb9f8e39d9b4885253979c55872
-  generated_at: '1794609706'
+  commit_sha: c23ae18e2361762fb70befab4d791c29bdc7847d
+  generated_at: '1794813848'
   generator: kuda-template/0.1.4

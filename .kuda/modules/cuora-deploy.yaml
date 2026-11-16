@@ -36,7 +36,7 @@ provenance:
   - crates/cuora-deploy/src/lib.rs
   hashes:
   - 000e41d5840b658bf1370bc0a1f4c10626a91fcb
-  - c266b8d49117a08a80acc0750330f33158bb6117
-  commit_sha: 9aa078807f3d952dd07e69bd48851e3ce8243869
-  generated_at: '1794488905'
+  - 146f9338c566c62c9018891a711932670aa0b3f7
+  commit_sha: c23ae18e2361762fb70befab4d791c29bdc7847d
+  generated_at: '1794813848'
   generator: kuda-template/0.1.4

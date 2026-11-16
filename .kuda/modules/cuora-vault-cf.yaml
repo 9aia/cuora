@@ -100,7 +100,7 @@ api:
 - name: auth_header_shapes
   kind: function
   file: crates/cuora-vault-cf/src/lib.rs
-  line: 1092
+  line: 1124
   module: cuora-vault-cf
 - name: bad_token_is_an_error_not_a_panic
   kind: function
@@ -110,7 +110,7 @@ api:
 - name: base_url_must_be_https_or_loopback_http
   kind: function
   file: crates/cuora-vault-cf/src/lib.rs
-  line: 918
+  line: 934
   module: cuora-vault-cf
 - name: bearer_auth_map
   kind: function
@@ -140,7 +140,7 @@ api:
 - name: config_debug_shows_recipient_never_key_material
   kind: function
   file: crates/cuora-vault-cf/src/lib.rs
-  line: 893
+  line: 909
   module: cuora-vault-cf
 - name: cred_for
   kind: function
@@ -155,7 +155,7 @@ api:
 - name: derive_private_key
   kind: function
   file: crates/cuora-vault-cf/src/lib.rs
-  line: 830
+  line: 846
   module: cuora-vault-cf
 - name: env_var
   kind: function
@@ -170,7 +170,7 @@ api:
 - name: error_msg_prefers_auth_hint_then_body
   kind: function
   file: crates/cuora-vault-cf/src/lib.rs
-  line: 1251
+  line: 1283
   module: cuora-vault-cf
 - name: fmt
   kind: function
@@ -244,10 +244,10 @@ provenance:
   - crates/cuora-vault-cf/tests/v2.rs
   hashes:
   - 422f52f2ca23213aedb8eb77d63058314f245371
-  - 5d98d62de62d69b5bfbb5763f2971b5919e28a8f
+  - 20c2b15a3ab524cc4d6a0d90df28f87dc06f4229
   - d99672fb48b8199755c4100c56ee271d3201aea4
   - 93edaafb4847cb03f80f985071ef516a8b62ed96
   - a457005f9223fc1f43c4a7eb7eb3c09d1f018218
-  commit_sha: 9aa078807f3d952dd07e69bd48851e3ce8243869
-  generated_at: '1794488905'
+  commit_sha: c23ae18e2361762fb70befab4d791c29bdc7847d
+  generated_at: '1794813848'
   generator: kuda-template/0.1.4

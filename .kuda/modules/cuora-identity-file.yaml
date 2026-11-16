@@ -1,21 +1,21 @@
 name: cuora-identity-file
 path: crates/cuora-identity-file/Cargo.toml
-purpose: 'Identity impl: the ~/.config/cuora/identity.txt age keyfile (0600) — the explicit file backend (headless/CI opt-out)'
+purpose: 'Identity impl: the shared tardigrada identity keyfile (<config>/tardigrada/identity.txt; legacy cuora/arca paths resolve) (0600) — the explicit file backend (headless/CI opt-out)'
 api:
 - name: FileIdentity
   kind: type
   file: crates/cuora-identity-file/src/lib.rs
-  line: 22
+  line: 26
   module: cuora-identity-file
 - name: a_loose_keyfile_warns_but_still_loads
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 255
+  line: 293
   module: cuora-identity-file
 - name: config_home
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 175
+  line: 213
   module: cuora-identity-file
 - name: cuora-identity-file
   kind: module
@@ -25,133 +25,149 @@ api:
 - name: default
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 69
+  line: 93
   module: cuora-identity-file
 - name: default_path
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 37
+  line: 45
   module: cuora-identity-file
 - name: default_path_follows_env_xdg_then_home
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 359
+  line: 420
+  module: cuora-identity-file
+- name: default_path_prefers_tardigrada_then_legacy_in_order
+  kind: function
+  file: crates/cuora-identity-file/src/lib.rs
+  line: 479
   module: cuora-identity-file
 - name: describe
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 163
+  line: 201
   module: cuora-identity-file
 - name: exists
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 57
+  line: 81
+  module: cuora-identity-file
+- name: explicit_paths_never_fall_back
+  kind: function
+  file: crates/cuora-identity-file/src/lib.rs
+  line: 519
   module: cuora-identity-file
 - name: home
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 169
+  line: 207
   module: cuora-identity-file
 - name: kind
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 159
+  line: 197
   module: cuora-identity-file
 - name: load
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 80
+  line: 104
   module: cuora-identity-file
 - name: load_rejects_garbage_and_missing
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 287
+  line: 325
   module: cuora-identity-file
 - name: load_skips_comment_and_blank_lines
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 273
+  line: 311
   module: cuora-identity-file
 - name: load_surfaces_non_notfound_io_errors
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 349
+  line: 410
   module: cuora-identity-file
 - name: new
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 29
+  line: 33
   module: cuora-identity-file
 - name: path
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 62
+  line: 86
   module: cuora-identity-file
 - name: perm_note
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 185
+  line: 223
   module: cuora-identity-file
 - name: perm_note
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 199
+  line: 237
   module: cuora-identity-file
 - name: set_private
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 212
+  line: 250
   module: cuora-identity-file
 - name: set_private
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 219
+  line: 257
   module: cuora-identity-file
 - name: set_private_on_missing_file_is_an_error
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 331
+  line: 392
   module: cuora-identity-file
 - name: store
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 112
+  line: 138
   module: cuora-identity-file
 - name: store_surfaces_parent_dir_failures
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 315
+  line: 376
   module: cuora-identity-file
 - name: store_surfaces_write_failures
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 301
+  line: 362
   module: cuora-identity-file
 - name: store_then_load_roundtrips_0600
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 229
+  line: 267
+  module: cuora-identity-file
+- name: store_tightens_a_preexisting_loose_file
+  kind: function
+  file: crates/cuora-identity-file/src/lib.rs
+  line: 340
   module: cuora-identity-file
 - name: tests
   kind: module
   file: crates/cuora-identity-file/src/lib.rs
-  line: 225
+  line: 263
   module: cuora-identity-file
 - name: the_source_names_and_defaults_itself
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 336
+  line: 397
   module: cuora-identity-file
 - name: warn_perms
   kind: function
   file: crates/cuora-identity-file/src/lib.rs
-  line: 204
+  line: 242
   module: cuora-identity-file
 deps:
 - age
 - cuora-identity
 - cuora-notice
 - time
+- zeroize
 - temp-env
 - tempfile
 - age
@@ -166,8 +182,8 @@ provenance:
   - crates/cuora-identity-file/Cargo.toml
   - crates/cuora-identity-file/src/lib.rs
   hashes:
-  - 091478de063b1735975a918ffc9a17a20efb905c
-  - dc1ede4ed693f5c1281f43aff6a729d95450b0e2
-  commit_sha: 9aa078807f3d952dd07e69bd48851e3ce8243869
-  generated_at: '1794488905'
+  - 33979d5b8faa4598746ca79a5cca19b61fab06bc
+  - f0a7cbab0abb9e72bbf425db7df7ade78284d03b
+  commit_sha: c23ae18e2361762fb70befab4d791c29bdc7847d
+  generated_at: '1794813848'
   generator: kuda-template/0.1.4

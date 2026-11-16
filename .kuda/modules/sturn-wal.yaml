@@ -31,7 +31,9 @@ provenance:
   - refs/sturn/wal/devin-t053
   - refs/sturn/wal/docs
   - refs/sturn/wal/docs-fix
+  - refs/sturn/wal/docs-gate
   - refs/sturn/wal/docs-sweep
+  - refs/sturn/wal/docs-tutorial-merge
   - refs/sturn/wal/feat-cached-vault
   - refs/sturn/wal/fix-ledger-xtask
   - refs/sturn/wal/main
@@ -52,7 +54,7 @@ provenance:
   hashes:
   - 4823dbd60ab925f782e3ff7b2f2806b344bea609
   - 30c7062fba86691862aa7d27b828ef1d9dd67d27
-  - a7d8fc156f9078c063488c9625faae9c540eb08c
+  - d6baaf301480b85ddbc8e811151b31b8715400ef
   - 3543e5590fbb66fdeda146325525c4289771ec90
   - f771b3f93e634d96b46aef1c466b905d55d57234
   - 33b9c7904dc7d1f7d352f6ce1a284ddb99b7d45d
@@ -64,7 +66,9 @@ provenance:
   - 78b545ed7684de8a25c06ab5a599543e52e05110
   - 3307c69bdf8fc5ca16d39b8bf82e3047f239b737
   - c4a9a55d5b08fb9c01bbaba11f70b83dfb3b9a30
+  - bcfe8de7ab21416896e1a94491549bb81df53c3d
   - 9350477e8954246ff72eaafc6e0f17e86e85f610
+  - b1ea5acb32081e6b123b149b469fca52cc8e7d76
   - 92c0b17b66ba8b82ed9b04929545bf1a43ec52b9
   - e85d03c77b6d23f608a227e5055f9731b136eeb6
   - 84563b684c1c74f3a92e8e3c6ecbb1814b2f5648
@@ -82,6 +86,6 @@ provenance:
   - b9534f3f4438b3abbe66b9e113b195a786147910
   - 4c15c0b17f665b5c7cc267f6e0db6537c796f3b1
   - 48e8d19c3ae7c37264451b468a841654a1f7fba3
-  commit_sha: 88d69286b3e21767b54ac46d8d19471885c5f9f1
-  generated_at: '1794759785'
+  commit_sha: c23ae18e2361762fb70befab4d791c29bdc7847d
+  generated_at: '1794813848'
   generator: kuda-template/0.1.4
