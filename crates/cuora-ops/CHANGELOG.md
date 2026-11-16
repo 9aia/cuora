@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.1] - 2026-11-16
+
+### Changed
+
+- retire cuora identity verbs — superseded by tardigrada (`3224398`)
+
 ## [1.0.0] - 2026-11-16
 
 ### Added
