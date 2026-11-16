@@ -12,7 +12,7 @@ same table.)
 | `CUORA_CONFIG` | — | config file override, between `--config` and `./cuora.toml` in the search order |
 | `CUORA_ENV` | `dev` | env context — resolution + routing (`--env` wins) |
 | `CUORA_ACTOR` | `$USER` → `anon` | audit attribution (`--actor` wins). Self-claimed |
-| `CUORA_IDENTITY_FILE` | `~/.config/cuora/identity.txt` | age identity keyfile for every vault impl — pins file mode outright |
+| `CUORA_IDENTITY_FILE` | `<config>/tardigrada/identity.txt` (legacy `cuora`/`arca` paths resolve) | age identity keyfile for every vault impl — pins file mode outright |
 | `CUORA_IDENTITY_BACKEND` | `keyring` | `keyring` (default — fail closed, no file fallback) | `auto` (keyring → keyfile fallback, for headless) | `file` (never probe the keyring); wins over `[identity] backend` |
 | `CUORA_CF_TOKEN` | — | bearer token for `kind = "cf"` vaults — *default* name; `[vaults.*].token_env` picks another |
 | `CLOUDFLARE_API_TOKEN` | — | API token for `cf-secrets-store` deploy sinks — *default* name; `[deploy.*].token_env` picks another |

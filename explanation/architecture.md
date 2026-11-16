@@ -42,7 +42,7 @@ Design rules:
 | `cuora-deploy-cf` | adapter | Deploy impl: push secret values to a Cloudflare account Secrets Store (write-only sink) via the CF API v4 |
 | `cuora-driver` | adapter | tamias-driver-cuora — pavo view driver over cuora vault metadata (read-only; never renders secret values), engine ops dispatching to the cuora lib, and the sealed-pack surface (seal/open/materialize/recipients over tamias ADR-0004 ciphertext-only packs) |
 | `cuora-identity` | adapter | Identity port: where the age identity (master key) comes from — file, keyring, later sealed variants |
-| `cuora-identity-file` | adapter | Identity impl: the ~/.config/cuora/identity.txt age keyfile (0600) — the explicit file backend (headless/CI opt-out) |
+| `cuora-identity-file` | adapter | Identity impl: the shared tardigrada identity keyfile (\<config>/tardigrada/identity.txt; legacy cuora/arca paths resolve) (0600) — the explicit file backend (headless/CI opt-out) |
 | `cuora-identity-keyring` | adapter | Identity impl: the platform session secret store (secret-service / Keychain / Credential Manager) via keyring-core |
 | `cuora-notice` | adapter | Process-wide UX notices — cuora:-prefixed stderr notes, mutable for terminal-owning surfaces |
 | `cuora-sealed` | adapter | cuora sealed packs: tamias store resolution, age identity, encrypt/decrypt, and the cuora://\<pack>/\<secret> engine read path (tamias ADR-0004) |
