@@ -136,7 +136,10 @@ enum Cmd {
     },
     /// Validate config + the declared surface: `[envs]` routes
     /// point at declared vaults, vaults decrypt, every `[secrets]`
-    /// ref resolves in its routed env. Exit 1 on findings.
+    /// ref resolves in its routed env. Vault probes run
+    /// concurrently under a deadline (`CUORA_CHECK_TIMEOUT_MS`,
+    /// default 10s) — a stalled backend is a finding, not a hang.
+    /// Exit 1 on findings.
     Check,
     /// Rewrite stored records for a wire/config upgrade. Currently
     /// one transform: `--private-refs` re-keys every plaintext-named
