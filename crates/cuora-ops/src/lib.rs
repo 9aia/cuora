@@ -32,11 +32,12 @@ pub fn env_var(name: &str) -> Option<String> {
     })
 }
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
-use std::time::Duration;
+use std::sync::{mpsc, Arc};
+use std::thread;
+use std::time::{Duration, Instant};
 
 use age::x25519;
 use cuora_config::ConfigSource;
@@ -1109,23 +1110,70 @@ impl Ops {
         vault_names.sort();
         vault_names.dedup();
 
+        // Probe every vault concurrently on detached threads under
+        // `check_probe_timeout` — construction is cheap (no I/O) but
+        // a remote `list` proves reachability, and one stalled
+        // backend (blackholed endpoint, hung keyring, wedged DNS)
+        // must surface as a finding, not hang the verb. Probes that
+        // outlive the deadline are abandoned; the backend's own
+        // client timeouts still end the worker threads.
+        let timeout = check_probe_timeout();
+        // Probe on a scoped clone so each thread owns its `Ops`;
+        // actor/env/policy carry over so probe-side audit events
+        // (scoped-token gets) keep the same attribution.
+        let probe_ops = Arc::new(self.scoped(None, None, self.policy.clone()));
+        let (tx, rx) = mpsc::channel();
+        let mut pending: BTreeSet<String> = vault_names.iter().cloned().collect();
+        for name in &vault_names {
+            let ops = Arc::clone(&probe_ops);
+            let name = name.clone();
+            let env = self.env.clone();
+            let tx = tx.clone();
+            thread::spawn(move || {
+                // Probe: construction is cheap (no I/O); a `list`
+                // proves a remote vault is actually reachable.
+                let result = ops
+                    .open_vault_named(&name)
+                    .and_then(|v| match v.list(&env) {
+                        Ok(_) => Ok(v),
+                        Err(e) => Err(e.into()),
+                    })
+                    .map_err(|e| e.to_string());
+                let _ = tx.send((name, result));
+            });
+        }
+        drop(tx);
+        let mut probed: BTreeMap<String, Result<Box<dyn Vault>, String>> = BTreeMap::new();
+        let deadline = Instant::now() + timeout;
+        while !pending.is_empty() {
+            let left = deadline.saturating_duration_since(Instant::now());
+            if left.is_zero() {
+                break;
+            }
+            match rx.recv_timeout(left) {
+                Ok((name, result)) => {
+                    pending.remove(&name);
+                    probed.insert(name, result);
+                }
+                // Deadline hit or every probe thread died — the
+                // stragglers report as timeouts below.
+                Err(_) => break,
+            }
+        }
+
         let mut vaults = Vec::new();
-        let mut opened: BTreeMap<String, Box<dyn Vault>> = BTreeMap::new();
+        let mut opened: BTreeMap<String, Arc<Box<dyn Vault>>> = BTreeMap::new();
         let mut failures: BTreeMap<String, String> = BTreeMap::new();
         for name in &vault_names {
             let cfg = self.config.vault_config(name);
             let kind = cfg.map(|c| c.kind.clone()).unwrap_or_else(|| "age".into());
             let path = cfg.and_then(|c| c.path.as_ref()).map(PathBuf::from);
-            match self.open_vault_named(name).and_then(|v| {
-                // Probe: construction is cheap (no I/O); a `list`
-                // proves a remote vault is actually reachable.
-                match v.list(&self.env) {
-                    Ok(_) => Ok(v),
-                    Err(e) => Err(e.into()),
-                }
-            }) {
+            let result = probed
+                .remove(name)
+                .unwrap_or_else(|| Err(format!("probe timed out after {}ms", timeout.as_millis())));
+            match result {
                 Ok(v) => {
-                    opened.insert(name.clone(), v);
+                    opened.insert(name.clone(), Arc::new(v));
                     vaults.push(VaultCheck {
                         name: name.clone(),
                         kind,
@@ -1136,13 +1184,13 @@ impl Ops {
                 }
                 Err(e) => {
                     problems.push(format!("vault {name:?} is not readable: {e}"));
-                    failures.insert(name.clone(), e.to_string());
+                    failures.insert(name.clone(), e.clone());
                     vaults.push(VaultCheck {
                         name: name.clone(),
                         kind,
                         path,
                         ok: false,
-                        error: Some(e.to_string()),
+                        error: Some(e),
                     });
                 }
             }
@@ -1175,7 +1223,23 @@ impl Ops {
             // the pack lookup below has answered.
             let mut vault_problem = None;
             let mut resolves = match opened.get(vault_name) {
-                Some(v) => v.get(&env, &r).map(|rec| rec.is_some()).unwrap_or(false),
+                Some(v) => {
+                    // Bound the per-secret probe too — a vault that
+                    // answered `list` can still stall on `get`.
+                    let v = Arc::clone(v);
+                    let penv = env.clone();
+                    let pr = r.clone();
+                    match bounded_probe(timeout, move || v.get(&penv, &pr)) {
+                        Ok(Ok(rec)) => rec.is_some(),
+                        Ok(Err(_)) => false,
+                        Err(why) => {
+                            vault_problem = Some(format!(
+                                "{var} → {rref}: env {env} vault {vault_name:?} probe failed: {why}"
+                            ));
+                            false
+                        }
+                    }
+                }
                 None => {
                     // The vault probe above already tried this name
                     // and it failed — a second open would fail
@@ -1483,6 +1547,38 @@ fn loader_hook_name(name: &str) -> bool {
     ];
     const PREFIX: &[&str] = &["LD_", "DYLD_", "PYTHON", "NODE_", "PERL5"];
     EXACT.contains(&name) || PREFIX.iter().any(|p| name.starts_with(p))
+}
+
+/// Default per-probe deadline for [`Ops::check`] — vault opens/
+/// lists and secret resolutions run on detached threads so a
+/// stalled backend reports a finding instead of hanging the verb.
+/// `CUORA_CHECK_TIMEOUT_MS` overrides (milliseconds).
+const CHECK_PROBE_TIMEOUT: Duration = Duration::from_secs(10);
+
+/// The effective check-probe deadline — `CUORA_CHECK_TIMEOUT_MS`
+/// (milliseconds) when set and parseable, else the default.
+fn check_probe_timeout() -> Duration {
+    env_var("CUORA_CHECK_TIMEOUT_MS")
+        .and_then(|v| v.parse::<u64>().ok())
+        .filter(|&ms| ms > 0)
+        .map_or(CHECK_PROBE_TIMEOUT, Duration::from_millis)
+}
+
+/// Run `f` on a detached thread and wait up to `timeout` for its
+/// result. `Err` means the probe outlived the deadline — the worker
+/// isn't joined (a truly stuck backend leaks one thread until its
+/// own client timeouts fire), which beats hanging the caller.
+fn bounded_probe<T, F>(timeout: Duration, f: F) -> Result<T, String>
+where
+    T: Send + 'static,
+    F: FnOnce() -> T + Send + 'static,
+{
+    let (tx, rx) = mpsc::channel();
+    thread::spawn(move || {
+        let _ = tx.send(f());
+    });
+    rx.recv_timeout(timeout)
+        .map_err(|_| format!("probe timed out after {}ms", timeout.as_millis()))
 }
 
 /// A user-visible fallback notice on stderr — at most once per

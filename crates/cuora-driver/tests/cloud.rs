@@ -308,6 +308,66 @@ fn check_reports_unreachable_cf_vault_not_panic() {
 }
 
 #[test]
+fn check_bounds_a_stalled_vault_probe() {
+    let home = tempfile::tempdir().unwrap();
+    let home = home.path();
+    // A listener that accepts and never answers — the client
+    // stalls mid-request, the worst case for an unbounded probe.
+    let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+    let port = listener.local_addr().unwrap().port();
+    std::thread::spawn(move || {
+        if let Ok((socket, _)) = listener.accept() {
+            std::thread::sleep(std::time::Duration::from_secs(60));
+            drop(socket);
+        }
+    });
+    let cfg = config(
+        home,
+        &format!(
+            r#"
+            [vaults.stall]
+            kind = "cf"
+            url = "http://127.0.0.1:{port}"
+            token_env = "{TOKEN_ENV}"
+
+            [envs]
+            dev = {{ vault = "stall" }}
+            "#,
+        ),
+    );
+    // The probe must get past identity resolution to reach the
+    // wire — bootstrap the keyfile identity via an env that routes
+    // to the implicit local vault (`--env boot` isn't in `[envs]`,
+    // so it defaults to `local`).
+    let init_o = cuora(home, &["--env", "boot", "init"]).output().unwrap();
+    assert!(init_o.status.success(), "init: {}", stderr(&init_o));
+    let args = [
+        "--config".to_string(),
+        cfg.to_string_lossy().into_owned(),
+        "check".to_string(),
+        "--json".to_string(),
+    ];
+    let refs: Vec<&str> = args.iter().map(String::as_str).collect();
+    let start = std::time::Instant::now();
+    let o = cuora(home, &refs)
+        .env("CUORA_CHECK_TIMEOUT_MS", "500")
+        .output()
+        .unwrap();
+    assert!(!o.status.success());
+    assert!(
+        start.elapsed() < std::time::Duration::from_secs(10),
+        "check took {:?} — the probe deadline didn't bound it",
+        start.elapsed()
+    );
+    let v: serde_json::Value = serde_json::from_str(&stdout(&o)).unwrap();
+    let vaults = v["vaults"].as_array().unwrap();
+    let stall = vaults.iter().find(|x| x["name"] == "stall").unwrap();
+    assert_eq!(stall["ok"], false, "{v}");
+    let error = stall["error"].as_str().unwrap_or_default();
+    assert!(error.contains("timed out"), "{v}");
+}
+
+#[test]
 fn cf_resolution_without_an_explicit_file_notes_the_missing_keyring() {
     let home = tempfile::tempdir().unwrap();
     let home = home.path();
