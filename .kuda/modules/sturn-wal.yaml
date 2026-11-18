@@ -10,11 +10,11 @@ verify:
 - refs/sturn/wal/cuora
 - refs/sturn/wal/cuora-T052
 - refs/sturn/wal/devin
+- refs/sturn/wal/devin-check-timeout
 - refs/sturn/wal/devin-ci-bupha
 - refs/sturn/wal/devin-driver-conformance
 - refs/sturn/wal/devin-driver-kit
 - refs/sturn/wal/devin-otel
-- refs/sturn/wal/devin-pl014-e1
 provenance:
   files:
   - refs/sturn/wal/adversarial-fixes
@@ -22,11 +22,13 @@ provenance:
   - refs/sturn/wal/cuora
   - refs/sturn/wal/cuora-T052
   - refs/sturn/wal/devin
+  - refs/sturn/wal/devin-check-timeout
   - refs/sturn/wal/devin-ci-bupha
   - refs/sturn/wal/devin-driver-conformance
   - refs/sturn/wal/devin-driver-kit
   - refs/sturn/wal/devin-otel
   - refs/sturn/wal/devin-pl014-e1
+  - refs/sturn/wal/devin-shim
   - refs/sturn/wal/devin-t005
   - refs/sturn/wal/devin-t053
   - refs/sturn/wal/docs
@@ -54,14 +56,16 @@ provenance:
   hashes:
   - 4823dbd60ab925f782e3ff7b2f2806b344bea609
   - 30c7062fba86691862aa7d27b828ef1d9dd67d27
-  - d6baaf301480b85ddbc8e811151b31b8715400ef
+  - da00c9bb92c60b03d3efbfdc362417ffc519e057
   - 3543e5590fbb66fdeda146325525c4289771ec90
   - f771b3f93e634d96b46aef1c466b905d55d57234
+  - 3aa862c537ab123634abe64f4748ee274b32dea4
   - 33b9c7904dc7d1f7d352f6ce1a284ddb99b7d45d
   - 5ad97b62e78e2a63b7aa795d14a687431a5f3cff
   - f6c97df43d4c2618769f127b4dec5ae1c166828c
   - 6b2d0933550a474492e8e5b53be09ee6e905ab57
   - 599c6442af7654347d3e0c6d5893ffa9c9b747d5
+  - 6f1219e2a0ac415a8d4f9f578ad40cfae87a8a58
   - afb5449ccb7d427f43c6eb4a3ee4448ed99701d0
   - 78b545ed7684de8a25c06ab5a599543e52e05110
   - 3307c69bdf8fc5ca16d39b8bf82e3047f239b737
@@ -86,6 +90,6 @@ provenance:
   - b9534f3f4438b3abbe66b9e113b195a786147910
   - 4c15c0b17f665b5c7cc267f6e0db6537c796f3b1
   - 48e8d19c3ae7c37264451b468a841654a1f7fba3
-  commit_sha: c23ae18e2361762fb70befab4d791c29bdc7847d
-  generated_at: '1794813848'
+  commit_sha: d23de0b83c3ef682e03db991d28380d39ea40e84
+  generated_at: '1795021514'
   generator: kuda-template/0.1.4

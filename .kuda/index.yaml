@@ -23,14 +23,15 @@ modules:
 - cuora-vault-cached
 - cuora-vault-cf
 - cuora-xtask
+- deps_temp_07312f4a
 - docs
 - project
 - sturn-wal
 commands:
 - cargo check
 - cargo test --workspace
-tree_digest: 17fe86e1aa549abc7db6ce1f1308651430a18504
-files_total: 209
+tree_digest: 2a6a94f3ba68ab830295285dee38629efafce968
+files_total: 211
 provenance:
   files:
   - Cargo.toml
@@ -57,7 +58,7 @@ provenance:
   - crates/cuora-vault-cf/Cargo.toml
   - xtask/Cargo.toml
   hashes:
-  - bd05994f24facbdbee514a35a536634dbe0d1a05
+  - 05773cef3f3881a95a0bf340248619fa4109e31a
   - bf7b0e5a4364babb178ee797ac9874fc9fadf2b9
   - 70be355e0ec1f29bc0bedc077f6cecc1b632495b
   - cfc09e62e4451faec3b10a1f95f3e27381c6a419
@@ -80,6 +81,6 @@ provenance:
   - df97d7ea0f12c02fec10db53389137ddf5dddcc2
   - 422f52f2ca23213aedb8eb77d63058314f245371
   - 1b2c254cc2d5e144e6ee3eedfdcbb94db8a3dedb
-  commit_sha: c23ae18e2361762fb70befab4d791c29bdc7847d
-  generated_at: '1794813848'
+  commit_sha: d23de0b83c3ef682e03db991d28380d39ea40e84
+  generated_at: '1795021514'
   generator: kuda/0.1.0

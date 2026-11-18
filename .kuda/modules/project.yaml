@@ -66,7 +66,7 @@ provenance:
   - project/proposals/proposal-0008-env-agnostic-secret-writes-cuora-put-env-all-sync-env.md
   hashes:
   - 9065e6f6e33503b5f7a4a773acd637396048731c
-  - 043c72083824501be0dd939539075300db2c03eb
+  - 9f4a1b1d7d249e1fa2b7b0c650d4a3ae085325da
   - 50e678358a4d2e79cef1e727f354cc0cf66748b3
   - ff2a96e4448ef817e6b0d3dd3e803ba2f912da95
   - a0ebea373c6eb686cf11e8b06a8968182c7b22b1
@@ -112,6 +112,6 @@ provenance:
   - f5ea53eda54409a8922805b45efa218155f2998e
   - 8b93f846e1262c6b19348553a01993d23387dd97
   - 2c9ac77a5f9eecca7cf545fc7ff416efcc569603
-  commit_sha: c23ae18e2361762fb70befab4d791c29bdc7847d
-  generated_at: '1794813848'
+  commit_sha: d23de0b83c3ef682e03db991d28380d39ea40e84
+  generated_at: '1795021514'
   generator: kuda-template/0.1.4

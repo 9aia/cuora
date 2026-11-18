@@ -15,32 +15,32 @@ api:
 - name: MAX_STDIN_SECRET
   kind: const
   file: crates/cuora-cli/src/lib.rs
-  line: 752
+  line: 755
   module: cuora
 - name: audit_fallback
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 340
+  line: 343
   module: cuora
 - name: cmd_op
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 288
+  line: 291
   module: cuora
 - name: cmd_op_maps_every_variant
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 963
+  line: 966
   module: cuora
 - name: cmd_rref
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 312
+  line: 315
   module: cuora
 - name: command
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 203
+  line: 206
   module: cuora
 - name: cuora
   kind: module
@@ -55,102 +55,102 @@ api:
 - name: dispatch
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 211
+  line: 214
   module: cuora
 - name: fail
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 948
+  line: 951
   module: cuora
 - name: json_out
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 934
+  line: 937
   module: cuora
 - name: load
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 360
+  line: 363
   module: cuora
 - name: manifest
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 815
+  line: 818
   module: cuora
 - name: norm_rref
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 327
+  line: 330
   module: cuora
 - name: out
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 926
+  line: 929
   module: cuora
 - name: parse
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 187
+  line: 190
   module: cuora
 - name: parse_from
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 192
+  line: 195
   module: cuora
 - name: parse_pairs
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 739
+  line: 742
   module: cuora
 - name: parse_ref
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 734
+  line: 737
   module: cuora
 - name: read_secret
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 758
+  line: 761
   module: cuora
 - name: record_json
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 799
+  line: 802
   module: cuora
 - name: run
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 266
+  line: 269
   module: cuora
 - name: run_cmd
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 368
+  line: 371
   module: cuora
 - name: run_cmd_folded_arm_covers_introspection_verbs
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 1023
+  line: 1026
   module: cuora
 - name: run_from
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 272
+  line: 275
   module: cuora
 - name: schema_json
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 941
+  line: 944
   module: cuora
 - name: sh_escape
   kind: function
   file: crates/cuora-cli/src/lib.rs
-  line: 792
+  line: 795
   module: cuora
 - name: tests
   kind: module
   file: crates/cuora-cli/src/lib.rs
-  line: 959
+  line: 962
   module: cuora
 deps:
 - clap
@@ -229,9 +229,9 @@ provenance:
   - e58c70bea39d5b252a1e819f242bbdcdf20e8b87
   - 30a263d674ef19de11c756d6f7537f91a421909e
   - 51b6a07dd57174197a937034b7eecebd5768ff8a
-  - bd05994f24facbdbee514a35a536634dbe0d1a05
+  - 05773cef3f3881a95a0bf340248619fa4109e31a
   - 70be355e0ec1f29bc0bedc077f6cecc1b632495b
-  - 82bfb4b7d37d39bbe51a51359bd608fa462cfee9
-  commit_sha: c23ae18e2361762fb70befab4d791c29bdc7847d
-  generated_at: '1794813848'
+  - 30f9ec1f23623dbbfeb468d3f6394b86a02597ef
+  commit_sha: d23de0b83c3ef682e03db991d28380d39ea40e84
+  generated_at: '1795021514'
   generator: kuda-template/0.1.4

@@ -202,7 +202,7 @@ api:
   file: crates/cuora-driver/src/data.rs
   line: 164
   module: cuora-driver
-api_omitted: 188
+api_omitted: 189
 deps:
 - age
 - clap
@@ -267,12 +267,12 @@ provenance:
   - bbbf269e671b5a963663f9714ca655fff7523c0c
   - 6604bb4dcce1ce511574bc729abc862f56b1557e
   - 76fd1af00cdbfcfc253ab0ea7654ddeeaf38b044
-  - a77bcc051dfbc40a486aa73edbe90599dc23f4ff
+  - dfdd4eb9c71372783046c6ac85d4c00dde50baf6
   - 813ded7870fb5b58571c0d442840489ffce57261
   - 8c9e31df6ac343eeb1355b64c7d06baaec25f226
   - 392de6a337836444626d64ddee933d7a31f37b00
   - 6ab878eb2c227e551b37dedb8af8eea2dc046289
   - eb98cd23a9bc3a8d9a23d5859c5d69428e81889c
-  commit_sha: c23ae18e2361762fb70befab4d791c29bdc7847d
-  generated_at: '1794813848'
+  commit_sha: d23de0b83c3ef682e03db991d28380d39ea40e84
+  generated_at: '1795021514'
   generator: kuda-template/0.1.4
