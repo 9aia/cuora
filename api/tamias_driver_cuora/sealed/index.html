@@ -46,7 +46,7 @@ install store — <code>$TAMIAS_HOME/store</code>, <code>$XDG_DATA_HOME/tamias/ 
 <code>cuora://&lt;pack&gt;/&lt;name&gt;</code> ref, env <code>sealed</code> (packs aren’t
 env-routed; the tag keeps the stream honest).</dd><dt><a class="fn" href="fn.commit_manifest.html" title="fn tamias_driver_cuora::sealed::commit_manifest">commit_<wbr>manifest</a><span title="Restricted Visibility">&nbsp;🔒</span> </dt><dd>Validate <code>merged</code> as a tamias manifest, then rename it over
 <code>path</code>. The temp file keeps the <code>.yaml</code> extension so
-[<code>Manifest::load_at</code>] picks the YAML parser, and inherits the
+<a href="../../tamias_core/manifest/struct.Manifest.html#method.load_at" title="associated function tamias_core::manifest::Manifest::load_at"><code>Manifest::load_at</code></a> picks the YAML parser, and inherits the
 original’s permissions before the rename.</dd><dt><a class="fn" href="fn.lifecycle.html" title="fn tamias_driver_cuora::sealed::lifecycle">lifecycle</a><span title="Restricted Visibility">&nbsp;🔒</span> </dt><dd><code>install</code>/<code>deploy</code>/<code>uninstall</code> — dispatched by tamias for
 <code>type: secrets</code> packs (the driver’s <code>capabilities.types</code> claims
 the kind). Sealed packs need no lifecycle action: ciphertext
