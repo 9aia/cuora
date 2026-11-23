@@ -727,6 +727,37 @@ dependencies = [
 ]
 
 [[package]]
+name = "cuora-secret"
+version = "1.0.4"
+
+[[package]]
+name = "cuora-secret-cuora"
+version = "1.0.4"
+dependencies = [
+ "cuora-secret",
+ "cuora-testkit",
+ "serde_json",
+ "tempfile",
+]
+
+[[package]]
+name = "cuora-secret-dotenv"
+version = "1.0.4"
+dependencies = [
+ "cuora-secret",
+ "cuora-testkit",
+ "tempfile",
+]
+
+[[package]]
+name = "cuora-secret-keyring"
+version = "1.0.4"
+dependencies = [
+ "cuora-secret",
+ "cuora-testkit",
+]
+
+[[package]]
 name = "cuora-serve"
 version = "1.0.4"
 dependencies = [
@@ -755,6 +786,7 @@ name = "cuora-testkit"
 version = "1.0.4"
 dependencies = [
  "cuora-core",
+ "cuora-secret",
  "cuora-vault",
  "hmac",
  "serde_json",

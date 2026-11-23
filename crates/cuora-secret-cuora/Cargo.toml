@@ -1,0 +1,20 @@
+[package]
+name = "cuora-secret-cuora"
+description = "Cuora `Secrets` impl — resolves `cuora://<scope>/<NAME>` through the cuora CLI or `cuora serve`"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+keywords = ["secrets", "cuora"]
+categories = ["development-tools"]
+
+[lints]
+workspace = true
+
+[dependencies]
+cuora-secret.workspace = true
+serde_json.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+cuora-testkit.workspace = true

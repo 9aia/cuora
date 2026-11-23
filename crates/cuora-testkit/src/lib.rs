@@ -213,3 +213,73 @@ pub fn overwrite_semantics(v: &dyn Vault) {
     assert_eq!(second.created_at, first.created_at);
     assert!(second.rotated_at.is_none());
 }
+
+/// Secrets-port conformance — every [`cuora_secret::Secrets`] impl
+/// must satisfy the same contract. Unlike [`vault_conformance!`]
+/// this is a plain fn (not a macro): stores carry their own
+/// isolation (service namespace, file path, stub binary), so the
+/// caller constructs a fresh store and calls
+/// [`secrets::conformance`] from however many `#[test]`s it wants —
+/// typically one, gated on `available()` where the backend needs a
+/// live service.
+///
+/// Values here are fake by rule — no real secret ever appears in a
+/// test fixture.
+pub mod secrets {
+    use cuora_secret::Secrets;
+    use std::sync::atomic::{AtomicU64, Ordering};
+
+    /// Fake value used across the suite — obviously not a real secret.
+    pub const FAKE: &str = "fake-value-not-a-real-secret";
+    /// Second fake for the overwrite leg.
+    pub const FAKE2: &str = "fake-overwritten-not-real";
+
+    static SEQ: AtomicU64 = AtomicU64::new(0);
+
+    /// A name no store can legitimately already hold — pid + a
+    /// process-wide counter keeps parallel tests collision-free.
+    fn unique_name(tag: &str) -> String {
+        format!(
+            "CUORA_CONFORM_{}_{}_{}",
+            tag,
+            std::process::id(),
+            SEQ.fetch_add(1, Ordering::Relaxed)
+        )
+    }
+
+    /// Run the full contract against `store`. Panics on violation.
+    pub fn conformance(store: &dyn Secrets) {
+        name_reported(store);
+        unset_name_misses(store);
+        set_get_roundtrip(store);
+        overwrite_last_wins(store);
+    }
+
+    /// `name()` is non-empty — it feeds `doctor` health lines and
+    /// chain error messages.
+    pub fn name_reported(store: &dyn Secrets) {
+        assert!(!store.name().is_empty(), "Secrets::name() is empty");
+    }
+
+    /// `get` on a name never `set` answers `None` — "not here", the
+    /// signal the chain falls through on.
+    pub fn unset_name_misses(store: &dyn Secrets) {
+        let name = unique_name("MISS");
+        assert_eq!(store.get(&name), None, "get({name}) should miss");
+    }
+
+    /// `set` then `get` returns the exact value.
+    pub fn set_get_roundtrip(store: &dyn Secrets) {
+        let name = unique_name("ROUNDTRIP");
+        store.set(&name, FAKE).unwrap();
+        assert_eq!(store.get(&name).as_deref(), Some(FAKE));
+    }
+
+    /// Re-`set` overwrites — last write wins.
+    pub fn overwrite_last_wins(store: &dyn Secrets) {
+        let name = unique_name("OVERWRITE");
+        store.set(&name, FAKE).unwrap();
+        store.set(&name, FAKE2).unwrap();
+        assert_eq!(store.get(&name).as_deref(), Some(FAKE2));
+    }
+}

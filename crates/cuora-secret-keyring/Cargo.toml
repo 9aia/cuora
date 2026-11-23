@@ -1,0 +1,18 @@
+[package]
+name = "cuora-secret-keyring"
+description = "OS-keyring impl of the cuora-secret port (secret-tool / libsecret)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+keywords = ["secrets", "cuora"]
+categories = ["development-tools"]
+
+[lints]
+workspace = true
+
+[dependencies]
+cuora-secret.workspace = true
+
+[dev-dependencies]
+cuora-testkit.workspace = true

@@ -14,6 +14,10 @@ members = [
     "crates/cuora-notice",
     "crates/cuora-ops",
     "crates/cuora-sealed",
+    "crates/cuora-secret",
+    "crates/cuora-secret-cuora",
+    "crates/cuora-secret-dotenv",
+    "crates/cuora-secret-keyring",
     "crates/cuora-serve",
     "crates/cuora-shell",
     "crates/cuora-testkit",
@@ -50,6 +54,10 @@ cuora-identity-keyring = { path = "crates/cuora-identity-keyring", version = "1.
 cuora-notice = { path = "crates/cuora-notice", version = "1.0.0" }
 cuora-ops = { path = "crates/cuora-ops", version = "1.0.0" }
 cuora-sealed = { path = "crates/cuora-sealed", version = "1.0.0" }
+cuora-secret = { path = "crates/cuora-secret", version = "1.0.0" }
+cuora-secret-cuora = { path = "crates/cuora-secret-cuora", version = "1.0.0" }
+cuora-secret-dotenv = { path = "crates/cuora-secret-dotenv", version = "1.0.0" }
+cuora-secret-keyring = { path = "crates/cuora-secret-keyring", version = "1.0.0" }
 cuora-serve = { path = "crates/cuora-serve", version = "1.0.0" }
 cuora-shell = { path = "crates/cuora-shell", version = "1.0.0" }
 cuora-testkit = { path = "crates/cuora-testkit", version = "1.0.0" }
