@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.0.0] - 2026-11-24
+
+### Added
+
+- canonicalize the age identity under the tardigrada namespace (`a39c1cd`)
+
+### Changed
+
+- **BREAKING** rename arca → cuora (crate, binary, env vars, refs, config) (`e66f8a6`)
+
+### Fixed
+
+- **identity-keyring:** bound credential-store calls — unlock prompts have no deadline (`dbfe051`)
+- **rename:** legacy fallbacks for keyring entry, vault/cache/data paths (`ceecad1`)
+- **identity:** read-only keyring probe, zeroized key material, honest timeout hint (`7bd0e07`)
+
 ## [1.0.4] - 2026-11-16
 
 ### Fixed

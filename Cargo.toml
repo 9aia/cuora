@@ -29,7 +29,7 @@ members = [
 ]
 
 [workspace.package]
-version = "1.0.4"
+version = "2.0.0"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/9aia/cuora"
@@ -41,30 +41,30 @@ inherits = "release"
 lto = "thin"
 
 [workspace.dependencies]
-cuora = { path = "crates/cuora-cli", version = "1.0.0" }
-cuora-config = { path = "crates/cuora-config", version = "1.0.0" }
-cuora-config-toml = { path = "crates/cuora-config-toml", version = "1.0.0" }
-cuora-core = { path = "crates/cuora-core", version = "1.0.0" }
-cuora-deploy = { path = "crates/cuora-deploy", version = "1.0.0" }
-cuora-deploy-cf = { path = "crates/cuora-deploy-cf", version = "1.0.0" }
-cuora-driver = { path = "crates/cuora-driver", version = "1.0.0" }
-cuora-identity = { path = "crates/cuora-identity", version = "1.0.0" }
-cuora-identity-file = { path = "crates/cuora-identity-file", version = "1.0.0" }
-cuora-identity-keyring = { path = "crates/cuora-identity-keyring", version = "1.0.0" }
-cuora-notice = { path = "crates/cuora-notice", version = "1.0.0" }
-cuora-ops = { path = "crates/cuora-ops", version = "1.0.0" }
-cuora-sealed = { path = "crates/cuora-sealed", version = "1.0.0" }
-cuora-secret = { path = "crates/cuora-secret", version = "1.0.0" }
-cuora-secret-cuora = { path = "crates/cuora-secret-cuora", version = "1.0.0" }
-cuora-secret-dotenv = { path = "crates/cuora-secret-dotenv", version = "1.0.0" }
-cuora-secret-keyring = { path = "crates/cuora-secret-keyring", version = "1.0.0" }
-cuora-serve = { path = "crates/cuora-serve", version = "1.0.0" }
-cuora-shell = { path = "crates/cuora-shell", version = "1.0.0" }
-cuora-testkit = { path = "crates/cuora-testkit", version = "1.0.0" }
-cuora-vault = { path = "crates/cuora-vault", version = "1.0.0" }
-cuora-vault-age = { path = "crates/cuora-vault-age", version = "1.0.0" }
-cuora-vault-cached = { path = "crates/cuora-vault-cached", version = "1.0.0" }
-cuora-vault-cf = { path = "crates/cuora-vault-cf", version = "1.0.0" }
+cuora = { path = "crates/cuora-cli", version = "2.0.0" }
+cuora-config = { path = "crates/cuora-config", version = "2.0.0" }
+cuora-config-toml = { path = "crates/cuora-config-toml", version = "2.0.0" }
+cuora-core = { path = "crates/cuora-core", version = "2.0.0" }
+cuora-deploy = { path = "crates/cuora-deploy", version = "2.0.0" }
+cuora-deploy-cf = { path = "crates/cuora-deploy-cf", version = "2.0.0" }
+cuora-driver = { path = "crates/cuora-driver", version = "2.0.0" }
+cuora-identity = { path = "crates/cuora-identity", version = "2.0.0" }
+cuora-identity-file = { path = "crates/cuora-identity-file", version = "2.0.0" }
+cuora-identity-keyring = { path = "crates/cuora-identity-keyring", version = "2.0.0" }
+cuora-notice = { path = "crates/cuora-notice", version = "2.0.0" }
+cuora-ops = { path = "crates/cuora-ops", version = "2.0.0" }
+cuora-sealed = { path = "crates/cuora-sealed", version = "2.0.0" }
+cuora-secret = { path = "crates/cuora-secret", version = "2.0.0" }
+cuora-secret-cuora = { path = "crates/cuora-secret-cuora", version = "2.0.0" }
+cuora-secret-dotenv = { path = "crates/cuora-secret-dotenv", version = "2.0.0" }
+cuora-secret-keyring = { path = "crates/cuora-secret-keyring", version = "2.0.0" }
+cuora-serve = { path = "crates/cuora-serve", version = "2.0.0" }
+cuora-shell = { path = "crates/cuora-shell", version = "2.0.0" }
+cuora-testkit = { path = "crates/cuora-testkit", version = "2.0.0" }
+cuora-vault = { path = "crates/cuora-vault", version = "2.0.0" }
+cuora-vault-age = { path = "crates/cuora-vault-age", version = "2.0.0" }
+cuora-vault-cached = { path = "crates/cuora-vault-cached", version = "2.0.0" }
+cuora-vault-cf = { path = "crates/cuora-vault-cf", version = "2.0.0" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 toml = "0.8"
