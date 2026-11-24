@@ -118,12 +118,15 @@ fn dispatch(req: &Request) -> Response {
                 Response::err(format!("unknown query: {query}"))
             }
         }
-        // The protocol grew `submit`/`jobs`/`notifications` ops after
-        // this driver was written; cuora mutations go through
-        // `cli.<verb>`/`run`, never `submit`, so they answer
+        // The protocol grew `submit`/`invoke`/`jobs`/`notifications`
+        // ops after this driver was written; cuora mutations go
+        // through `cli.<verb>`/`run`, never `submit`, so they answer
         // `ok:false` like any unsupported op.
-        Request::Submit { .. } | Request::Jobs | Request::Notifications => {
-            Response::err("tamias-driver-cuora implements no submit/jobs/notifications ops")
+        Request::Submit { .. }
+        | Request::Invoke { .. }
+        | Request::Jobs
+        | Request::Notifications => {
+            Response::err("tamias-driver-cuora implements no submit/invoke/jobs/notifications ops")
         }
     }
 }
