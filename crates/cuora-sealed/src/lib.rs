@@ -34,7 +34,8 @@ use age::x25519;
 use cuora_core::Ref;
 use cuora_identity::IdentitySource;
 use cuora_identity_file::FileIdentity;
-use tamias_core::{Manifest, Sealed, StoreRecord, RECORD_FILE};
+use tamias_core::{Manifest, Sealed, StoreEntry};
+use tamias_store_local::Store;
 use zeroize::Zeroizing;
 
 // ------------------------------------------------------------------ store
@@ -57,60 +58,21 @@ pub fn store_root(store: Option<&Path>) -> PathBuf {
         .unwrap_or_else(|| PathBuf::from(".tamias/store"))
 }
 
-/// One installed store entry — dir + record (manifest loads lazily).
-#[derive(Debug)]
-pub struct Installed {
-    dir: PathBuf,
-    record: StoreRecord,
-    label: String,
-}
-
-impl Installed {
-    /// `name@version` / `@scope/name@version` — same spelling
-    /// `tamias-store-local`'s `StoreEntry::label` produces.
-    fn label_of(record: &StoreRecord) -> String {
-        let scoped = match &record.scope {
-            Some(scope) => format!("@{scope}/{}", record.name),
-            None => record.name.clone(),
-        };
-        let version = record.version.clone().unwrap_or_else(|| {
-            let sha = record
-                .resolved
-                .strip_prefix("sha256:")
-                .unwrap_or(&record.resolved);
-            sha.chars().take(12).collect()
-        });
-        format!("{scoped}@{version}")
-    }
-
-    /// The payload dir — holds `tamias.yaml` + `sealed/`.
-    pub fn dir(&self) -> &Path {
-        &self.dir
-    }
-
-    /// `name@version` label for messages.
-    pub fn label(&self) -> &str {
-        &self.label
-    }
-
-    /// Bare pack name (`record.name`).
-    pub fn name(&self) -> &str {
-        &self.record.name
-    }
-
-    /// The store record (source ref, resolved digest, …).
-    pub fn record(&self) -> &StoreRecord {
-        &self.record
-    }
-
-    pub fn manifest(&self) -> Result<Manifest, String> {
-        Manifest::load(&self.dir).map_err(|e| format!("{}: {e}", self.dir.display()))
-    }
+/// Every installed store entry, sorted by `name@version` label —
+/// the `.tamias-store.json` walk, record parsing, and label
+/// spelling are `tamias-store-local`'s `Store::entries`.
+pub fn scan_store(root: &Path) -> Result<Vec<StoreEntry>, String> {
+    Store::new(root)
+        .entries()
+        .map_err(|e| format!("scan {}: {e}", root.display()))
 }
 
 /// Why [`find_pack`] found nothing usable.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum FindPackError {
+    /// The store walk itself failed (I/O).
+    #[error("scan store failed: {0}")]
+    Store(String),
     /// No installed entry matches the spec.
     #[error("sealed pack '{spec}' is not installed under {root}")]
     NotInstalled {
@@ -132,99 +94,41 @@ pub enum FindPackError {
     },
 }
 
-/// Depth-first walk for dirs carrying `.tamias-store.json` — the
-/// same shape `tamias-store-local`'s `collect` uses (dot-dirs and
-/// symlinked records skipped). Unparsable records warn + skip.
-pub fn scan_store(root: &Path) -> Vec<Installed> {
-    let mut out = Vec::new();
-    collect_entries(root, &mut out);
-    out.sort_by(|a, b| a.label.cmp(&b.label));
-    out
-}
-
-fn collect_entries(dir: &Path, out: &mut Vec<Installed>) {
-    let Ok(read) = std::fs::read_dir(dir) else {
-        return;
-    };
-    for entry in read.flatten() {
-        let path = entry.path();
-        let Ok(ft) = entry.file_type() else { continue };
-        if !ft.is_dir() {
-            continue;
-        }
-        // `file_type` never follows symlinks — a linked dir isn't
-        // an entry (same rule as the store's own walk).
-        if entry.file_name().to_string_lossy().starts_with('.') {
-            continue;
-        }
-        let record_path = path.join(RECORD_FILE);
-        let is_file = std::fs::symlink_metadata(&record_path)
-            .map(|m| m.is_file())
-            .unwrap_or(false);
-        if is_file {
-            match std::fs::read_to_string(&record_path)
-                .ok()
-                .and_then(|t| serde_json::from_str::<StoreRecord>(&t).ok())
-            {
-                Some(record) => {
-                    let label = Installed::label_of(&record);
-                    out.push(Installed {
-                        dir: path,
-                        record,
-                        label,
-                    });
-                }
-                None => eprintln!(
-                    "cuora sealed: skipping unparsable record {}",
-                    record_path.display()
-                ),
-            }
-        } else {
-            collect_entries(&path, out);
-        }
-    }
-}
-
 /// Resolve a pack spec — bare name, `@scope/name`, `name@version`,
-/// or a full `label()` — to an installed entry. Several same-name
-/// installs are [`FindPackError::Ambiguous`] (mirrors
-/// `Store::find`'s ambiguity rule).
-pub fn find_pack(root: &Path, spec: &str) -> Result<Installed, FindPackError> {
-    let entries = scan_store(root);
+/// or a full `StoreEntry::label()` — to an installed entry. Several
+/// same-name installs are [`FindPackError::Ambiguous`]. The walk is
+/// `tamias-store-local`'s; the `@scope/name` (unversioned) match is
+/// this crate's addition on top.
+pub fn find_pack(root: &Path, spec: &str) -> Result<StoreEntry, FindPackError> {
+    let entries = Store::new(root)
+        .entries()
+        .map_err(|e| FindPackError::Store(e.to_string()))?;
     // Exact label first (`@scope/name@1.0.0`, `name@1.0.0`).
-    if let Some(e) = entries.iter().find(|e| e.label == spec) {
-        return Ok(clone_installed(e));
+    if let Some(e) = entries.iter().find(|e| e.label() == spec) {
+        return Ok(e.clone());
     }
-    let scoped = |e: &Installed| match &e.record.scope {
+    let scoped = |e: &StoreEntry| match &e.record.scope {
         Some(s) => format!("@{s}/{}", e.record.name),
         None => e.record.name.clone(),
     };
-    let mut matches: Vec<&Installed> = entries
-        .iter()
-        .filter(|e| e.record.name == spec || scoped(e) == spec || e.label == spec)
+    let mut matches: Vec<StoreEntry> = entries
+        .into_iter()
+        .filter(|e| e.record.name == spec || scoped(e) == spec)
         .collect();
     match matches.len() {
         0 => Err(FindPackError::NotInstalled {
             spec: spec.to_string(),
             root: root.to_path_buf(),
         }),
-        1 => Ok(clone_installed(matches.swap_remove(0))),
+        1 => Ok(matches.swap_remove(0)),
         _ => Err(FindPackError::Ambiguous {
             spec: spec.to_string(),
             candidates: matches
                 .iter()
-                .map(|e| e.label.as_str())
+                .map(StoreEntry::label)
                 .collect::<Vec<_>>()
                 .join(", "),
         }),
-    }
-}
-
-fn clone_installed(e: &Installed) -> Installed {
-    Installed {
-        dir: e.dir.clone(),
-        record: e.record.clone(),
-        label: e.label.clone(),
     }
 }
 
@@ -279,13 +183,13 @@ pub fn resolve_target(
         pack_spec.ok_or_else(|| "a pack name (or --dir <payload>) is required".to_string())?;
     let root = store_root(store);
     let entry = find_pack(&root, spec).map_err(|e| e.to_string())?;
-    let manifest = entry.manifest()?;
+    let manifest = entry.manifest().map_err(|e| e.to_string())?;
     let sealed = manifest
         .sealed
         .clone()
         .ok_or_else(|| format!("pack '{spec}' carries no sealed: block"))?;
     Ok(Target {
-        label: entry.label.clone(),
+        label: entry.label(),
         pack: entry.record.name.clone(),
         dir: entry.dir.clone(),
         sealed,
@@ -522,13 +426,13 @@ fn find_sealed(pack: &str, store: Option<&Path>) -> Result<Option<(Target, Seale
         Err(FindPackError::NotInstalled { .. }) => return Ok(None),
         Err(e) => return Err(e.to_string()),
     };
-    let manifest = entry.manifest()?;
+    let manifest = entry.manifest().map_err(|e| e.to_string())?;
     let Some(sealed) = manifest.sealed.clone() else {
         return Ok(None);
     };
     Ok(Some((
         Target {
-            label: entry.label.clone(),
+            label: entry.label(),
             pack: entry.record.name.clone(),
             dir: entry.dir.clone(),
             sealed: sealed.clone(),
@@ -541,6 +445,8 @@ fn find_sealed(pack: &str, store: Option<&Path>) -> Result<Option<(Target, Seale
 #[cfg_attr(coverage, coverage(off))]
 mod tests {
     #![allow(clippy::unwrap_used)]
+
+    use tamias_core::RECORD_FILE;
 
     use super::*;
 
@@ -601,10 +507,10 @@ mod tests {
         .unwrap();
         std::fs::create_dir_all(root.path().join(".hidden")).unwrap();
         std::fs::write(root.path().join("stray.txt"), "x").unwrap();
-        let found = scan_store(root.path());
+        let found = scan_store(root.path()).unwrap();
         assert_eq!(found.len(), 1);
         assert_eq!(found[0].label(), "secrets-9aia@1.0.0");
-        assert_eq!(found[0].name(), "secrets-9aia");
+        assert_eq!(found[0].record.name, "secrets-9aia");
     }
 
     #[test]

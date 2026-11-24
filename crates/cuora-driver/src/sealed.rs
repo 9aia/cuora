@@ -642,7 +642,7 @@ fn packs_inner(args: &[String]) -> Result<i32, String> {
     }
     let root = cuora_sealed::store_root(f.store.as_deref());
     let mut found = 0usize;
-    for e in cuora_sealed::scan_store(&root) {
+    for e in cuora_sealed::scan_store(&root)? {
         let Ok(m) = e.manifest() else { continue };
         let Some(sealed) = &m.sealed else { continue };
         let n = sealed.files.len();
@@ -651,7 +651,7 @@ fn packs_inner(args: &[String]) -> Result<i32, String> {
             e.label(),
             m.name,
             n,
-            e.dir().display()
+            e.dir.display()
         );
         found += 1;
     }
