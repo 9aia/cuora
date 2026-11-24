@@ -1,0 +1,19 @@
+[package]
+name = "cuora-secret-dotenv"
+description = "dotenv-file impl of the cuora-secret port (KEY=VAL file, 0600)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+keywords = ["secrets", "cuora"]
+categories = ["development-tools"]
+
+[lints]
+workspace = true
+
+[dependencies]
+cuora-secret.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+cuora-testkit.workspace = true
