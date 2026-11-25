@@ -20,6 +20,10 @@ documented at source (doc comments).
 * [cuora-identity-keyring](/cuora/api/cuora_identity_keyring/index.html) — adapter
 * [cuora-notice](/cuora/api/cuora_notice/index.html) — adapter
 * [cuora-sealed](/cuora/api/cuora_sealed/index.html) — adapter
+* [cuora-secret](/cuora/api/cuora_secret/index.html) — adapter
+* [cuora-secret-cuora](/cuora/api/cuora_secret_cuora/index.html) — adapter
+* [cuora-secret-dotenv](/cuora/api/cuora_secret_dotenv/index.html) — adapter
+* [cuora-secret-keyring](/cuora/api/cuora_secret_keyring/index.html) — adapter
 * [cuora-serve](/cuora/api/cuora_serve/index.html) — adapter
 * [cuora-shell](/cuora/api/cuora_shell/index.html) — adapter
 * [cuora-testkit](/cuora/api/cuora_testkit/index.html) — adapter

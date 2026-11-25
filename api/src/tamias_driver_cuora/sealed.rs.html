@@ -642,7 +642,7 @@
 <a href=#642 id=642 data-nosnippet>642</a>    }
 <a href=#643 id=643 data-nosnippet>643</a>    <span class="kw">let </span>root = cuora_sealed::store_root(f.store.as_deref());
 <a href=#644 id=644 data-nosnippet>644</a>    <span class="kw">let </span><span class="kw-2">mut </span>found = <span class="number">0usize</span>;
-<a href=#645 id=645 data-nosnippet>645</a>    <span class="kw">for </span>e <span class="kw">in </span>cuora_sealed::scan_store(<span class="kw-2">&amp;</span>root) {
+<a href=#645 id=645 data-nosnippet>645</a>    <span class="kw">for </span>e <span class="kw">in </span>cuora_sealed::scan_store(<span class="kw-2">&amp;</span>root)<span class="question-mark">? </span>{
 <a href=#646 id=646 data-nosnippet>646</a>        <span class="kw">let </span><span class="prelude-val">Ok</span>(m) = e.manifest() <span class="kw">else </span>{ <span class="kw">continue </span>};
 <a href=#647 id=647 data-nosnippet>647</a>        <span class="kw">let </span><span class="prelude-val">Some</span>(sealed) = <span class="kw-2">&amp;</span>m.sealed <span class="kw">else </span>{ <span class="kw">continue </span>};
 <a href=#648 id=648 data-nosnippet>648</a>        <span class="kw">let </span>n = sealed.files.len();
@@ -651,7 +651,7 @@
 <a href=#651 id=651 data-nosnippet>651</a>            e.label(),
 <a href=#652 id=652 data-nosnippet>652</a>            m.name,
 <a href=#653 id=653 data-nosnippet>653</a>            n,
-<a href=#654 id=654 data-nosnippet>654</a>            e.dir().display()
+<a href=#654 id=654 data-nosnippet>654</a>            e.dir.display()
 <a href=#655 id=655 data-nosnippet>655</a>        );
 <a href=#656 id=656 data-nosnippet>656</a>        found += <span class="number">1</span>;
 <a href=#657 id=657 data-nosnippet>657</a>    }

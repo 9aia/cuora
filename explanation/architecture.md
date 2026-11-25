@@ -46,9 +46,13 @@ Design rules:
 | `cuora-identity-keyring` | adapter | Identity impl: the platform session secret store (secret-service / Keychain / Credential Manager) via keyring-core |
 | `cuora-notice` | adapter | Process-wide UX notices — cuora:-prefixed stderr notes, mutable for terminal-owning surfaces |
 | `cuora-sealed` | adapter | cuora sealed packs: tamias store resolution, age identity, encrypt/decrypt, and the cuora://\<pack>/\<secret> engine read path (tamias ADR-0004) |
+| `cuora-secret` | adapter | Secrets port — named-secret resolution from a backing store (env, keyring, dotenv, cuora broker) |
+| `cuora-secret-cuora` | adapter | Cuora `Secrets` impl — resolves `cuora://&lt;scope&gt;/&lt;NAME&gt;` through the cuora CLI or `cuora serve` |
+| `cuora-secret-dotenv` | adapter | dotenv-file impl of the cuora-secret port (KEY=VAL file, 0600) |
+| `cuora-secret-keyring` | adapter | OS-keyring impl of the cuora-secret port (secret-tool / libsecret) |
 | `cuora-serve` | adapter | cuora serve — the ndjson request/response IPC surface orchestrators embed, with the external policy-decision consult (P-005) |
 | `cuora-shell` | adapter | Run a command in a working directory via bash -c — the generic shell-out helper |
-| `cuora-testkit` | adapter | Vault conformance suite — every cuora-vault impl passes the same contract tests (fake values only) |
+| `cuora-testkit` | adapter | Conformance suites — every cuora-vault / cuora-secret impl passes the same contract tests (fake values only) |
 | `cuora-vault-age` | adapter | Local vault impl: one age-x25519-encrypted JSON doc — the v1 default backend |
 | `cuora-vault-cached` | adapter | Composite vault impl: read-through age-encrypted local cache in front of any backend (P-007) |
 | `cuora-vault-cf` | adapter | Remote vault impl: self-hosted Cloudflare Worker + D1 holding per-secret age ciphertext — the Worker never sees plaintext |
