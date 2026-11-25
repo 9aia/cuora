@@ -39,7 +39,7 @@ age.workspace = true
 # lifecycle verbs + `sealed_json`. Git dep like pavo-protocol
 # above (path deps break fresh-clone resolution); `rev` is the
 # org-canonical tamias pin (PL-032), shared with cuora-sealed.
-tamias-core = { git = "https://github.com/9aia/tamias", rev = "ddc61e5b13d7f0b39ea3bfd950be18b1a48ddc38", version = "0.3" }
+tamias-core = { git = "https://github.com/9aia/tamias", rev = "cbbc0e048cd5f28358245dd3555bee274b8da19d", version = "0.3" }
 # The public wire contract — git dep so `cargo install --git` and
 # `cargo xtask install` work without a sibling ../pavo checkout
 # (path deps break workspace resolution on a fresh clone).
