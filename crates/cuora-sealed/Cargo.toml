@@ -19,12 +19,12 @@ zeroize.workspace = true
 # `StoreRecord`, `RECORD_FILE`. Git dep like cuora-driver's (path
 # deps break fresh-clone resolution). `rev` is the org-canonical
 # tamias pin (PL-032) — shared with cuora-driver's tamias-core.
-tamias-core = { git = "https://github.com/9aia/tamias", rev = "5464556b58bd43ee5bb2e48e02804686e04c87da", version = "0.3" }
+tamias-core = { git = "https://github.com/9aia/tamias", rev = "ddc61e5b13d7f0b39ea3bfd950be18b1a48ddc38", version = "0.3" }
 # The local install store — `Store`/`StoreEntry` own the
 # `.tamias-store.json` walk, label spelling, and find/ambiguity
 # rules this crate used to re-implement. Same git source + rev as
 # tamias-core above (one tamias rev per graph).
-tamias-store-local = { git = "https://github.com/9aia/tamias", rev = "5464556b58bd43ee5bb2e48e02804686e04c87da", version = "0.3" }
+tamias-store-local = { git = "https://github.com/9aia/tamias", rev = "ddc61e5b13d7f0b39ea3bfd950be18b1a48ddc38", version = "0.3" }
 
 [dev-dependencies]
 tempfile.workspace = true
