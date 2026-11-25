@@ -15,6 +15,10 @@ modules:
 - cuora-notice
 - cuora-ops
 - cuora-sealed
+- cuora-secret
+- cuora-secret-cuora
+- cuora-secret-dotenv
+- cuora-secret-keyring
 - cuora-serve
 - cuora-shell
 - cuora-testkit
@@ -30,8 +34,8 @@ modules:
 commands:
 - cargo check
 - cargo test --workspace
-tree_digest: 2a6a94f3ba68ab830295285dee38629efafce968
-files_total: 211
+tree_digest: 7352bfb864e483a646203a89144aba0899a63b2c
+files_total: 222
 provenance:
   files:
   - Cargo.toml
@@ -49,6 +53,10 @@ provenance:
   - crates/cuora-notice/Cargo.toml
   - crates/cuora-ops/Cargo.toml
   - crates/cuora-sealed/Cargo.toml
+  - crates/cuora-secret/Cargo.toml
+  - crates/cuora-secret-cuora/Cargo.toml
+  - crates/cuora-secret-dotenv/Cargo.toml
+  - crates/cuora-secret-keyring/Cargo.toml
   - crates/cuora-serve/Cargo.toml
   - crates/cuora-shell/Cargo.toml
   - crates/cuora-testkit/Cargo.toml
@@ -58,7 +66,7 @@ provenance:
   - crates/cuora-vault-cf/Cargo.toml
   - xtask/Cargo.toml
   hashes:
-  - 05773cef3f3881a95a0bf340248619fa4109e31a
+  - b68c3ce57757f5c97ce3384ba149343b8d9c91e5
   - bf7b0e5a4364babb178ee797ac9874fc9fadf2b9
   - 70be355e0ec1f29bc0bedc077f6cecc1b632495b
   - cfc09e62e4451faec3b10a1f95f3e27381c6a419
@@ -66,21 +74,25 @@ provenance:
   - 84f4d48465d7a00aa61152d1261563f5e806c35b
   - 000e41d5840b658bf1370bc0a1f4c10626a91fcb
   - c140ab8aed34d70490289b50e722c42ac084fadd
-  - 4a83471cbe8e2efd6c5582efba8e72e4ace5411c
+  - ead926aa2b0cd6a70577466d13189a5df631fc5b
   - 61f701f21c7a5745cc8e5b624533b590af330534
   - 33979d5b8faa4598746ca79a5cca19b61fab06bc
   - 85562442425338ba57cdf88a54b5e2b0c8c2338d
   - ca24f91ffa63a58ab8099943aba4d2231cf69d74
   - b80c210a0026bc5f405e7a28836317ba83de9ff2
-  - c8103e1f04004173f751e6d8dbc799775dd04a71
+  - 295c0192c265e8eaf70c68e1086be188a67fbf77
+  - e3d19cfe631be2afb0a91f9de5593420d2b006f7
+  - a1efa3776e30e980da77a3283e0ecb139b4ea69e
+  - c0efab1f06796f7507b7d4a11ba6bf0d1f914009
+  - c1ed86b02854535991e642c5af26e03ce355abbc
   - 874e99d5adec58f0aa1b68fab12d8bd79bbbf622
   - 85700da84b4e3dbeef45489b31a713b1cd9a2271
-  - be58afb0cde0c39560e013b419a0dfdc476e21b2
+  - 4c7acbb30acaf5087c846afbed2547b87fb80cdd
   - d299151058457fff78b5efba2132b2bf75d972f3
   - 07d95ed7761181c7545591538f08d907aaa4a523
   - df97d7ea0f12c02fec10db53389137ddf5dddcc2
   - 422f52f2ca23213aedb8eb77d63058314f245371
   - 1b2c254cc2d5e144e6ee3eedfdcbb94db8a3dedb
-  commit_sha: d23de0b83c3ef682e03db991d28380d39ea40e84
-  generated_at: '1795021514'
+  commit_sha: b25f543fecc8e12a1c9818f5afbcaafbf6001b45
+  generated_at: '1795566122'
   generator: kuda/0.1.0

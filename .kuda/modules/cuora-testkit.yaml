@@ -1,6 +1,6 @@
 name: cuora-testkit
 path: crates/cuora-testkit/Cargo.toml
-purpose: Vault conformance suite — every cuora-vault impl passes the same contract tests (fake values only)
+purpose: Conformance suites — every cuora-vault / cuora-secret impl passes the same contract tests (fake values only)
 api:
 - name: AUTH
   kind: const
@@ -11,6 +11,16 @@ api:
   kind: const
   file: crates/cuora-testkit/src/lib.rs
   line: 25
+  module: cuora-testkit
+- name: FAKE
+  kind: const
+  file: crates/cuora-testkit/src/lib.rs
+  line: 233
+  module: cuora-testkit
+- name: FAKE2
+  kind: const
+  file: crates/cuora-testkit/src/lib.rs
+  line: 235
   module: cuora-testkit
 - name: HttpMock
   kind: type
@@ -26,6 +36,11 @@ api:
   kind: type
   file: crates/cuora-testkit/src/httpmock.rs
   line: 55
+  module: cuora-testkit
+- name: SEQ
+  kind: const
+  file: crates/cuora-testkit/src/lib.rs
+  line: 237
   module: cuora-testkit
 - name: SEQ
   kind: const
@@ -66,6 +81,11 @@ api:
   kind: function
   file: crates/cuora-testkit/src/mocks.rs
   line: 623
+  module: cuora-testkit
+- name: conformance
+  kind: function
+  file: crates/cuora-testkit/src/lib.rs
+  line: 251
   module: cuora-testkit
 - name: ct_eq
   kind: function
@@ -162,6 +182,11 @@ api:
   file: crates/cuora-testkit/src/lib.rs
   line: 19
   module: cuora-testkit
+- name: name_reported
+  kind: function
+  file: crates/cuora-testkit/src/lib.rs
+  line: 260
+  module: cuora-testkit
 - name: new
   kind: function
   file: crates/cuora-testkit/src/httpmock.rs
@@ -177,34 +202,10 @@ api:
   file: crates/cuora-testkit/src/httpmock.rs
   line: 282
   module: cuora-testkit
-- name: overwrite_semantics
-  kind: function
-  file: crates/cuora-testkit/src/lib.rs
-  line: 205
-  module: cuora-testkit
-- name: paths
-  kind: function
-  file: crates/cuora-testkit/src/lib.rs
-  line: 90
-  module: cuora-testkit
-- name: put_get_roundtrip
-  kind: function
-  file: crates/cuora-testkit/src/lib.rs
-  line: 95
-  module: cuora-testkit
-- name: rm_semantics
-  kind: function
-  file: crates/cuora-testkit/src/lib.rs
-  line: 129
-  module: cuora-testkit
-- name: rotate_bumps
-  kind: function
-  file: crates/cuora-testkit/src/lib.rs
-  line: 139
-  module: cuora-testkit
-api_omitted: 18
+api_omitted: 28
 deps:
 - cuora-core
+- cuora-secret
 - cuora-vault
 - hmac
 - serde_json
@@ -216,6 +217,7 @@ deps:
 - time
 - cuora-core
 - cuora-vault
+- cuora-secret
 notes: ''
 verify:
 - crates/cuora-testkit/Cargo.toml
@@ -229,10 +231,10 @@ provenance:
   - crates/cuora-testkit/src/lib.rs
   - crates/cuora-testkit/src/mocks.rs
   hashes:
-  - be58afb0cde0c39560e013b419a0dfdc476e21b2
+  - 4c7acbb30acaf5087c846afbed2547b87fb80cdd
   - b1ac3e5154ce8e547fccb50864aff2bedcedd285
-  - ef584122b1264eed3b674384996a9d57307a7726
+  - 152e2044733027b7992b3a1d45e8fede0fdfbdac
   - 725afcb81a08095e7462d7cc44aa2e10bfb6c0f3
-  commit_sha: 9aa078807f3d952dd07e69bd48851e3ce8243869
-  generated_at: '1794488905'
+  commit_sha: b25f543fecc8e12a1c9818f5afbcaafbf6001b45
+  generated_at: '1795566122'
   generator: kuda-template/0.1.4

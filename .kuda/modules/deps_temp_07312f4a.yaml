@@ -1,0 +1,16 @@
+name: deps_temp_07312f4a
+path: docs/.vitepress/cache/deps_temp_07312f4a/package.json
+purpose: '*Secrets broker for agents — sealed, not spilled.*'
+api: []
+deps: []
+notes: ''
+verify:
+- docs/.vitepress/cache/deps_temp_07312f4a/package.json
+provenance:
+  files:
+  - docs/.vitepress/cache/deps_temp_07312f4a/package.json
+  hashes:
+  - 3dbc1ca591c0557e35b6004aeba250e6a70b56e3
+  commit_sha: b25f543fecc8e12a1c9818f5afbcaafbf6001b45
+  generated_at: '1795566122'
+  generator: kuda-template/0.1.4

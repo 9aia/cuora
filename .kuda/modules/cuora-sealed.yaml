@@ -5,37 +5,22 @@ api:
 - name: FindPackError
   kind: type
   file: crates/cuora-sealed/src/lib.rs
-  line: 113
-  module: cuora-sealed
-- name: Installed
-  kind: type
-  file: crates/cuora-sealed/src/lib.rs
-  line: 62
+  line: 72
   module: cuora-sealed
 - name: PackOpen
   kind: type
   file: crates/cuora-sealed/src/lib.rs
-  line: 460
+  line: 364
   module: cuora-sealed
 - name: Target
   kind: type
   file: crates/cuora-sealed/src/lib.rs
-  line: 236
+  line: 140
   module: cuora-sealed
 - name: actor
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 340
-  module: cuora-sealed
-- name: clone_installed
-  kind: function
-  file: crates/cuora-sealed/src/lib.rs
-  line: 223
-  module: cuora-sealed
-- name: collect_entries
-  kind: function
-  file: crates/cuora-sealed/src/lib.rs
-  line: 145
+  line: 244
   module: cuora-sealed
 - name: cuora-sealed
   kind: module
@@ -45,171 +30,175 @@ api:
 - name: decrypt
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 368
+  line: 272
   module: cuora-sealed
 - name: decrypt_rejects_wrong_key_and_scrypt_shape
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 564
-  module: cuora-sealed
-- name: dir
-  kind: function
-  file: crates/cuora-sealed/src/lib.rs
-  line: 87
+  line: 470
   module: cuora-sealed
 - name: encrypt
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 352
+  line: 256
   module: cuora-sealed
 - name: encrypt_decrypt_roundtrip
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 554
+  line: 460
   module: cuora-sealed
 - name: fake_store
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 730
+  line: 636
   module: cuora-sealed
 - name: fake_store_pub
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 694
+  line: 600
   module: cuora-sealed
 - name: find_pack
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 192
+  line: 102
   module: cuora-sealed
 - name: find_pack_errors_are_typed
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 611
+  line: 517
   module: cuora-sealed
 - name: find_sealed
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 518
+  line: 422
   module: cuora-sealed
 - name: identity
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 547
+  line: 453
   module: cuora-sealed
 - name: identity_keyfile
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 672
+  line: 578
   module: cuora-sealed
 - name: identity_source
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 318
-  module: cuora-sealed
-- name: label
-  kind: function
-  file: crates/cuora-sealed/src/lib.rs
-  line: 92
-  module: cuora-sealed
-- name: label_of
-  kind: function
-  file: crates/cuora-sealed/src/lib.rs
-  line: 71
+  line: 222
   module: cuora-sealed
 - name: load_identity
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 325
-  module: cuora-sealed
-- name: manifest
-  kind: function
-  file: crates/cuora-sealed/src/lib.rs
-  line: 106
-  module: cuora-sealed
-- name: name
-  kind: function
-  file: crates/cuora-sealed/src/lib.rs
-  line: 97
+  line: 229
   module: cuora-sealed
 - name: open_pack_ref
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 484
+  line: 388
   module: cuora-sealed
 - name: open_pack_ref_hits_misses_and_errors
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 736
+  line: 642
   module: cuora-sealed
 - name: open_pack_ref_surfaces_real_errors
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 772
+  line: 678
   module: cuora-sealed
 - name: pack_declares
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 509
+  line: 413
   module: cuora-sealed
 - name: pack_ref_requires_two_segments
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 582
+  line: 488
   module: cuora-sealed
 - name: parse_pack_ref
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 300
+  line: 204
   module: cuora-sealed
 - name: parse_recipient_lines
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 385
+  line: 289
   module: cuora-sealed
 - name: payload_path
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 405
+  line: 309
   module: cuora-sealed
 - name: payload_path_refuses_symlink_escape
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 653
+  line: 559
   module: cuora-sealed
 - name: recipient_lines_parse_comments_and_blanks
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 574
-  module: cuora-sealed
-- name: record
-  kind: function
-  file: crates/cuora-sealed/src/lib.rs
-  line: 102
+  line: 480
   module: cuora-sealed
 - name: resolve_target
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 252
+  line: 156
   module: cuora-sealed
 - name: scan_store
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 138
+  line: 64
   module: cuora-sealed
 - name: scan_store_finds_entries_and_skips_junk
   kind: function
   file: crates/cuora-sealed/src/lib.rs
-  line: 593
+  line: 499
   module: cuora-sealed
-api_omitted: 7
+- name: store_root
+  kind: function
+  file: crates/cuora-sealed/src/lib.rs
+  line: 46
+  module: cuora-sealed
+- name: tests
+  kind: module
+  file: crates/cuora-sealed/src/lib.rs
+  line: 446
+  module: cuora-sealed
+- name: variant
+  kind: function
+  file: crates/cuora-sealed/src/lib.rs
+  line: 776
+  module: cuora-sealed
+- name: version_pin_resolves_ambiguous_installs
+  kind: function
+  file: crates/cuora-sealed/src/lib.rs
+  line: 719
+  module: cuora-sealed
+- name: write_secret_file
+  kind: function
+  file: crates/cuora-sealed/src/lib.rs
+  line: 329
+  module: cuora-sealed
+- name: write_secret_file_lands_0600
+  kind: function
+  file: crates/cuora-sealed/src/lib.rs
+  line: 526
+  module: cuora-sealed
+- name: write_secret_file_tightens_a_preexisting_loose_file
+  kind: function
+  file: crates/cuora-sealed/src/lib.rs
+  line: 543
+  module: cuora-sealed
 deps:
 - age
 - cuora-core
 - cuora-identity
 - cuora-identity-file
-- serde_json
 - tamias-core
+- tamias-store-local
 - thiserror
 - zeroize
 - tempfile
@@ -218,6 +207,7 @@ deps:
 - cuora-identity
 - cuora-identity-file
 - tamias_core
+- tamias_store_local
 - zeroize
 notes: ''
 verify:
@@ -228,8 +218,8 @@ provenance:
   - crates/cuora-sealed/Cargo.toml
   - crates/cuora-sealed/src/lib.rs
   hashes:
-  - c8103e1f04004173f751e6d8dbc799775dd04a71
-  - 84c37be432e6beca2843621413b5c0df591dfdbb
-  commit_sha: c23ae18e2361762fb70befab4d791c29bdc7847d
-  generated_at: '1794813848'
+  - 295c0192c265e8eaf70c68e1086be188a67fbf77
+  - 93cbf27c8e9faccc818f6c80f73d28cb2f3ac27a
+  commit_sha: b25f543fecc8e12a1c9818f5afbcaafbf6001b45
+  generated_at: '1795566122'
   generator: kuda-template/0.1.4

@@ -545,7 +545,7 @@ dependencies = [
 
 [[package]]
 name = "cuora"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "clap",
  "clap-markdown",
@@ -566,14 +566,14 @@ dependencies = [
 
 [[package]]
 name = "cuora-config"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "cuora-core",
 ]
 
 [[package]]
 name = "cuora-config-toml"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "cuora-config",
  "cuora-core",
@@ -584,7 +584,7 @@ dependencies = [
 
 [[package]]
 name = "cuora-core"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "cuora-core",
  "proptest",
@@ -598,7 +598,7 @@ dependencies = [
 
 [[package]]
 name = "cuora-deploy"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "cuora-core",
  "thiserror 2.0.21",
@@ -606,7 +606,7 @@ dependencies = [
 
 [[package]]
 name = "cuora-deploy-cf"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "cuora-core",
  "cuora-deploy",
@@ -619,7 +619,7 @@ dependencies = [
 
 [[package]]
 name = "cuora-driver"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "age",
  "clap",
@@ -642,7 +642,7 @@ dependencies = [
 
 [[package]]
 name = "cuora-identity"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "age",
  "thiserror 2.0.21",
@@ -650,7 +650,7 @@ dependencies = [
 
 [[package]]
 name = "cuora-identity-file"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "age",
  "cuora-identity",
@@ -663,7 +663,7 @@ dependencies = [
 
 [[package]]
 name = "cuora-identity-keyring"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "age",
  "apple-native-keyring-store",
@@ -678,11 +678,11 @@ dependencies = [
 
 [[package]]
 name = "cuora-notice"
-version = "1.0.4"
+version = "2.0.0"
 
 [[package]]
 name = "cuora-ops"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "age",
  "cuora-config",
@@ -713,7 +713,7 @@ dependencies = [
 
 [[package]]
 name = "cuora-sealed"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "age",
  "cuora-core",
@@ -728,11 +728,11 @@ dependencies = [
 
 [[package]]
 name = "cuora-secret"
-version = "1.0.4"
+version = "2.0.0"
 
 [[package]]
 name = "cuora-secret-cuora"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "cuora-secret",
  "cuora-testkit",
@@ -742,7 +742,7 @@ dependencies = [
 
 [[package]]
 name = "cuora-secret-dotenv"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "cuora-secret",
  "cuora-testkit",
@@ -751,7 +751,7 @@ dependencies = [
 
 [[package]]
 name = "cuora-secret-keyring"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "cuora-secret",
  "cuora-testkit",
@@ -759,7 +759,7 @@ dependencies = [
 
 [[package]]
 name = "cuora-serve"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "cuora-core",
  "cuora-identity",
@@ -776,14 +776,14 @@ dependencies = [
 
 [[package]]
 name = "cuora-shell"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "temp-env",
 ]
 
 [[package]]
 name = "cuora-testkit"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "cuora-core",
  "cuora-secret",
@@ -796,7 +796,7 @@ dependencies = [
 
 [[package]]
 name = "cuora-vault"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "cuora-core",
  "thiserror 2.0.21",
@@ -805,7 +805,7 @@ dependencies = [
 
 [[package]]
 name = "cuora-vault-age"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "age",
  "cuora-core",
@@ -825,7 +825,7 @@ dependencies = [
 
 [[package]]
 name = "cuora-vault-cached"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "age",
  "cuora-core",
@@ -842,7 +842,7 @@ dependencies = [
 
 [[package]]
 name = "cuora-vault-cf"
-version = "1.0.4"
+version = "2.0.0"
 dependencies = [
  "age",
  "base64 0.23.1",
@@ -862,7 +862,7 @@ dependencies = [
 
 [[package]]
 name = "cuora-xtask"
-version = "1.0.4"
+version = "2.0.0"
 
 [[package]]
 name = "curve25519-dalek"
